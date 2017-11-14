@@ -1,0 +1,110 @@
+/* BUZZ PANELS GLOBAL CSS v0.2 */
+
+@import "compass";
+@import "compass/css3";
+@import "compass/utilities";
+
+$primary_font: 'Open Sans', sans-serif;
+
+$primary-color: #ff8900;
+
+
+/* --------------------------------------- */
+/* Styles */
+/* --------------------------------------- */
+
+html,body {
+  font-family: $primary_font;
+  padding:0px;
+  margin:0px;
+  width:100%;
+  height:auto;
+  font-weight:300;
+}
+
+body{
+  background:orange;
+  background: url("../assets/bg.jpg") no-repeat center center fixed;
+  @include background-size(cover);
+  color: $primary-color;
+}
+
+footer{
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:auto;  
+   //background:#6cf;
+   padding:0px 10px 10px 10px;
+}
+
+
+.tomboticon {
+  position:relative;
+  margin:0 auto;
+  margin-top:7%;
+  //background: green;
+  width:200px;
+  height:200px;
+
+  .robot {
+    position:absolute;
+    //background:blue;
+    width:150px;
+    height:150px;
+    top:25px;
+    left:25px;
+  }
+}
+
+.tombot-question {
+
+  font-size:40px;
+  padding:30px 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color:white;
+  margin-top:2%;
+  border:1px solid rgba(255, 255, 255, 0.1);
+
+  &.bot{
+    color:$primary-color;
+  }
+
+}
+
+
+.main_container {
+  
+  margin:0 auto;
+  width: 70%;
+  //background:red;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* --------------------------------------- */
+/* MEDIA QUERIES                           */
+/* --------------------------------------- */
+
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (max-width : 480px) {
+
+  .main_container {
+    
+    width: 95%;
+
+  }
+
+}
+

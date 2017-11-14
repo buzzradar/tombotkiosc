@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1096 1096" style="enable-background:new 0 0 1096 1096;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_2_);fill:#F6921E;}
+	.st1{clip-path:url(#SVGID_2_);}
+	.face{fill:#FFFFFF;}
+	.st4{fill:none;stroke:#FFFFFF;stroke-width:24;stroke-miterlimit:10;}
+	.lightbolt{fill:#404040;}
+	.mouth{fill:#404040;}
+	.eyes{fill:#404040;}
+	.antena{fill:#ffffff;}
+</style>
+<g>
+	<defs>
+		<circle id="SVGID_1_" cx="548" cy="548" r="542.9"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	
+	<g class="st1">
+		<g>
+			<polyline class="lightbolt" points="254.7,121 443.4,297.1 355.9,297.9 457.6,434.8 269.1,258.9 357.4,258.9 254.7,121"/>
+			<polyline class="lightbolt" points="841.3,121 652.6,297.1 740.1,297.9 638.4,434.8 826.9,258.9 738.5,258.9 841.3,121"/>
+		</g>
+		<path class="face" d="M706.5,975h-317c-81.6,0-149.2-63.4-154.4-144.8l-12.9-201.6C216.5,539.4,287.3,464,376.6,464h342.8
+			c89.4,0,160.1,75.5,154.4,164.6l-12.9,201.6C855.7,911.6,788.1,975,706.5,975z"/>
+		<line class="st4" x1="548" y1="309.5" x2="548" y2="541"/>
+		<g>
+			<path class="mouth" d="M421.2,773.1c0,70,56.8,126.8,126.8,126.8s126.8-56.8,126.8-126.8H421.2z"/>
+			<path class="face" d="M510.4,829L510.4,829c17.7,0,32.2-14.5,32.2-32.2v-24.6h-64.3v24.6C478.2,814.5,492.7,829,510.4,829z"/>
+			<path class="face" d="M585.6,829L585.6,829c17.7,0,32.2-14.5,32.2-32.2v-24.6h-64.3v24.6C553.4,814.5,567.9,829,585.6,829z"/>
+		</g>
+		<g>
+			<ellipse class="eyes" cx="357.5" cy="696.1" rx="41" ry="41"/>
+			<ellipse class="eyes" cx="738.5" cy="696.1" rx="41" ry="41"/>
+		</g>
+		<circle class="antena" cx="548" cy="309.5" r="35"/>
+
+	</g>
+</g>
+</svg>
