@@ -120,13 +120,12 @@ function _addInputTalk() {
 	this.inputTalk.on("question_ready", onNewQuestionReceived, this);
 
 	function onNewQuestionReceived(newQuestion) {
-    	console.log ("%c -> Event question_ready => ", "background:#c3bb35;", newQuestion);
+    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
+    	this.botIcon.changeState("thinking");
+    	this.inputTalk.disableInput();
 	}
 
 }
-
-
-
 
 
 
@@ -272,7 +271,8 @@ function _addFocusOutKeyDownListener() {
 
 	function onFocusOutKeydown(e) {
 		// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
-        this.botIcon.changeState("listening");
+        
+        if (e.type == "keydown") this.botIcon.changeState("listening");
 
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
@@ -292,16 +292,34 @@ function _checkQuestion() {
 		console.log("Question is empty!");
 		_changeOwner.call(this,'tombot');
 		Utils_SRV.animateCopy(this.input_DOM,Utils_SRV.getRandomShy(), this.botIcon);
+	}else if(question.length < 10){
+		console.log("User is saying hello!!!!!");
+		_sayHello.call(this);
 	}else{
-		Utils_SRV.on("copy_animation_finished",onAcknowledgeAnimationFinished,this);
-
+		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
-
 	}
 
-	function onAcknowledgeAnimationFinished() {
+	function _onAcknowledgeAnimationFinished() {
 		this.emit("question_ready",question);
+		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
+
+}
+
+
+
+
+
+
+
+
+
+
+function _sayHello() {
+
+	_changeOwner.call(this,'tombot');
+	Utils_SRV.animateCopy(this.input_DOM,"Hello!", this.botIcon);
 
 }
 
@@ -322,6 +340,27 @@ function _checkQuestion() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+InputTalk_Ctrl.prototype.disableInput = function () {
+	this.input_DOM.attr("disabled", true);
+};
 
 
 
@@ -987,7 +1026,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, 50);
+    let copyInterval = setInterval(onEachInterval, 10);
 
     function onEachInterval() {
 
@@ -18450,31 +18489,6 @@ if ('undefined' !== typeof module) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],11:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],12:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -18659,6 +18673,31 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
+
+},{}],12:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
 
 },{}],13:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
@@ -19257,4 +19296,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":13,"_process":12,"inherits":11}]},{},[5]);
+},{"./support/isBuffer":13,"_process":11,"inherits":12}]},{},[5]);

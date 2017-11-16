@@ -106,7 +106,8 @@ function _addFocusOutKeyDownListener() {
 
 	function onFocusOutKeydown(e) {
 		// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
-        this.botIcon.changeState("listening");
+        
+        if (e.type == "keydown") this.botIcon.changeState("listening");
 
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
@@ -126,16 +127,34 @@ function _checkQuestion() {
 		console.log("Question is empty!");
 		_changeOwner.call(this,'tombot');
 		Utils_SRV.animateCopy(this.input_DOM,Utils_SRV.getRandomShy(), this.botIcon);
+	}else if(question.length < 10){
+		console.log("User is saying hello!!!!!");
+		_sayHello.call(this);
 	}else{
-		Utils_SRV.on("copy_animation_finished",onAcknowledgeAnimationFinished,this);
-
+		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
-
 	}
 
-	function onAcknowledgeAnimationFinished() {
+	function _onAcknowledgeAnimationFinished() {
 		this.emit("question_ready",question);
+		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
+
+}
+
+
+
+
+
+
+
+
+
+
+function _sayHello() {
+
+	_changeOwner.call(this,'tombot');
+	Utils_SRV.animateCopy(this.input_DOM,"Hello!", this.botIcon);
 
 }
 
@@ -156,6 +175,27 @@ function _checkQuestion() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+InputTalk_Ctrl.prototype.disableInput = function () {
+	this.input_DOM.attr("disabled", true);
+};
 
 
 

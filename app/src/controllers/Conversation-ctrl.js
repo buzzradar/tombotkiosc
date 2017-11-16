@@ -43,13 +43,12 @@ function _addInputTalk() {
 	this.inputTalk.on("question_ready", onNewQuestionReceived, this);
 
 	function onNewQuestionReceived(newQuestion) {
-    	console.log ("%c -> Event question_ready => ", "background:#c3bb35;", newQuestion);
+    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
+    	this.botIcon.changeState("thinking");
+    	this.inputTalk.disableInput();
 	}
 
 }
-
-
-
 
 
 
