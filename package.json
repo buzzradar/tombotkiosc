@@ -1,12 +1,13 @@
 {
-  "name": "electron-quick-start",
+  "name": "BuzzRadar-TomBot-Kiosc",
   "version": "1.0.0",
   "description": "Tombot Electron application",
   "main": "main.js",
   "scripts": {
     "watch": "watchify app/src/main.js -v -o app/js/tombot.js & ",
     "dev": "npm run watch && gulp watch",
-    "electron": "electron --inspect=5858 ."
+    "electron": "electron --inspect=5858 .",
+    "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=app/assets/icon/mac/tombot_app_icon.icns --prune=true --out=release-builds"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -20,14 +21,20 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "~1.7.8",
+    "electron-packager": "^9.1.0",
     "browser-sync": "*",
     "browserify": "^13.0.0",
+    "eslint": "^1.1.1",
     "gulp": "^3.9.0",
     "gulp-compass": "*",
     "gulp-concat": "^2.6.0",
+    "gulp-css-to-js": "0.0.1",
+    "gulp-csstojs": "^1.0.1",
     "gulp-dest": "^0.2.3",
     "gulp-load-plugins": "*",
     "gulp-merge": "^0.1.1",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
     "gulp-ruby-sass": "*",
     "gulp-uglify": "^2.1.2",
     "jscs": "^2.8.0",
@@ -35,20 +42,18 @@
     "serve": "^1.4.0",
     "uglify-js": "^2.6.1",
     "uglifyify": "^3.0.1",
-    "watchify": "^3.7.0",
+    "watchify": "^3.7.0"
+  },
+  "dependencies": {
     "babelify": "^6.0.1",
     "bowser": "^1.0.0",
+    "d3": "^3.5.16",
+    "eventemitter3": "^1.1.1",
     "glslify": "^5.0.2",
     "gulp-html-js-template": "^0.1.6",
-    "gulp-html-to-js": "0.0.1",
     "gulp-statil": "0.0.9",
     "handlebars": "^4.0.5",
     "jquery": "^2.2.0",
-    "lodash": "^4.0.0",
-    "node-record-lpcm16": "^0.3.0",
-    "eslint": "^3.7.0"
-  },
-  "dependencies": {
-    "sonus": "^0.1.8"
+    "lodash": "^4.0.0"
   }
 }

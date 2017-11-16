@@ -7,8 +7,8 @@
 //----------------------------
 
 const DisplayGlobals_SRV = require('./services/DisplayGlobals-srv'); 
-const TomBotIcon_CTRL = require('./controllers/TomBotIcon-ctrl');
-const InputQuestion_CTRL = require('./controllers/InputQuestion-ctrl');
+const JSONHandler_SRV = require('./services/JSONHandler-srv'); 
+const Conversation_CTRL = require('./controllers/Conversation-ctrl');
 
 
 
@@ -29,9 +29,9 @@ function App_NODE () {
     console.log ("%c -> -------------------------------------- ", "background:#eee;", '');
     console.log ("%c -> -------------------------------------- ", "background:#eee;", '');
 
+
+    _loadSentencesJSON();
     
-    var botIcon = new TomBotIcon_CTRL($('.tomboticon'));
-    var question = new InputQuestion_CTRL($('.tombot-question'),botIcon);
 
 }
 
@@ -39,6 +39,24 @@ function App_NODE () {
 
 
 
+
+
+
+function _loadSentencesJSON() {
+
+    let sentencesJSON = 'json/sentences.json';
+
+    JSONHandler_SRV.load(sentencesJSON, function(sentencesConfJSON) {
+        
+        console.log ("%c -> Master Config Succesfully Loaded => ", "background:#00ff00;", sentencesConfJSON);
+
+        DisplayGlobals_SRV.setSentencesJSON(sentencesConfJSON);
+
+        var conversation = new Conversation_CTRL();
+
+    }.bind(this));
+
+}
 
 
 

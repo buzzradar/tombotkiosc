@@ -1,0 +1,41 @@
+{
+  "sentences": {
+
+    "greetings" : [
+        "Hello! Ask your question here...",
+        "Hi! I can see you are curious, just type a question here.",
+        "Please write a question here, I am bored.",
+        "Greetings my friend, come and ask me something...",
+        "I Know I am irresistible, come and talk to me please.",
+        "TomBot is my name and I am an AI Agent, shoot a question here please.",
+        "Hey you, yes you, the one just passed by, come and ask me something please.",
+        "I love chit chats, come and try me. Ask a question here...",
+        "I do not like being alone, come and talk to me please.",
+        "Are you enjoying CES? If so come and ask me something, I want to help."
+        
+    ],
+
+    "acknowledge" : [
+        "Ok, let me see what I can do for you.",
+        "That is a very good question, let me check If I can help.",
+        "Oh wow, love it. Bear with me please.",
+        "Sure no problem, let me check what I can do.",
+        "Brilliant! Hold on please, let me check your question.",
+        "I love talking to you, let me see If I can help you.",
+        "I can see you are very curious, let me see If I can help.",
+        "Got you! let me check...",
+        "Really enjoying our chit chat, let me see what I can do for you."
+    ],
+
+
+    "shy" : [
+        "Do not be shy? Try again please!",
+        "It seems you have not written anything. Try again please.",
+        "Oh no, I did not get that, try again please.",
+        "You do not come across like a shy person, come on ask me something."
+    ]
+
+
+  }
+
+}

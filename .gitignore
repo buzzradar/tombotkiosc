@@ -1,4 +1,5 @@
 /app/metronic_assets
 /node_modules
+/release-builds
 /.sass-cache
 .DS_Store

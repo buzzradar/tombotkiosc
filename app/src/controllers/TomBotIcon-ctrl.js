@@ -10,6 +10,11 @@ const _ = require("lodash");
 
 const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 
+let _nodeUtil = require('util');
+let _eventEmitter3 = require('eventemitter3');
+
+
+
 
 
 // ------------------------------------
@@ -23,11 +28,12 @@ function TomBotIcon_Ctrl (target) {
 	this.svgHeight = target.height();
 	this.botColor = '#f6911f';
 	this.botTalkingColor = '#77C0B2';
-	this.state = "neutral";
+	this.state = "waiting";
 
 	_createSVGTomBot.call(this,target);
 
 }
+_nodeUtil.inherits(TomBotIcon_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
 
 
 
@@ -68,7 +74,7 @@ function _createSVGTomBot(target) {
 	// }.bind(this),10000);
 
 	// setTimeout(function() {
-	// 	_changeState.call(this,"neutral");
+	// 	_changeState.call(this,"waiting");
 	// }.bind(this),15000);
 
 }
@@ -98,11 +104,18 @@ function _addBGBot() {
 function _addBotFigure(target) {
 
 	d3.xml("assets/TombotLogoOrangeCircle.svg").mimeType("image/svg+xml").get(function(error, xml) {
-	  if (error) throw error;
-	  target.find('.robot').append(xml.documentElement);
-	});
+	  	if (error) throw error;
+	  	target.find('.robot').append(xml.documentElement);
+
+	  	setTimeout(function() {
+			this.emit("bot_ready");
+	  	}.bind(this),1000);
+
+	}.bind(this));
 
 }
+
+
 
 
 function _addAnimationCircles() {
@@ -154,8 +167,8 @@ function _changeState(newState) {
 		console.log("Change State.....", this.state);
 
 		switch(newState) {
-			case "neutral":
-				_neutral.call(this);
+			case "waiting":
+				_waiting.call(this);
 			break;
 			case "listening":
 				_listening.call(this);
@@ -173,7 +186,7 @@ function _changeState(newState) {
 
 }
 
-function _neutral() {
+function _waiting() {
 
 	this.botBG.transition().duration(500)
 		    .attr('fill', this.botColor);

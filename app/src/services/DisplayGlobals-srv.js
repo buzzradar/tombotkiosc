@@ -39,7 +39,7 @@ function DisplayGlobals () {
 //--------------------------------------
 
 
-let _version = "0.1";
+let _version = "0.2";
 
 DisplayGlobals.prototype.getVersion = function() {
 
@@ -71,6 +71,30 @@ DisplayGlobals.prototype.setAppNodeRef = function(appNode) {
 DisplayGlobals.prototype.getAppNodeRef = function() {
 
     return _appNode;
+
+};
+
+
+
+
+
+
+//----------------------------
+// Sentences JSON
+//----------------------------
+
+let _sentencesJSON;
+
+DisplayGlobals.prototype.setSentencesJSON = function(sentencesJSON) {
+
+  _sentencesJSON = sentencesJSON;
+
+};
+
+
+DisplayGlobals.prototype.getSentencesJSON = function() {
+
+    return _sentencesJSON;
 
 };
 
