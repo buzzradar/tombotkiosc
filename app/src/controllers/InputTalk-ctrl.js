@@ -36,9 +36,6 @@ _nodeUtil.inherits(InputTalk_Ctrl,_eventEmitter3); // extend _eventEmitter3 so w
 
 function _init() {
 
-
-
-
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
 	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
@@ -91,11 +88,13 @@ function _changeOwner(newOwner) {
 function _addFocusInListener() {
 
 	var self = this;
-	this.input_DOM.on('click', function(e) {
-	    this.value = '';
+	this.input_DOM.on('click', onInputClicked);
+
+	function onInputClicked() {
+		this.value = '';
 	    _changeOwner.call(self,'user');
     	_addFocusOutKeyDownListener.call(self);
-	});
+	}
 
 }
 
@@ -103,17 +102,17 @@ function _addFocusInListener() {
 
 function _addFocusOutKeyDownListener() {
 
-	this.input_DOM.on('focusout keydown', function(e) {
+	this.input_DOM.on('focusout keydown', onFocusOutKeydown.bind(this));
 
-    	// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
+	function onFocusOutKeydown(e) {
+		// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
         this.botIcon.changeState("listening");
 
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
     	}
-
-	}.bind(this));
+	}
 
 }
 

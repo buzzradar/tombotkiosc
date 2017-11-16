@@ -40,11 +40,11 @@ function _addInputTalk() {
 	this.inputTalk = new InputTalk_CTRL($('.conversation'),this.botIcon);
 
 	//Add Input Listeners
-	this.inputTalk.on("question_ready", function(newQuestion) {
+	this.inputTalk.on("question_ready", onNewQuestionReceived, this);
 
+	function onNewQuestionReceived(newQuestion) {
     	console.log ("%c -> Event question_ready => ", "background:#c3bb35;", newQuestion);
-
-	}, this);
+	}
 
 }
 

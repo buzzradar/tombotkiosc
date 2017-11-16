@@ -117,11 +117,11 @@ function _addInputTalk() {
 	this.inputTalk = new InputTalk_CTRL($('.conversation'),this.botIcon);
 
 	//Add Input Listeners
-	this.inputTalk.on("question_ready", function(newQuestion) {
+	this.inputTalk.on("question_ready", onNewQuestionReceived, this);
 
+	function onNewQuestionReceived(newQuestion) {
     	console.log ("%c -> Event question_ready => ", "background:#c3bb35;", newQuestion);
-
-	}, this);
+	}
 
 }
 
@@ -202,9 +202,6 @@ _nodeUtil.inherits(InputTalk_Ctrl,_eventEmitter3); // extend _eventEmitter3 so w
 
 function _init() {
 
-
-
-
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
 	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
@@ -257,11 +254,13 @@ function _changeOwner(newOwner) {
 function _addFocusInListener() {
 
 	var self = this;
-	this.input_DOM.on('click', function(e) {
-	    this.value = '';
+	this.input_DOM.on('click', onInputClicked);
+
+	function onInputClicked() {
+		this.value = '';
 	    _changeOwner.call(self,'user');
     	_addFocusOutKeyDownListener.call(self);
-	});
+	}
 
 }
 
@@ -269,17 +268,17 @@ function _addFocusInListener() {
 
 function _addFocusOutKeyDownListener() {
 
-	this.input_DOM.on('focusout keydown', function(e) {
+	this.input_DOM.on('focusout keydown', onFocusOutKeydown.bind(this));
 
-    	// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
+	function onFocusOutKeydown(e) {
+		// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
         this.botIcon.changeState("listening");
 
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
     	}
-
-	}.bind(this));
+	}
 
 }
 
@@ -397,9 +396,7 @@ function _createSVGTomBot(target) {
 	_addAnimationCircles.call(this);
 	_addBGBot.call(this);
 
-	setInterval(function() {
-		_blinkEyes.call(this);
-	}.bind(this),3000);
+	setInterval(_blinkEyes.bind(this),3000);
 
 
 
@@ -449,14 +446,16 @@ function _addBotFigure(target) {
 	  	if (error) throw error;
 	  	target.find('.robot').append(xml.documentElement);
 
-	  	setTimeout(function() {
-			this.emit("bot_ready");
-	  	}.bind(this),1000);
+	  	setTimeout(_dispatchBotReady.bind(this),1000);
 
 	}.bind(this));
 
 }
 
+
+function _dispatchBotReady() {
+	this.emit("bot_ready");
+}
 
 
 

@@ -55,9 +55,7 @@ function _createSVGTomBot(target) {
 	_addAnimationCircles.call(this);
 	_addBGBot.call(this);
 
-	setInterval(function() {
-		_blinkEyes.call(this);
-	}.bind(this),3000);
+	setInterval(_blinkEyes.bind(this),3000);
 
 
 
@@ -107,14 +105,16 @@ function _addBotFigure(target) {
 	  	if (error) throw error;
 	  	target.find('.robot').append(xml.documentElement);
 
-	  	setTimeout(function() {
-			this.emit("bot_ready");
-	  	}.bind(this),1000);
+	  	setTimeout(_dispatchBotReady.bind(this),1000);
 
 	}.bind(this));
 
 }
 
+
+function _dispatchBotReady() {
+	this.emit("bot_ready");
+}
 
 
 
