@@ -4,6 +4,7 @@
 const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 const TomBotIcon_CTRL = require('./TomBotIcon-ctrl');
 const InputTalk_CTRL = require('./InputTalk-ctrl');
+const ContentBubble_CTRL = require('./ContentBubble-ctrl');
 
 
 
@@ -18,6 +19,7 @@ function Conversation_Ctrl () {
 
 	this.botIcon = new TomBotIcon_CTRL($('.tomboticon'));
 	this.inputTalk = null;
+	this.contentBubble = null;
 	this.state = "listening";
 
 	_init.call(this);
@@ -28,10 +30,19 @@ function Conversation_Ctrl () {
 
 function _init() {
 
-	//When Bot is Ready
-	this.botIcon.on("bot_ready",_addInputTalk,this);
+	//When Bot is Ready add Content Bubble
+	this.botIcon.on("bot_ready",_addContentBubble,this);
 
 }
+
+
+
+function _addContentBubble() {
+
+	this.contentBubble = new ContentBubble_CTRL();
+
+}
+
 
 
 

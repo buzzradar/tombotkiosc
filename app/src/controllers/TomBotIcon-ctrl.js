@@ -55,7 +55,7 @@ function _createSVGTomBot(target) {
 	_addAnimationCircles.call(this);
 	_addBGBot.call(this);
 
-	setInterval(_blinkEyes.bind(this),3000);
+	// setInterval(_blinkEyes.bind(this),3000);
 
 
 

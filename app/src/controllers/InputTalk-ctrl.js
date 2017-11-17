@@ -9,6 +9,8 @@ const _ = require("lodash");
 //----------------------------
 const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 const Utils_SRV = require('../services/Utils-srv'); 
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
+
 
 let _nodeUtil = require('util');
 let _eventEmitter3 = require('eventemitter3');
@@ -122,22 +124,25 @@ function _addFocusOutKeyDownListener() {
 function _checkQuestion() {
 
 	var question = this.input_DOM.val();
+	var AIAgent_pre_check_answer = AIAgent_SRV.checkQuestion(question);
 
-	if ($.trim(question) === "") {
-		console.log("Question is empty!");
+	console.log("AI Agent pre check.....", AIAgent_pre_check_answer);
+
+	if ( AIAgent_pre_check_answer ){
+		console.log("AI Return TRUE so understood the question");
+
 		_changeOwner.call(this,'tombot');
-		Utils_SRV.animateCopy(this.input_DOM,Utils_SRV.getRandomShy(), this.botIcon);
-	}else if(question.length < 10){
-		console.log("User is saying hello!!!!!");
-		_sayHello.call(this);
+		Utils_SRV.animateCopy(this.input_DOM,AIAgent_pre_check_answer, this.botIcon);
+
 	}else{
+		console.log("AI Return FALSE so ask Marius");
 		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
 	}
 
 	function _onAcknowledgeAnimationFinished() {
-		this.emit("question_ready",question);
-		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
+		// this.emit("question_ready",question);
+		// Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
 
 }
