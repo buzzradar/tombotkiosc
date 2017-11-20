@@ -110,6 +110,11 @@ function _init() {
 	this.intro = new IntroSlides_CTRL(this.bubble_DOM,introSlidesMOD_Array);
 	this.intro.on("intro_slides_stopped",_onSlidesStopped,this);
 
+
+	
+	this.intro.startSlides();
+
+
 }
 
 
@@ -195,7 +200,7 @@ ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
 
 	switch(answer_MOD.type) {
 		case 'bar':
-			
+
 		break;
 	}
 
@@ -1010,7 +1015,7 @@ _nodeUtil.inherits(IntroSlides_Ctrl,_eventEmitter3); // extend _eventEmitter3 so
 function _init() {
 
 	_initTimer.call(this);
-	_startSlides.call(this);
+	// _startSlides.call(this);
 
 }
 
@@ -1156,7 +1161,18 @@ function _startSlides() {
 
 
 
+IntroSlides_Ctrl.prototype.startSlides = function() {
 
+	_startSlides.call(this);
+
+};
+
+
+IntroSlides_Ctrl.prototype.stopSlides = function() {
+
+	_stopSlides.call(this);
+
+};
 
 
 

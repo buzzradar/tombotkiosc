@@ -33,6 +33,11 @@ function _init() {
 	this.intro = new IntroSlides_CTRL(this.bubble_DOM,introSlidesMOD_Array);
 	this.intro.on("intro_slides_stopped",_onSlidesStopped,this);
 
+
+	
+	this.intro.startSlides();
+
+
 }
 
 
@@ -118,7 +123,7 @@ ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
 
 	switch(answer_MOD.type) {
 		case 'bar':
-			
+
 		break;
 	}
 

@@ -33,7 +33,7 @@ _nodeUtil.inherits(IntroSlides_Ctrl,_eventEmitter3); // extend _eventEmitter3 so
 function _init() {
 
 	_initTimer.call(this);
-	_startSlides.call(this);
+	// _startSlides.call(this);
 
 }
 
@@ -179,7 +179,18 @@ function _startSlides() {
 
 
 
+IntroSlides_Ctrl.prototype.startSlides = function() {
 
+	_startSlides.call(this);
+
+};
+
+
+IntroSlides_Ctrl.prototype.stopSlides = function() {
+
+	_stopSlides.call(this);
+
+};
 
 
 
