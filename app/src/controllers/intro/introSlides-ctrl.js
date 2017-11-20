@@ -19,8 +19,9 @@ function IntroSlides_Ctrl (bubbleDOM,introSlidesMOD_Array) {
 	this.bubble_DOM = bubbleDOM;
 	this.slidesMOD_Array = introSlidesMOD_Array;
 	this.slide_DOM = HBTemplates_SRV.getTemplate('intro_slide');
-	this.slideId = -1;
-
+	this.slideId = 0;
+	this.sliderInTimer = null;
+	this.sliderOutTimer = null;
 
 	_init.call(this);
 
@@ -31,19 +32,57 @@ _nodeUtil.inherits(IntroSlides_Ctrl,_eventEmitter3); // extend _eventEmitter3 so
 
 function _init() {
 
-	setTimeout(_loadNextSlide.bind(this),100);	
+	_initTimer.call(this);
+	_startSlides.call(this);
+
+}
+
+
+function _initTimer() {
+
+	var self = this;
+
+	//Anim In Timer
+	this.sliderInTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_animSlideOut.bind(self), 5000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+	//Anim Out Timer
+	this.sliderOutTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_loadNextSlide.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
 
 }
 
 
 function _loadNextSlide(){
 
-	this.slideId ++;
+	_renderSlide.call(this);		
 
-	if (this.slideId < this.slidesMOD_Array.length){
-		_renderSlide.call(this);
-	}else{
-		this.slideId = -1;
+	//prepare next slideId
+	this.slideId ++;
+	if (this.slideId >= this.slidesMOD_Array.length){
+		this.slideId = 0;
 	}
 
 }
@@ -51,11 +90,9 @@ function _loadNextSlide(){
 
 function _renderSlide() {
 
-
 	var eachSlideMOD = this.slidesMOD_Array[this.slideId];
 
 	console.log("load next slide....", this.slideId, eachSlideMOD);
-
 
 	//Add the layout to the Speechbubble and then update with the MODEL
 	this.bubble_DOM.html( this.slide_DOM );
@@ -77,19 +114,34 @@ function _renderSlide() {
 		case 'serial':
 			Charts_SRV.loadSerialChart.call(this,eachSlideMOD.dataProvider);
 		break;
+		case 'pie':
+			Charts_SRV.loadPieChart.call(this,eachSlideMOD.dataProvider);
+		break;
 	}
 
-	_dispatchShowSlide.call(this);
+
+	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
+	_animSlideIn.call(this);
+
 
 
 }
 
 
-function _dispatchShowSlide() {
+function _animSlideIn() {
 
-	console.log("slide_show");
-	this.bubble_DOM.fadeIn(500);
+	console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-out').addClass('anim-in');
+	this.sliderInTimer.start();
 
+}
+
+
+function _animSlideOut() {
+
+	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.sliderOutTimer.start();
 
 }
 
@@ -97,6 +149,24 @@ function _dispatchShowSlide() {
 
 
 
+function _stopSlides() {
+
+	console.log("stop slides....");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.sliderOutTimer.stop();
+	this.sliderInTimer.stop();
+
+	setTimeout(this.emit.bind(this,"intro_slides_stopped"),500);
+
+}
+
+
+function _startSlides() {
+
+	console.log("start slides....");
+	_loadNextSlide.call(this);
+	
+}
 
 
 

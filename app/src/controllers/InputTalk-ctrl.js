@@ -141,8 +141,8 @@ function _checkQuestion() {
 	}
 
 	function _onAcknowledgeAnimationFinished() {
-		// this.emit("question_ready",question);
-		// Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
+		this.emit("question_ready",question);
+		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
 
 }

@@ -168,6 +168,33 @@ function _loadSerialChart(dataProvider) {
 
 
 
+function _loadPieChart(dataProvider) {
+
+	AmCharts.makeChart("chartdiv",
+		{
+			"type": "pie",
+			"balloonText": "",
+			"labelRadius": "-30%",
+			"labelText": "[[percents]]%",
+			"colorField": "color",
+			"hideLabelsPercent": 5,
+			"titleField": "category",
+			"valueField": "column-1",
+			"color": "#FFFFFF",
+			"allLabels": [],
+			"balloon": {},
+			"legend": {
+				"enabled": true,
+				"align": "center",
+				"markerType": "circle"
+			},
+			"titles": [],
+			"dataProvider": dataProvider
+		}
+	);
+
+}
+
 
 
 
@@ -181,6 +208,13 @@ Charts_SRV.prototype.loadBarChart = function(dataProvider) {
 Charts_SRV.prototype.loadSerialChart = function(dataProvider) {
 
 	_loadSerialChart.call(this,dataProvider);
+
+};
+
+
+Charts_SRV.prototype.loadPieChart = function(dataProvider) {
+
+	_loadPieChart.call(this,dataProvider);
 
 };
 

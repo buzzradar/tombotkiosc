@@ -4,6 +4,7 @@
 @import "compass/css3";
 @import "compass/utilities";
 
+
 $primary_font: 'Open Sans Condensed', sans-serif;
 
 $primary-color: #ff8900;
@@ -22,6 +23,7 @@ html,body {
   width:100%;
   height:auto;
   font-weight:300;
+  overflow:hidden;
 }
 
 body{
@@ -67,7 +69,7 @@ footer{
 .main_container {
   
   margin:0 auto;
-  width: 60%;
+  width: 65%;
   //background:red;
 
 }
@@ -125,7 +127,7 @@ footer{
 
 .content-info {
 
-  display:none;
+  @include animation(anim-out 0s forwards);
 
   &.speechbubble {
     position:relative;
@@ -150,9 +152,44 @@ footer{
     margin-top: -23px;
   }
   
+  &.anim-in{
+    @include animation(anim-in 0.5s forwards);
+  }
+
+  &.anim-out{
+    @include animation(anim-out 0.5s forwards);
+  }
+
+  &.hide {
+    display:none;
+  }
+
+
+  @keyframes anim-in {
+    from   { 
+      @include transform(translateY(50px));
+       opacity:0;
+    }
+    to { 
+       @include transform(translateY(0px));
+       opacity:1;
+    }
+  }
+
+  @keyframes anim-out {
+    from   { 
+       @include transform(translateY(0px));
+       opacity:1;
+    }
+    to { 
+       @include transform(translateY(50px));
+       opacity:0;
+    }
+  }
 
 
 }
+
 
 
 
@@ -182,7 +219,10 @@ footer{
   
   z-index:999;
 
-  h2{
+
+
+
+  .title{
     font-family: $primary_font;
     color:$primary-color;
     font-weight:600;
@@ -192,22 +232,25 @@ footer{
   .question {
 
     font-weight:600;
-    font-size:30px;
+    font-size:24px;
+    margin-bottom:10px;
 
   }
 
-  .btn {
-
-    font-size:30px;
-    margin-top:-15px;
-    margin-bottom:5px;
+  p{
+    font-size:20px;
   }
+
+  .btn {  
+    font-weight:600;
+    font-size:20px;
+  }
+
+
+
+
 
 }
-
-
-
-
 
 
 

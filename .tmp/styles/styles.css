@@ -9,6 +9,7 @@ html, body {
   width: 100%;
   height: auto;
   font-weight: 300;
+  overflow: hidden;
 }
 
 body {
@@ -48,7 +49,7 @@ footer {
 
 .main_container {
   margin: 0 auto;
-  width: 60%;
+  width: 65%;
 }
 
 .conversation input {
@@ -79,7 +80,9 @@ footer {
 }
 
 .content-info {
-  display: none;
+  -moz-animation: anim-out 0s forwards;
+  -webkit-animation: anim-out 0s forwards;
+  animation: anim-out 0s forwards;
 }
 .content-info.speechbubble {
   position: relative;
@@ -104,7 +107,51 @@ footer {
   margin-left: -23px;
   margin-top: -23px;
 }
-
+.content-info.anim-in {
+  -moz-animation: anim-in 0.5s forwards;
+  -webkit-animation: anim-in 0.5s forwards;
+  animation: anim-in 0.5s forwards;
+}
+.content-info.anim-out {
+  -moz-animation: anim-out 0.5s forwards;
+  -webkit-animation: anim-out 0.5s forwards;
+  animation: anim-out 0.5s forwards;
+}
+.content-info.hide {
+  display: none;
+}
+@keyframes anim-in {
+  from {
+    -moz-transform: translateY(50px);
+    -ms-transform: translateY(50px);
+    -webkit-transform: translateY(50px);
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    -moz-transform: translateY(0px);
+    -ms-transform: translateY(0px);
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+@keyframes anim-out {
+  from {
+    -moz-transform: translateY(0px);
+    -ms-transform: translateY(0px);
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  to {
+    -moz-transform: translateY(50px);
+    -ms-transform: translateY(50px);
+    -webkit-transform: translateY(50px);
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
 /* --------------------------------------- */
 /* Intro Slides */
 /* --------------------------------------- */
@@ -115,7 +162,7 @@ footer {
 .intro-slide {
   z-index: 999;
 }
-.intro-slide h2 {
+.intro-slide .title {
   font-family: "Open Sans Condensed", sans-serif;
   color: #ff8900;
   font-weight: 600;
@@ -123,12 +170,15 @@ footer {
 }
 .intro-slide .question {
   font-weight: 600;
-  font-size: 30px;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.intro-slide p {
+  font-size: 20px;
 }
 .intro-slide .btn {
-  font-size: 30px;
-  margin-top: -15px;
-  margin-bottom: 5px;
+  font-weight: 600;
+  font-size: 20px;
 }
 
 /* --------------------------------------- */

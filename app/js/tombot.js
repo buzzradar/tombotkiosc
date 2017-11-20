@@ -90,10 +90,12 @@ let _eventEmitter3 = require('eventemitter3');
 // Constructor
 // ------------------------------------
 
-function ContentBubble_Ctrl () {
+function ContentBubble_Ctrl (botIcon) {
 
 	this.bubble_DOM = $('.content-info');
+	this.botIcon = botIcon;
 	this.intro = null;
+	this.inputTalk = null;
 
 	_init.call(this);
 
@@ -104,7 +106,9 @@ _nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 
 
 function _init() {
 
-	_addIntroSlides.call(this);
+	var introSlidesMOD_Array = _getIntroSlidesArray.call(this);
+	this.intro = new IntroSlides_CTRL(this.bubble_DOM,introSlidesMOD_Array);
+	this.intro.on("intro_slides_stopped",_onSlidesStopped,this);
 
 }
 
@@ -118,34 +122,30 @@ function _init() {
 // Intro Slides
 // ------------------------------------
 
-function _addIntroSlides() {
-
-	var introSlidesMOD_Array = _getIntroSlidesArray.call(this);
-
-	this.intro = new IntroSlides_CTRL(this.bubble_DOM,introSlidesMOD_Array);
-	this.intro.on("slide_show",_showBubble.bind(this),this);
-	this.intro.on("slide_hide",_hideBubble.bind(this),this);
-
-}
-
-
 
 function _getIntroSlidesArray() {
 
 	var slidesMOD_Array = [
 							{
 								type : 'bar',
-								title : 'Hello! I am TomBot the AI Social Data Analyst',
+								title : 'Hi! I am TomBot the AI Social Data Analyst',
 								copy : 'Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.',
 								question : 'What are the top trends at CES today?',
 								dataProvider: [{"date":"2017-02-11","organic_reach":5918,"paid_reach":6208},{"date":"2017-02-12","organic_reach":14377,"paid_reach":72589},{"date":"2017-02-13","organic_reach":14079,"paid_reach":51783},{"date":"2017-02-14","organic_reach":23749,"paid_reach":106508},{"date":"2017-02-15","organic_reach":24137,"paid_reach":114305},{"date":"2017-02-16","organic_reach":10125,"paid_reach":47634},{"date":"2017-02-17","organic_reach":7982,"paid_reach":17067},{"date":"2017-02-18","organic_reach":2241,"paid_reach":14692},{"date":"2017-02-19","organic_reach":17246,"paid_reach":54426},{"date":"2017-02-20","organic_reach":14706,"paid_reach":74782},{"date":"2017-02-21","organic_reach":21557,"paid_reach":97222},{"date":"2017-02-22","organic_reach":22246,"paid_reach":117480},{"date":"2017-02-23","organic_reach":18460,"paid_reach":71019},{"date":"2017-02-24","organic_reach":8747,"paid_reach":18952},{"date":"2017-02-25","organic_reach":5456,"paid_reach":29563},{"date":"2017-02-26","organic_reach":17430,"paid_reach":40745},{"date":"2017-02-27","organic_reach":15525,"paid_reach":56324},{"date":"2017-02-28","organic_reach":27813,"paid_reach":119911},{"date":"2017-03-01","organic_reach":29418,"paid_reach":84731},{"date":"2017-03-02","organic_reach":17480,"paid_reach":45396},{"date":"2017-03-03","organic_reach":4713,"paid_reach":7466},{"date":"2017-03-04","organic_reach":1450,"paid_reach":27545},{"date":"2017-03-05","organic_reach":16468,"paid_reach":51824},{"date":"2017-03-06","organic_reach":12940,"paid_reach":42163},{"date":"2017-03-07","organic_reach":23687,"paid_reach":93645},{"date":"2017-03-08","organic_reach":29495,"paid_reach":116639},{"date":"2017-03-09","organic_reach":15853,"paid_reach":59688},{"date":"2017-03-10","organic_reach":9530,"paid_reach":12281},{"date":"2017-03-11","organic_reach":4655,"paid_reach":25650},{"date":"2017-03-12","organic_reach":10306,"paid_reach":62717},{"date":"2017-03-13","organic_reach":12054,"paid_reach":41944}],
 							},
 							{
 								type : 'serial',
-								title : 'Hello! I am TomBot the AI Social Data Analyst',
+								title : 'Hi! I am TomBot the AI Social Data Analyst',
 								copy : 'Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.',
 								question : 'What is the most talked about industry right now? ',
 								dataProvider: [{"date":"2017-02-11","CPC":"3.61","CPM":"8.43","Spend":"38.14"},{"date":"2017-02-12","CPC":"5.95","CPM":"7.71","Spend":"27.05"},{"date":"2017-02-13","CPC":"2.67","CPM":"8.08","Spend":"30.39"},{"date":"2017-02-14","CPC":"4.33","CPM":"8.19","Spend":"20.13"},{"date":"2017-02-15","CPC":"2.26","CPM":"8.99","Spend":"20"},{"date":"2017-02-16","CPC":"2.94","CPM":"7.5","Spend":"33.99"},{"date":"2017-02-17","CPC":"5.71","CPM":"8.08","Spend":"30.77"},{"date":"2017-02-18","CPC":"5.92","CPM":"7.37","Spend":"35.42"},{"date":"2017-02-19","CPC":"1.8","CPM":"8.97","Spend":"37.64"},{"date":"2017-02-20","CPC":"5.08","CPM":"7.91","Spend":"37.34"},{"date":"2017-02-21","CPC":"2.71","CPM":"8.28","Spend":"29.18"},{"date":"2017-02-22","CPC":"4.73","CPM":"7.98","Spend":"23.92"},{"date":"2017-02-23","CPC":"3.47","CPM":"7.52","Spend":"39.55"},{"date":"2017-02-24","CPC":"4.06","CPM":"8.2","Spend":"38.72"},{"date":"2017-02-25","CPC":"5.59","CPM":"8.71","Spend":"25.17"},{"date":"2017-02-26","CPC":"4.75","CPM":"7.67","Spend":"31.79"},{"date":"2017-02-27","CPC":"3.91","CPM":"7.12","Spend":"20.29"},{"date":"2017-02-28","CPC":"3.29","CPM":"8.66","Spend":"27.76"},{"date":"2017-03-01","CPC":"3.87","CPM":"7.01","Spend":"34.17"},{"date":"2017-03-02","CPC":"3.04","CPM":"7.31","Spend":"37.01"},{"date":"2017-03-03","CPC":"2.88","CPM":"8.77","Spend":"31.8"},{"date":"2017-03-04","CPC":"3.97","CPM":"8.35","Spend":"26.87"},{"date":"2017-03-05","CPC":"5.05","CPM":"8.19","Spend":"21.88"},{"date":"2017-03-06","CPC":"2.28","CPM":"7.06","Spend":"25.22"},{"date":"2017-03-07","CPC":"2.14","CPM":"7.2","Spend":"25.06"},{"date":"2017-03-08","CPC":"5.48","CPM":"7.38","Spend":"30.98"},{"date":"2017-03-09","CPC":"5.44","CPM":"8","Spend":"38.47"},{"date":"2017-03-10","CPC":"1.61","CPM":"8.73","Spend":"30.28"},{"date":"2017-03-11","CPC":"5.58","CPM":"8.5","Spend":"24.6"},{"date":"2017-03-12","CPC":"5.62","CPM":"8.9","Spend":"36.4"},{"date":"2017-03-13","CPC":"3.54","CPM":"8.98","Spend":"31.64"}],
+							},
+							{
+								type : 'pie',
+								title : 'Hi! I am TomBot the AI Social Data Analyst',
+								copy : 'Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.',
+								question : 'How many people are talking about CES this week?',
+								dataProvider: [{category:"13-17","column-1":"518",color:"#F6921E"},{category:"18-24","column-1":"1043",color:"#F79E37"},{category:"25-34","column-1":"1630",color:"#F79E37"},{category:"35-44","column-1":"1824",color:"#F9B669"},{category:"45-54","column-1":"1093",color:"#FAC282"},{category:"55-64","column-1":"675",color:"#FBCE9B"},{category:"65+","column-1":"183",color:"#FCDAB4"}],
 							},
 	];
 
@@ -155,50 +155,54 @@ function _getIntroSlidesArray() {
 
 
 
+function _onSlidesStopped() {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function _showBubble() {
-
-	console.log("bbbbbbbbbbbbbb")
-	this.bubble_DOM.fadeIn(500);
-
+	this.emit("intro_slides_stopped");
+	
 }
 
 
-function _hideBubble() {
 
-console.log("aaaaaaaaaaaa")
-	this.bubble_DOM.fadeOut(500);
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
+
+	switch(answer_MOD.type) {
+		case 'bar':
+			
+		break;
+	}
+
+};
+
+
+
 
 
 
@@ -273,7 +277,8 @@ function _init() {
 
 function _addContentBubble() {
 
-	this.contentBubble = new ContentBubble_CTRL();
+	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
+	this.contentBubble.on("intro_slides_stopped",_addInputTalk,this);
 
 }
 
@@ -289,15 +294,39 @@ function _addInputTalk() {
 
 	function onNewQuestionReceived(newQuestion) {
     	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
-    	this.botIcon.changeState("thinking");
-    	this.inputTalk.disableInput();
+    	// this.botIcon.changeState("thinking");
+    	// this.inputTalk.disableInput();
+
+    	this.contentBubble.loadTomBotAnswer(_getContentTypes(0));
 	}
 
 }
 
 
 
+function _getContentTypes(id) {
 
+	var contentTypeMOD_Array = [
+							{
+								type : 'bar',
+								title : 'Title for the Bar Chart',
+								dataProvider: [{"date":"2017-02-11","organic_reach":5918,"paid_reach":6208},{"date":"2017-02-12","organic_reach":14377,"paid_reach":72589},{"date":"2017-02-13","organic_reach":14079,"paid_reach":51783},{"date":"2017-02-14","organic_reach":23749,"paid_reach":106508},{"date":"2017-02-15","organic_reach":24137,"paid_reach":114305},{"date":"2017-02-16","organic_reach":10125,"paid_reach":47634},{"date":"2017-02-17","organic_reach":7982,"paid_reach":17067},{"date":"2017-02-18","organic_reach":2241,"paid_reach":14692},{"date":"2017-02-19","organic_reach":17246,"paid_reach":54426},{"date":"2017-02-20","organic_reach":14706,"paid_reach":74782},{"date":"2017-02-21","organic_reach":21557,"paid_reach":97222},{"date":"2017-02-22","organic_reach":22246,"paid_reach":117480},{"date":"2017-02-23","organic_reach":18460,"paid_reach":71019},{"date":"2017-02-24","organic_reach":8747,"paid_reach":18952},{"date":"2017-02-25","organic_reach":5456,"paid_reach":29563},{"date":"2017-02-26","organic_reach":17430,"paid_reach":40745},{"date":"2017-02-27","organic_reach":15525,"paid_reach":56324},{"date":"2017-02-28","organic_reach":27813,"paid_reach":119911},{"date":"2017-03-01","organic_reach":29418,"paid_reach":84731},{"date":"2017-03-02","organic_reach":17480,"paid_reach":45396},{"date":"2017-03-03","organic_reach":4713,"paid_reach":7466},{"date":"2017-03-04","organic_reach":1450,"paid_reach":27545},{"date":"2017-03-05","organic_reach":16468,"paid_reach":51824},{"date":"2017-03-06","organic_reach":12940,"paid_reach":42163},{"date":"2017-03-07","organic_reach":23687,"paid_reach":93645},{"date":"2017-03-08","organic_reach":29495,"paid_reach":116639},{"date":"2017-03-09","organic_reach":15853,"paid_reach":59688},{"date":"2017-03-10","organic_reach":9530,"paid_reach":12281},{"date":"2017-03-11","organic_reach":4655,"paid_reach":25650},{"date":"2017-03-12","organic_reach":10306,"paid_reach":62717},{"date":"2017-03-13","organic_reach":12054,"paid_reach":41944}],
+							},
+							{
+								type : 'serial',
+								title : 'Title for the Serial Chart',
+								dataProvider: [{"date":"2017-02-11","CPC":"3.61","CPM":"8.43","Spend":"38.14"},{"date":"2017-02-12","CPC":"5.95","CPM":"7.71","Spend":"27.05"},{"date":"2017-02-13","CPC":"2.67","CPM":"8.08","Spend":"30.39"},{"date":"2017-02-14","CPC":"4.33","CPM":"8.19","Spend":"20.13"},{"date":"2017-02-15","CPC":"2.26","CPM":"8.99","Spend":"20"},{"date":"2017-02-16","CPC":"2.94","CPM":"7.5","Spend":"33.99"},{"date":"2017-02-17","CPC":"5.71","CPM":"8.08","Spend":"30.77"},{"date":"2017-02-18","CPC":"5.92","CPM":"7.37","Spend":"35.42"},{"date":"2017-02-19","CPC":"1.8","CPM":"8.97","Spend":"37.64"},{"date":"2017-02-20","CPC":"5.08","CPM":"7.91","Spend":"37.34"},{"date":"2017-02-21","CPC":"2.71","CPM":"8.28","Spend":"29.18"},{"date":"2017-02-22","CPC":"4.73","CPM":"7.98","Spend":"23.92"},{"date":"2017-02-23","CPC":"3.47","CPM":"7.52","Spend":"39.55"},{"date":"2017-02-24","CPC":"4.06","CPM":"8.2","Spend":"38.72"},{"date":"2017-02-25","CPC":"5.59","CPM":"8.71","Spend":"25.17"},{"date":"2017-02-26","CPC":"4.75","CPM":"7.67","Spend":"31.79"},{"date":"2017-02-27","CPC":"3.91","CPM":"7.12","Spend":"20.29"},{"date":"2017-02-28","CPC":"3.29","CPM":"8.66","Spend":"27.76"},{"date":"2017-03-01","CPC":"3.87","CPM":"7.01","Spend":"34.17"},{"date":"2017-03-02","CPC":"3.04","CPM":"7.31","Spend":"37.01"},{"date":"2017-03-03","CPC":"2.88","CPM":"8.77","Spend":"31.8"},{"date":"2017-03-04","CPC":"3.97","CPM":"8.35","Spend":"26.87"},{"date":"2017-03-05","CPC":"5.05","CPM":"8.19","Spend":"21.88"},{"date":"2017-03-06","CPC":"2.28","CPM":"7.06","Spend":"25.22"},{"date":"2017-03-07","CPC":"2.14","CPM":"7.2","Spend":"25.06"},{"date":"2017-03-08","CPC":"5.48","CPM":"7.38","Spend":"30.98"},{"date":"2017-03-09","CPC":"5.44","CPM":"8","Spend":"38.47"},{"date":"2017-03-10","CPC":"1.61","CPM":"8.73","Spend":"30.28"},{"date":"2017-03-11","CPC":"5.58","CPM":"8.5","Spend":"24.6"},{"date":"2017-03-12","CPC":"5.62","CPM":"8.9","Spend":"36.4"},{"date":"2017-03-13","CPC":"3.54","CPM":"8.98","Spend":"31.64"}],
+							},
+							{
+								type : 'pie',
+								title : 'Title for the Pie Chart',
+								dataProvider: [{category:"13-17","column-1":"518",color:"#F6921E"},{category:"18-24","column-1":"1043",color:"#F79E37"},{category:"25-34","column-1":"1630",color:"#F79E37"},{category:"35-44","column-1":"1824",color:"#F9B669"},{category:"45-54","column-1":"1093",color:"#FAC282"},{category:"55-64","column-1":"675",color:"#FBCE9B"},{category:"65+","column-1":"183",color:"#FCDAB4"}],
+							},
+	];
+
+	return contentTypeMOD_Array[id];
+
+}
 
 
 
@@ -474,8 +503,8 @@ function _checkQuestion() {
 	}
 
 	function _onAcknowledgeAnimationFinished() {
-		// this.emit("question_ready",question);
-		// Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
+		this.emit("question_ready",question);
+		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
 
 }
@@ -967,8 +996,9 @@ function IntroSlides_Ctrl (bubbleDOM,introSlidesMOD_Array) {
 	this.bubble_DOM = bubbleDOM;
 	this.slidesMOD_Array = introSlidesMOD_Array;
 	this.slide_DOM = HBTemplates_SRV.getTemplate('intro_slide');
-	this.slideId = -1;
-
+	this.slideId = 0;
+	this.sliderInTimer = null;
+	this.sliderOutTimer = null;
 
 	_init.call(this);
 
@@ -979,19 +1009,57 @@ _nodeUtil.inherits(IntroSlides_Ctrl,_eventEmitter3); // extend _eventEmitter3 so
 
 function _init() {
 
-	setTimeout(_loadNextSlide.bind(this),100);	
+	_initTimer.call(this);
+	_startSlides.call(this);
+
+}
+
+
+function _initTimer() {
+
+	var self = this;
+
+	//Anim In Timer
+	this.sliderInTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_animSlideOut.bind(self), 5000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+	//Anim Out Timer
+	this.sliderOutTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_loadNextSlide.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
 
 }
 
 
 function _loadNextSlide(){
 
-	this.slideId ++;
+	_renderSlide.call(this);		
 
-	if (this.slideId < this.slidesMOD_Array.length){
-		_renderSlide.call(this);
-	}else{
-		this.slideId = -1;
+	//prepare next slideId
+	this.slideId ++;
+	if (this.slideId >= this.slidesMOD_Array.length){
+		this.slideId = 0;
 	}
 
 }
@@ -999,11 +1067,9 @@ function _loadNextSlide(){
 
 function _renderSlide() {
 
-
 	var eachSlideMOD = this.slidesMOD_Array[this.slideId];
 
 	console.log("load next slide....", this.slideId, eachSlideMOD);
-
 
 	//Add the layout to the Speechbubble and then update with the MODEL
 	this.bubble_DOM.html( this.slide_DOM );
@@ -1025,19 +1091,34 @@ function _renderSlide() {
 		case 'serial':
 			Charts_SRV.loadSerialChart.call(this,eachSlideMOD.dataProvider);
 		break;
+		case 'pie':
+			Charts_SRV.loadPieChart.call(this,eachSlideMOD.dataProvider);
+		break;
 	}
 
-	_dispatchShowSlide.call(this);
+
+	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
+	_animSlideIn.call(this);
+
 
 
 }
 
 
-function _dispatchShowSlide() {
+function _animSlideIn() {
 
-	console.log("slide_show");
-	this.bubble_DOM.fadeIn(500);
+	console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-out').addClass('anim-in');
+	this.sliderInTimer.start();
 
+}
+
+
+function _animSlideOut() {
+
+	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.sliderOutTimer.start();
 
 }
 
@@ -1045,6 +1126,24 @@ function _dispatchShowSlide() {
 
 
 
+function _stopSlides() {
+
+	console.log("stop slides....");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.sliderOutTimer.stop();
+	this.sliderInTimer.stop();
+
+	setTimeout(this.emit.bind(this,"intro_slides_stopped"),500);
+
+}
+
+
+function _startSlides() {
+
+	console.log("start slides....");
+	_loadNextSlide.call(this);
+	
+}
 
 
 
@@ -1355,6 +1454,33 @@ function _loadSerialChart(dataProvider) {
 
 
 
+function _loadPieChart(dataProvider) {
+
+	AmCharts.makeChart("chartdiv",
+		{
+			"type": "pie",
+			"balloonText": "",
+			"labelRadius": "-30%",
+			"labelText": "[[percents]]%",
+			"colorField": "color",
+			"hideLabelsPercent": 5,
+			"titleField": "category",
+			"valueField": "column-1",
+			"color": "#FFFFFF",
+			"allLabels": [],
+			"balloon": {},
+			"legend": {
+				"enabled": true,
+				"align": "center",
+				"markerType": "circle"
+			},
+			"titles": [],
+			"dataProvider": dataProvider
+		}
+	);
+
+}
+
 
 
 
@@ -1368,6 +1494,13 @@ Charts_SRV.prototype.loadBarChart = function(dataProvider) {
 Charts_SRV.prototype.loadSerialChart = function(dataProvider) {
 
 	_loadSerialChart.call(this,dataProvider);
+
+};
+
+
+Charts_SRV.prototype.loadPieChart = function(dataProvider) {
+
+	_loadPieChart.call(this,dataProvider);
 
 };
 
@@ -1511,7 +1644,7 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"intro_slide":"           <div class=\"intro-slide\">        <h2 class=\"title margin-top-0\"><u>Hello I am TomBot the AI Social Data Analyst</u></h2>        <p>Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.</p>        <div class=\"question\">          <span>Question <i class=\"fa fa-arrow-right\"></i></span> <span class=\"q\">What are the top trends at CES today? </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold\">ASK ME QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          "}
+var templates = {"intro_slide":"           <div class=\"intro-slide\">        <div>          <span class=\"title\"><u>Hello I am TomBot the AI Social Data Analyst</u></span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK ME QUESTIONS</button>          </span>        </div>        <p>Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.</p>        <div class=\"question\">          <span>Question <i class=\"fa fa-arrow-right\"></i></span> <span class=\"q\">What are the top trends at CES today? </span>         <!--  <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold\">ASK ME QUESTIONS</button>          </span> -->        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 
