@@ -1,9 +1,9 @@
 /*jslint node: true, unused: true, esnext: true */
 
 
-const DisplayGlobals_SRV = require('../../services/DisplayGlobals-srv'); 
-const HBTemplates_SRV = require('../../services/HBTemplates-srv');
-const Charts_SRV = require('../../services/Charts-srv');
+
+const HBTemplates_SRV = require('../services/HBTemplates-srv');
+const Charts_SRV = require('../services/Charts-srv');
 
 let _nodeUtil = require('util');
 let _eventEmitter3 = require('eventemitter3');
@@ -22,6 +22,7 @@ function IntroSlides_Ctrl (bubbleDOM,introSlidesMOD_Array) {
 	this.slideId = 0;
 	this.sliderInTimer = null;
 	this.sliderOutTimer = null;
+	this.chart = null;
 
 	_init.call(this);
 
@@ -33,7 +34,7 @@ _nodeUtil.inherits(IntroSlides_Ctrl,_eventEmitter3); // extend _eventEmitter3 so
 function _init() {
 
 	_initTimer.call(this);
-	// _startSlides.call(this);
+	_startSlides.call(this);
 
 }
 
@@ -77,6 +78,7 @@ function _initTimer() {
 
 function _loadNextSlide(){
 
+	_destroyChart.call(this);
 	_renderSlide.call(this);		
 
 	//prepare next slideId
@@ -109,21 +111,18 @@ function _renderSlide() {
 	//Content
 	switch(eachSlideMOD.type) {
 		case 'bar':
-			Charts_SRV.loadBarChart.call(this,eachSlideMOD.dataProvider);
+			this.chart = Charts_SRV.loadBarChart.call(this,eachSlideMOD.dataProvider);
 		break;
 		case 'serial':
-			Charts_SRV.loadSerialChart.call(this,eachSlideMOD.dataProvider);
+			this.chart = Charts_SRV.loadSerialChart.call(this,eachSlideMOD.dataProvider);
 		break;
 		case 'pie':
-			Charts_SRV.loadPieChart.call(this,eachSlideMOD.dataProvider);
+			this.chart = Charts_SRV.loadPieChart.call(this,eachSlideMOD.dataProvider);
 		break;
 	}
 
-
 	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
 	_animSlideIn.call(this);
-
-
 
 }
 
@@ -156,7 +155,15 @@ function _stopSlides() {
 	this.sliderOutTimer.stop();
 	this.sliderInTimer.stop();
 
-	setTimeout(this.emit.bind(this,"intro_slides_stopped"),500);
+	setTimeout(_dispatchIntroSlidesStopped.bind(this),500);
+
+}
+
+
+function _dispatchIntroSlidesStopped() {
+
+	_destroyChart.call(this);
+	this.emit.call(this,"intro_slides_stopped");
 
 }
 
@@ -168,6 +175,14 @@ function _startSlides() {
 	
 }
 
+function _destroyChart() {
+
+	if (this.chart) {
+		this.chart.clear();
+		this.chart = null;
+	}
+
+}
 
 
 

@@ -78,8 +78,8 @@ module.exports = App_NODE;
 /*jslint node: true, unused: true, esnext: true */
 
 
-const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
-const IntroSlides_CTRL = require('./intro/introSlides-ctrl');
+const HBTemplates_SRV = require('../services/HBTemplates-srv');
+const Charts_SRV = require('../services/Charts-srv');
 
 let _nodeUtil = require('util');
 let _eventEmitter3 = require('eventemitter3');
@@ -94,43 +94,13 @@ function ContentBubble_Ctrl (botIcon) {
 
 	this.bubble_DOM = $('.content-info');
 	this.botIcon = botIcon;
-	this.intro = null;
-	this.inputTalk = null;
+	this.content_DOM = null;
+	this.introId = 0;
+	this.introInTimer = null;
+	this.introOutTimer = null;
+	this.chart = null;
 
-	_init.call(this);
-
-}
-_nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
-
-
-
-function _init() {
-
-	var introSlidesMOD_Array = _getIntroSlidesArray.call(this);
-	this.intro = new IntroSlides_CTRL(this.bubble_DOM,introSlidesMOD_Array);
-	this.intro.on("intro_slides_stopped",_onSlidesStopped,this);
-
-
-	
-	this.intro.startSlides();
-
-
-}
-
-
-
-
-
-
-
-
-// Intro Slides
-// ------------------------------------
-
-
-function _getIntroSlidesArray() {
-
-	var slidesMOD_Array = [
+	this.introMOD_Array = 	[
 							{
 								type : 'bar',
 								title : 'Hi! I am TomBot the AI Social Data Analyst',
@@ -154,22 +124,161 @@ function _getIntroSlidesArray() {
 							},
 	];
 
-	return slidesMOD_Array;
+	_init.call(this);
+
+}
+_nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
+
+
+
+function _init() {
+	
+	_initTimer.call(this);
+	_startIntro.call(this);
 
 }
 
 
 
-function _onSlidesStopped() {
 
-	this.emit("intro_slides_stopped");
+function _initTimer() {
+
+	var self = this;
+
+	//Anim In Timer
+	this.introInTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_animBubbleOut.bind(self), 5000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+	//Anim Out Timer
+	this.introOutTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+}
+
+
+
+
+function _loadNextIntro(){
+
+	_destroyChart.call(this);
+	_renderContent.call(this, 'intro_content',this.introMOD_Array[this.introId]);		
+
+	//prepare next slideId
+	this.introId ++;
+	if (this.introId >= this.introMOD_Array.length){
+		this.introId = 0;
+	}
+
+}
+
+
+function _renderContent(templateId, content_MOD) {
+
+	console.log("_renderContent....", content_MOD);
+
+	this.content_DOM = HBTemplates_SRV.getTemplate(templateId, content_MOD);
+
+	//Add the layout to the Speechbubble and then update with the MODEL
+	this.bubble_DOM.html( this.content_DOM );
+
+	//Content
+	switch(content_MOD.type) {
+		case 'bar':
+			this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
+		break;
+		case 'serial':
+			this.chart = Charts_SRV.loadSerialChart.call(this,content_MOD.dataProvider);
+		break;
+		case 'pie':
+			this.chart = Charts_SRV.loadPieChart.call(this,content_MOD.dataProvider);
+		break;
+	}
+
+	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
+	_animBubbleIn.call(this);
+	
+	if(templateId === "intro_content") this.introInTimer.start();
+
+}
+
+
+function _animBubbleIn() {
+
+	console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-out').addClass('anim-in');
+
+}
+
+
+function _animBubbleOut() {
+
+	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.introOutTimer.start();
+
+}
+
+
+
+
+
+function _stopSlides() {
+
+	console.log("stop intro....");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.introOutTimer.stop();
+	this.introInTimer.stop();
+
+	setTimeout(_dispatchIntroStopped.bind(this),500);
+
+}
+
+
+function _dispatchIntroStopped() {
+
+	_destroyChart.call(this);
+	this.emit.call(this,"intro_slides_stopped");
+
+}
+
+
+function _startIntro() {
+
+	console.log("start intro....");
+	_loadNextIntro.call(this);
 	
 }
 
+function _destroyChart() {
 
+	if (this.chart) {
+		this.chart.clear();
+		this.chart = null;
+	}
 
-
-
+}
 
 
 
@@ -198,11 +307,7 @@ function _onSlidesStopped() {
 
 ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
 
-	switch(answer_MOD.type) {
-		case 'bar':
-
-		break;
-	}
+	_renderContent.call(this, 'graph_item',answer_MOD);		
 
 };
 
@@ -220,31 +325,13 @@ ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = ContentBubble_Ctrl;
-},{"../services/DisplayGlobals-srv":10,"./intro/introSlides-ctrl":6,"eventemitter3":56,"util":63}],3:[function(require,module,exports){
+},{"../services/Charts-srv":9,"../services/HBTemplates-srv":11,"eventemitter3":56,"util":63}],3:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
 const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
+const APICalls_SRV = require('../services/APICalls-srv'); 
 const TomBotIcon_CTRL = require('./TomBotIcon-ctrl');
 const InputTalk_CTRL = require('./InputTalk-ctrl');
 const ContentBubble_CTRL = require('./ContentBubble-ctrl');
@@ -260,7 +347,7 @@ const ContentBubble_CTRL = require('./ContentBubble-ctrl');
 
 function Conversation_Ctrl () {
 
-	this.botIcon = new TomBotIcon_CTRL($('.tomboticon'));
+	this.botIcon = null;
 	this.inputTalk = null;
 	this.contentBubble = null;
 	this.state = "listening";
@@ -273,14 +360,8 @@ function Conversation_Ctrl () {
 
 function _init() {
 
-	//When Bot is Ready add Content Bubble
-	this.botIcon.on("bot_ready",_addContentBubble,this);
-
-}
-
-
-
-function _addContentBubble() {
+	this.botIcon = new TomBotIcon_CTRL($('.tomboticon'));
+	//this.botIcon.on("bot_ready",_addContentBubble,this);
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
 	this.contentBubble.on("intro_slides_stopped",_addInputTalk,this);
@@ -290,50 +371,50 @@ function _addContentBubble() {
 
 
 
+
+
+
 function _addInputTalk() {
 
-	this.inputTalk = new InputTalk_CTRL($('.conversation'),this.botIcon);
+	if (!this.inputTalk) {
 
-	//Add Input Listeners
-	this.inputTalk.on("question_ready", onNewQuestionReceived, this);
+		this.inputTalk = new InputTalk_CTRL(this.botIcon);
 
-	function onNewQuestionReceived(newQuestion) {
-    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
-    	// this.botIcon.changeState("thinking");
-    	// this.inputTalk.disableInput();
+		//Add Input Listeners
+		this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
 
-    	this.contentBubble.loadTomBotAnswer(_getContentTypes(0));
+		function _onNewQuestionReceived(newQuestion) {
+	    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
+	    	// this.botIcon.changeState("thinking");
+	    	// this.inputTalk.disableInput();
+
+	    	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
+
+		}
+
+		function _onAnswerReceived(response) {
+			_hideInputTalk.call(this);
+	    	this.contentBubble.loadTomBotAnswer(response);
+		}
+
+	}else{
+		this.inputTalk.show();
 	}
 
 }
 
 
+function _hideInputTalk() {
 
-function _getContentTypes(id) {
-
-	var contentTypeMOD_Array = [
-							{
-								type : 'bar',
-								title : 'Title for the Bar Chart',
-								dataProvider: [{"date":"2017-02-11","organic_reach":5918,"paid_reach":6208},{"date":"2017-02-12","organic_reach":14377,"paid_reach":72589},{"date":"2017-02-13","organic_reach":14079,"paid_reach":51783},{"date":"2017-02-14","organic_reach":23749,"paid_reach":106508},{"date":"2017-02-15","organic_reach":24137,"paid_reach":114305},{"date":"2017-02-16","organic_reach":10125,"paid_reach":47634},{"date":"2017-02-17","organic_reach":7982,"paid_reach":17067},{"date":"2017-02-18","organic_reach":2241,"paid_reach":14692},{"date":"2017-02-19","organic_reach":17246,"paid_reach":54426},{"date":"2017-02-20","organic_reach":14706,"paid_reach":74782},{"date":"2017-02-21","organic_reach":21557,"paid_reach":97222},{"date":"2017-02-22","organic_reach":22246,"paid_reach":117480},{"date":"2017-02-23","organic_reach":18460,"paid_reach":71019},{"date":"2017-02-24","organic_reach":8747,"paid_reach":18952},{"date":"2017-02-25","organic_reach":5456,"paid_reach":29563},{"date":"2017-02-26","organic_reach":17430,"paid_reach":40745},{"date":"2017-02-27","organic_reach":15525,"paid_reach":56324},{"date":"2017-02-28","organic_reach":27813,"paid_reach":119911},{"date":"2017-03-01","organic_reach":29418,"paid_reach":84731},{"date":"2017-03-02","organic_reach":17480,"paid_reach":45396},{"date":"2017-03-03","organic_reach":4713,"paid_reach":7466},{"date":"2017-03-04","organic_reach":1450,"paid_reach":27545},{"date":"2017-03-05","organic_reach":16468,"paid_reach":51824},{"date":"2017-03-06","organic_reach":12940,"paid_reach":42163},{"date":"2017-03-07","organic_reach":23687,"paid_reach":93645},{"date":"2017-03-08","organic_reach":29495,"paid_reach":116639},{"date":"2017-03-09","organic_reach":15853,"paid_reach":59688},{"date":"2017-03-10","organic_reach":9530,"paid_reach":12281},{"date":"2017-03-11","organic_reach":4655,"paid_reach":25650},{"date":"2017-03-12","organic_reach":10306,"paid_reach":62717},{"date":"2017-03-13","organic_reach":12054,"paid_reach":41944}],
-							},
-							{
-								type : 'serial',
-								title : 'Title for the Serial Chart',
-								dataProvider: [{"date":"2017-02-11","CPC":"3.61","CPM":"8.43","Spend":"38.14"},{"date":"2017-02-12","CPC":"5.95","CPM":"7.71","Spend":"27.05"},{"date":"2017-02-13","CPC":"2.67","CPM":"8.08","Spend":"30.39"},{"date":"2017-02-14","CPC":"4.33","CPM":"8.19","Spend":"20.13"},{"date":"2017-02-15","CPC":"2.26","CPM":"8.99","Spend":"20"},{"date":"2017-02-16","CPC":"2.94","CPM":"7.5","Spend":"33.99"},{"date":"2017-02-17","CPC":"5.71","CPM":"8.08","Spend":"30.77"},{"date":"2017-02-18","CPC":"5.92","CPM":"7.37","Spend":"35.42"},{"date":"2017-02-19","CPC":"1.8","CPM":"8.97","Spend":"37.64"},{"date":"2017-02-20","CPC":"5.08","CPM":"7.91","Spend":"37.34"},{"date":"2017-02-21","CPC":"2.71","CPM":"8.28","Spend":"29.18"},{"date":"2017-02-22","CPC":"4.73","CPM":"7.98","Spend":"23.92"},{"date":"2017-02-23","CPC":"3.47","CPM":"7.52","Spend":"39.55"},{"date":"2017-02-24","CPC":"4.06","CPM":"8.2","Spend":"38.72"},{"date":"2017-02-25","CPC":"5.59","CPM":"8.71","Spend":"25.17"},{"date":"2017-02-26","CPC":"4.75","CPM":"7.67","Spend":"31.79"},{"date":"2017-02-27","CPC":"3.91","CPM":"7.12","Spend":"20.29"},{"date":"2017-02-28","CPC":"3.29","CPM":"8.66","Spend":"27.76"},{"date":"2017-03-01","CPC":"3.87","CPM":"7.01","Spend":"34.17"},{"date":"2017-03-02","CPC":"3.04","CPM":"7.31","Spend":"37.01"},{"date":"2017-03-03","CPC":"2.88","CPM":"8.77","Spend":"31.8"},{"date":"2017-03-04","CPC":"3.97","CPM":"8.35","Spend":"26.87"},{"date":"2017-03-05","CPC":"5.05","CPM":"8.19","Spend":"21.88"},{"date":"2017-03-06","CPC":"2.28","CPM":"7.06","Spend":"25.22"},{"date":"2017-03-07","CPC":"2.14","CPM":"7.2","Spend":"25.06"},{"date":"2017-03-08","CPC":"5.48","CPM":"7.38","Spend":"30.98"},{"date":"2017-03-09","CPC":"5.44","CPM":"8","Spend":"38.47"},{"date":"2017-03-10","CPC":"1.61","CPM":"8.73","Spend":"30.28"},{"date":"2017-03-11","CPC":"5.58","CPM":"8.5","Spend":"24.6"},{"date":"2017-03-12","CPC":"5.62","CPM":"8.9","Spend":"36.4"},{"date":"2017-03-13","CPC":"3.54","CPM":"8.98","Spend":"31.64"}],
-							},
-							{
-								type : 'pie',
-								title : 'Title for the Pie Chart',
-								dataProvider: [{category:"13-17","column-1":"518",color:"#F6921E"},{category:"18-24","column-1":"1043",color:"#F79E37"},{category:"25-34","column-1":"1630",color:"#F79E37"},{category:"35-44","column-1":"1824",color:"#F9B669"},{category:"45-54","column-1":"1093",color:"#FAC282"},{category:"55-64","column-1":"675",color:"#FBCE9B"},{category:"65+","column-1":"183",color:"#FCDAB4"}],
-							},
-	];
-
-	return contentTypeMOD_Array[id];
+	$('.conversation').hide();
 
 }
 
+function _showInputTalk() {
 
+	$('.conversation').fadeIn(500);
+
+}
 
 
 
@@ -364,7 +445,7 @@ function _getContentTypes(id) {
 
 
 module.exports = Conversation_Ctrl;
-},{"../services/DisplayGlobals-srv":10,"./ContentBubble-ctrl":2,"./InputTalk-ctrl":4,"./TomBotIcon-ctrl":5}],4:[function(require,module,exports){
+},{"../services/APICalls-srv":8,"../services/DisplayGlobals-srv":10,"./ContentBubble-ctrl":2,"./InputTalk-ctrl":4,"./TomBotIcon-ctrl":5}],4:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -387,12 +468,12 @@ let _eventEmitter3 = require('eventemitter3');
 // Constructor
 // ------------------------------------
 
-function InputTalk_Ctrl (conversationTarget, botIcon) {
+function InputTalk_Ctrl (botIcon) {
 
 	this.botIcon = botIcon;
-	this.conversation_DOM = conversationTarget;
-	this.label_DOM = conversationTarget.find('label');
-	this.input_DOM = conversationTarget.find('input');
+	this.conversation_DOM = $('.conversation');
+	this.label_DOM = this.conversation_DOM.find('label');
+	this.input_DOM = this.conversation_DOM.find('input');
 	this.owner = "tombot";   //tombot or user
 
 	_init.call(this);
@@ -474,7 +555,7 @@ function _addFocusOutKeyDownListener() {
 	this.input_DOM.on('focusout keydown', onFocusOutKeydown.bind(this));
 
 	function onFocusOutKeydown(e) {
-		// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
+		console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
         
         if (e.type == "keydown") this.botIcon.changeState("listening");
 
@@ -493,7 +574,7 @@ function _checkQuestion() {
 	var question = this.input_DOM.val();
 	var AIAgent_pre_check_answer = AIAgent_SRV.checkQuestion(question);
 
-	console.log("AI Agent pre check.....", AIAgent_pre_check_answer);
+	console.log("AI Agent pre check.....",question, AIAgent_pre_check_answer);
 
 	if ( AIAgent_pre_check_answer ){
 		console.log("AI Return TRUE so understood the question");
@@ -570,6 +651,12 @@ InputTalk_Ctrl.prototype.disableInput = function () {
 };
 
 
+InputTalk_Ctrl.prototype.show = function () {
+	this.conversation_DOM.fadeIn(500);
+	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+};
+
+
 
 
 
@@ -584,7 +671,7 @@ InputTalk_Ctrl.prototype.disableInput = function () {
 
 
 module.exports = InputTalk_Ctrl;
-},{"../services/AIAgent-srv":8,"../services/DisplayGlobals-srv":10,"../services/Utils-srv":13,"eventemitter3":56,"lodash":57,"util":63}],5:[function(require,module,exports){
+},{"../services/AIAgent-srv":7,"../services/DisplayGlobals-srv":10,"../services/Utils-srv":13,"eventemitter3":56,"lodash":57,"util":63}],5:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -983,214 +1070,6 @@ module.exports = TomBotIcon_Ctrl;
 /*jslint node: true, unused: true, esnext: true */
 
 
-const DisplayGlobals_SRV = require('../../services/DisplayGlobals-srv'); 
-const HBTemplates_SRV = require('../../services/HBTemplates-srv');
-const Charts_SRV = require('../../services/Charts-srv');
-
-let _nodeUtil = require('util');
-let _eventEmitter3 = require('eventemitter3');
-
-
-
-// ------------------------------------
-// Constructor
-// ------------------------------------
-
-function IntroSlides_Ctrl (bubbleDOM,introSlidesMOD_Array) {
-
-	this.bubble_DOM = bubbleDOM;
-	this.slidesMOD_Array = introSlidesMOD_Array;
-	this.slide_DOM = HBTemplates_SRV.getTemplate('intro_slide');
-	this.slideId = 0;
-	this.sliderInTimer = null;
-	this.sliderOutTimer = null;
-
-	_init.call(this);
-
-}
-_nodeUtil.inherits(IntroSlides_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
-
-
-
-function _init() {
-
-	_initTimer.call(this);
-	// _startSlides.call(this);
-
-}
-
-
-function _initTimer() {
-
-	var self = this;
-
-	//Anim In Timer
-	this.sliderInTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_animSlideOut.bind(self), 5000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
-
-	//Anim Out Timer
-	this.sliderOutTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_loadNextSlide.bind(self), 1000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
-
-}
-
-
-function _loadNextSlide(){
-
-	_renderSlide.call(this);		
-
-	//prepare next slideId
-	this.slideId ++;
-	if (this.slideId >= this.slidesMOD_Array.length){
-		this.slideId = 0;
-	}
-
-}
-
-
-function _renderSlide() {
-
-	var eachSlideMOD = this.slidesMOD_Array[this.slideId];
-
-	console.log("load next slide....", this.slideId, eachSlideMOD);
-
-	//Add the layout to the Speechbubble and then update with the MODEL
-	this.bubble_DOM.html( this.slide_DOM );
-
-	//Title
-	this.slide_DOM.find('.title').html(eachSlideMOD.title);
-
-	//Copy
-	this.slide_DOM.find('p').html(eachSlideMOD.copy);
-
-	//Question
-	this.slide_DOM.find('.q').html(eachSlideMOD.question);
-
-	//Content
-	switch(eachSlideMOD.type) {
-		case 'bar':
-			Charts_SRV.loadBarChart.call(this,eachSlideMOD.dataProvider);
-		break;
-		case 'serial':
-			Charts_SRV.loadSerialChart.call(this,eachSlideMOD.dataProvider);
-		break;
-		case 'pie':
-			Charts_SRV.loadPieChart.call(this,eachSlideMOD.dataProvider);
-		break;
-	}
-
-
-	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
-	_animSlideIn.call(this);
-
-
-
-}
-
-
-function _animSlideIn() {
-
-	console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
-	this.bubble_DOM.removeClass('anim-out').addClass('anim-in');
-	this.sliderInTimer.start();
-
-}
-
-
-function _animSlideOut() {
-
-	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
-	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-	this.sliderOutTimer.start();
-
-}
-
-
-
-
-
-function _stopSlides() {
-
-	console.log("stop slides....");
-	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-	this.sliderOutTimer.stop();
-	this.sliderInTimer.stop();
-
-	setTimeout(this.emit.bind(this,"intro_slides_stopped"),500);
-
-}
-
-
-function _startSlides() {
-
-	console.log("start slides....");
-	_loadNextSlide.call(this);
-	
-}
-
-
-
-
-
-
-
-
-
-
-
-
-IntroSlides_Ctrl.prototype.startSlides = function() {
-
-	_startSlides.call(this);
-
-};
-
-
-IntroSlides_Ctrl.prototype.stopSlides = function() {
-
-	_stopSlides.call(this);
-
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = IntroSlides_Ctrl;
-},{"../../services/Charts-srv":9,"../../services/DisplayGlobals-srv":10,"../../services/HBTemplates-srv":11,"eventemitter3":56,"util":63}],7:[function(require,module,exports){
-/*jslint node: true, unused: true, esnext: true */
-
-
 const DisplayGlobals_SRV = require('./services/DisplayGlobals-srv'); 
 const TomBotKioscApp_NODE = require('./TomBotKioscNode-ctrl');
 
@@ -1203,7 +1082,7 @@ function _initApp() {
 	DisplayGlobals_SRV.setAppNodeRef(new TomBotKioscApp_NODE());
 
 }
-},{"./TomBotKioscNode-ctrl":1,"./services/DisplayGlobals-srv":10}],8:[function(require,module,exports){
+},{"./TomBotKioscNode-ctrl":1,"./services/DisplayGlobals-srv":10}],7:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -1299,7 +1178,143 @@ function _checkHelp(question) {
 
 module.exports = new AIAgent ();
 
-},{"./DisplayGlobals-srv":10,"./Utils-srv":13,"lodash":57}],9:[function(require,module,exports){
+},{"./DisplayGlobals-srv":10,"./Utils-srv":13,"lodash":57}],8:[function(require,module,exports){
+/*jslint node: true, unused: true, esnext: true */
+
+
+const _ = require("lodash");
+
+const DisplayGlobals_SRV = require('./DisplayGlobals-srv'); 
+
+
+
+//--------------------------------------
+// CONSTRUCTOR
+//--------------------------------------
+
+let _ApiCalls;
+
+function ApiCalls () {
+
+  _ApiCalls = this;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+ApiCalls.prototype.callPOST = function(urlCall, dataObj, callBack) {
+
+	console.log ("%c -> ", "background:#c5f442;", "APICalls-> POST : URL =>" , urlCall, dataObj);
+
+
+		$.ajax({
+			type: 'GET',
+			url: urlCall,
+			contentType: "application/json",
+			data: dataObj,
+			success: function(json) {
+				console.log("Success!", json);
+				if(callBack) callBack(json);
+			},
+			error: function(e) {
+				console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
+			}
+		});
+
+
+
+
+
+};
+
+
+
+
+
+
+// ApiCalls.prototype.callGet = function(urlCall, dataObj, callBack) {
+
+
+// 	if (type === 'GET') {
+
+// 		//-------------
+// 		//GET
+// 		//-------------
+
+
+// 		console.log ("%c -> ", "background:#87eb9d;", "APICalls-> GET  : URL =>" , urlCall, dataObj);
+
+
+		// $.ajax({
+		// 	type: 'GET',
+		// 	url: urlCall,
+		// 	async: false,
+		// 	jsonpCallback: 'jsonCallback',
+		// 	contentType: "application/json",
+		// 	dataType: 'jsonp',
+		// 	success: function(json) {
+		// 		console.log("Success!", json);
+		// 		if(callBack) callBack(json);
+		// 	},
+		// 	error: function(e) {
+		// 		console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error" + e.responseText);
+		// 	}
+		// });
+
+// 	}else{
+
+// 		//-------------
+// 		//POST
+// 		//-------------
+
+// 		console.log ("%c -> ", "background:#c5f442;", "APICalls-> POST : URL =>" , urlCall, dataObj);
+
+
+// 		$.post(urlCall, dataObj)
+// 			.done(function( data ) {
+// 					console.log ("%c -> ", "background:#87eb9d;", "APICalls.ajaxCall() ---> ", data);
+// 					if(callBack) callBack(data);
+// 			})
+// 			.fail(function() {
+// 				console.log ("%c -> ", "background:#ff0000;", "POST APICalls.ajaxCall() ---> Error");
+// 			})
+// 			.always(function() {
+				
+// 			});
+
+// 	}
+
+
+
+
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = new ApiCalls ();
+
+},{"./DisplayGlobals-srv":10,"lodash":57}],9:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -1330,7 +1345,7 @@ function Charts_SRV () {
 
 function _loadBarChart(dataProvider) {
 
-	AmCharts.makeChart("chartdiv",
+	var barChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
 			"categoryField": "date",
@@ -1378,6 +1393,8 @@ function _loadBarChart(dataProvider) {
 		}
 	);
 
+	return barChart;
+
 }
 
 
@@ -1387,7 +1404,7 @@ function _loadBarChart(dataProvider) {
 
 function _loadSerialChart(dataProvider) {
 
-	AmCharts.makeChart("chartdiv",
+	var serialChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
 			"categoryField": "date",
@@ -1465,6 +1482,8 @@ function _loadSerialChart(dataProvider) {
 		}
 	);
 
+	return serialChart;
+
 }
 
 
@@ -1472,7 +1491,7 @@ function _loadSerialChart(dataProvider) {
 
 function _loadPieChart(dataProvider) {
 
-	AmCharts.makeChart("chartdiv",
+	var pieChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "pie",
 			"balloonText": "",
@@ -1495,6 +1514,8 @@ function _loadPieChart(dataProvider) {
 		}
 	);
 
+	return pieChart;
+
 }
 
 
@@ -1502,23 +1523,26 @@ function _loadPieChart(dataProvider) {
 
 Charts_SRV.prototype.loadBarChart = function(dataProvider) {
 
-	_loadBarChart.call(this,dataProvider);
+	return _loadBarChart.call(this,dataProvider);
 
 };
 
 
 Charts_SRV.prototype.loadSerialChart = function(dataProvider) {
 
-	_loadSerialChart.call(this,dataProvider);
+	return _loadSerialChart.call(this,dataProvider);
 
 };
 
 
 Charts_SRV.prototype.loadPieChart = function(dataProvider) {
 
-	_loadPieChart.call(this,dataProvider);
+	return _loadPieChart.call(this,dataProvider);
 
 };
+
+
+
 
 
 
@@ -1660,7 +1684,7 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"intro_slide":"           <div class=\"intro-slide\">        <div>          <span class=\"title\"><u>Hello I am TomBot the AI Social Data Analyst</u></span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK ME QUESTIONS</button>          </span>        </div>        <p>Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.</p>        <div class=\"question\">          <span>Question <i class=\"fa fa-arrow-right\"></i></span> <span class=\"q\">What are the top trends at CES today? </span>         <!--  <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold\">ASK ME QUESTIONS</button>          </span> -->        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          "}
+var templates = {"intro_content":"           <div class=\"intro-slide\">        <div>          <span class=\"title\">{{title}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK ME QUESTIONS</button>          </span>        </div>        <p>{{copy}}</p>        <div class=\"question\">          <span>Question <i class=\"fa fa-arrow-right\"></i></span> <span class=\"q\">{{question}} </span>         <!--  <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold\">ASK ME QUESTIONS</button>          </span> -->        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","graph_item":"           <div class=\"graph-item\">        <div>          <span class=\"title\">{{title}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK MORE QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -28327,4 +28351,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":62,"_process":60,"inherits":61}]},{},[7]);
+},{"./support/isBuffer":62,"_process":60,"inherits":61}]},{},[6]);

@@ -21,13 +21,13 @@ html,body {
   padding:0px;
   margin:0px;
   width:100%;
-  height:auto;
+  height:100%;
   font-weight:300;
   overflow:hidden;
 }
 
 body{
-  background:orange;
+  //background:orange;
   background: url("../assets/bg.jpg") no-repeat center center fixed;
   @include background-size(cover);
   color: $primary-color;
@@ -70,8 +70,8 @@ footer{
   
   margin:0 auto;
   width: 65%;
+  height:100%;
   //background:red;
-
 }
 
 
@@ -216,6 +216,53 @@ footer{
 }
 
 .intro-slide {
+  
+  z-index:999;
+
+
+
+
+  .title{
+    font-family: $primary_font;
+    color:$primary-color;
+    font-weight:600;
+    font-size:30px;
+  }
+
+  .question {
+
+    font-weight:600;
+    font-size:24px;
+    margin-bottom:10px;
+
+  }
+
+  p{
+    font-size:20px;
+  }
+
+  .btn {  
+    font-weight:600;
+    font-size:20px;
+  }
+
+
+
+
+
+}
+
+
+
+
+
+
+/* --------------------------------------- */
+/* Intro Slides */
+/* --------------------------------------- */
+
+
+.graph-item {
   
   z-index:999;
 

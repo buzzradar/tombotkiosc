@@ -1,8 +1,8 @@
 /*jslint node: true, unused: true, esnext: true */
 
 
-const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
-const IntroSlides_CTRL = require('./intro/introSlides-ctrl');
+const HBTemplates_SRV = require('../services/HBTemplates-srv');
+const Charts_SRV = require('../services/Charts-srv');
 
 let _nodeUtil = require('util');
 let _eventEmitter3 = require('eventemitter3');
@@ -17,43 +17,13 @@ function ContentBubble_Ctrl (botIcon) {
 
 	this.bubble_DOM = $('.content-info');
 	this.botIcon = botIcon;
-	this.intro = null;
-	this.inputTalk = null;
+	this.content_DOM = null;
+	this.introId = 0;
+	this.introInTimer = null;
+	this.introOutTimer = null;
+	this.chart = null;
 
-	_init.call(this);
-
-}
-_nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
-
-
-
-function _init() {
-
-	var introSlidesMOD_Array = _getIntroSlidesArray.call(this);
-	this.intro = new IntroSlides_CTRL(this.bubble_DOM,introSlidesMOD_Array);
-	this.intro.on("intro_slides_stopped",_onSlidesStopped,this);
-
-
-	
-	this.intro.startSlides();
-
-
-}
-
-
-
-
-
-
-
-
-// Intro Slides
-// ------------------------------------
-
-
-function _getIntroSlidesArray() {
-
-	var slidesMOD_Array = [
+	this.introMOD_Array = 	[
 							{
 								type : 'bar',
 								title : 'Hi! I am TomBot the AI Social Data Analyst',
@@ -77,22 +47,161 @@ function _getIntroSlidesArray() {
 							},
 	];
 
-	return slidesMOD_Array;
+	_init.call(this);
+
+}
+_nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
+
+
+
+function _init() {
+	
+	_initTimer.call(this);
+	_startIntro.call(this);
 
 }
 
 
 
-function _onSlidesStopped() {
 
-	this.emit("intro_slides_stopped");
+function _initTimer() {
+
+	var self = this;
+
+	//Anim In Timer
+	this.introInTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_animBubbleOut.bind(self), 5000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+	//Anim Out Timer
+	this.introOutTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+}
+
+
+
+
+function _loadNextIntro(){
+
+	_destroyChart.call(this);
+	_renderContent.call(this, 'intro_content',this.introMOD_Array[this.introId]);		
+
+	//prepare next slideId
+	this.introId ++;
+	if (this.introId >= this.introMOD_Array.length){
+		this.introId = 0;
+	}
+
+}
+
+
+function _renderContent(templateId, content_MOD) {
+
+	console.log("_renderContent....", content_MOD);
+
+	this.content_DOM = HBTemplates_SRV.getTemplate(templateId, content_MOD);
+
+	//Add the layout to the Speechbubble and then update with the MODEL
+	this.bubble_DOM.html( this.content_DOM );
+
+	//Content
+	switch(content_MOD.type) {
+		case 'bar':
+			this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
+		break;
+		case 'serial':
+			this.chart = Charts_SRV.loadSerialChart.call(this,content_MOD.dataProvider);
+		break;
+		case 'pie':
+			this.chart = Charts_SRV.loadPieChart.call(this,content_MOD.dataProvider);
+		break;
+	}
+
+	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
+	_animBubbleIn.call(this);
+	
+	if(templateId === "intro_content") this.introInTimer.start();
+
+}
+
+
+function _animBubbleIn() {
+
+	console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-out').addClass('anim-in');
+
+}
+
+
+function _animBubbleOut() {
+
+	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.introOutTimer.start();
+
+}
+
+
+
+
+
+function _stopSlides() {
+
+	console.log("stop intro....");
+	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+	this.introOutTimer.stop();
+	this.introInTimer.stop();
+
+	setTimeout(_dispatchIntroStopped.bind(this),500);
+
+}
+
+
+function _dispatchIntroStopped() {
+
+	_destroyChart.call(this);
+	this.emit.call(this,"intro_slides_stopped");
+
+}
+
+
+function _startIntro() {
+
+	console.log("start intro....");
+	_loadNextIntro.call(this);
 	
 }
 
+function _destroyChart() {
 
+	if (this.chart) {
+		this.chart.clear();
+		this.chart = null;
+	}
 
-
-
+}
 
 
 
@@ -121,32 +230,9 @@ function _onSlidesStopped() {
 
 ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
 
-	switch(answer_MOD.type) {
-		case 'bar':
-
-		break;
-	}
+	_renderContent.call(this, 'graph_item',answer_MOD);		
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -28,7 +28,7 @@ function Charts_SRV () {
 
 function _loadBarChart(dataProvider) {
 
-	AmCharts.makeChart("chartdiv",
+	var barChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
 			"categoryField": "date",
@@ -76,6 +76,8 @@ function _loadBarChart(dataProvider) {
 		}
 	);
 
+	return barChart;
+
 }
 
 
@@ -85,7 +87,7 @@ function _loadBarChart(dataProvider) {
 
 function _loadSerialChart(dataProvider) {
 
-	AmCharts.makeChart("chartdiv",
+	var serialChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
 			"categoryField": "date",
@@ -163,6 +165,8 @@ function _loadSerialChart(dataProvider) {
 		}
 	);
 
+	return serialChart;
+
 }
 
 
@@ -170,7 +174,7 @@ function _loadSerialChart(dataProvider) {
 
 function _loadPieChart(dataProvider) {
 
-	AmCharts.makeChart("chartdiv",
+	var pieChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "pie",
 			"balloonText": "",
@@ -193,6 +197,8 @@ function _loadPieChart(dataProvider) {
 		}
 	);
 
+	return pieChart;
+
 }
 
 
@@ -200,23 +206,26 @@ function _loadPieChart(dataProvider) {
 
 Charts_SRV.prototype.loadBarChart = function(dataProvider) {
 
-	_loadBarChart.call(this,dataProvider);
+	return _loadBarChart.call(this,dataProvider);
 
 };
 
 
 Charts_SRV.prototype.loadSerialChart = function(dataProvider) {
 
-	_loadSerialChart.call(this,dataProvider);
+	return _loadSerialChart.call(this,dataProvider);
 
 };
 
 
 Charts_SRV.prototype.loadPieChart = function(dataProvider) {
 
-	_loadPieChart.call(this,dataProvider);
+	return _loadPieChart.call(this,dataProvider);
 
 };
+
+
+
 
 
 

@@ -20,12 +20,12 @@ let _eventEmitter3 = require('eventemitter3');
 // Constructor
 // ------------------------------------
 
-function InputTalk_Ctrl (conversationTarget, botIcon) {
+function InputTalk_Ctrl (botIcon) {
 
 	this.botIcon = botIcon;
-	this.conversation_DOM = conversationTarget;
-	this.label_DOM = conversationTarget.find('label');
-	this.input_DOM = conversationTarget.find('input');
+	this.conversation_DOM = $('.conversation');
+	this.label_DOM = this.conversation_DOM.find('label');
+	this.input_DOM = this.conversation_DOM.find('input');
 	this.owner = "tombot";   //tombot or user
 
 	_init.call(this);
@@ -107,7 +107,7 @@ function _addFocusOutKeyDownListener() {
 	this.input_DOM.on('focusout keydown', onFocusOutKeydown.bind(this));
 
 	function onFocusOutKeydown(e) {
-		// console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
+		console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
         
         if (e.type == "keydown") this.botIcon.changeState("listening");
 
@@ -126,7 +126,7 @@ function _checkQuestion() {
 	var question = this.input_DOM.val();
 	var AIAgent_pre_check_answer = AIAgent_SRV.checkQuestion(question);
 
-	console.log("AI Agent pre check.....", AIAgent_pre_check_answer);
+	console.log("AI Agent pre check.....",question, AIAgent_pre_check_answer);
 
 	if ( AIAgent_pre_check_answer ){
 		console.log("AI Return TRUE so understood the question");
@@ -200,6 +200,12 @@ function _sayHello() {
 
 InputTalk_Ctrl.prototype.disableInput = function () {
 	this.input_DOM.attr("disabled", true);
+};
+
+
+InputTalk_Ctrl.prototype.show = function () {
+	this.conversation_DOM.fadeIn(500);
+	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
 };
 
 
