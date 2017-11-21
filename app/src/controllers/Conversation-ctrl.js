@@ -56,15 +56,16 @@ function _addInputTalk() {
 
 		function _onNewQuestionReceived(newQuestion) {
 	    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
-	    	// this.botIcon.changeState("thinking");
-	    	// this.inputTalk.disableInput();
-
+	    	
+	    	this.botIcon.changeState("thinking");
+	    	this.inputTalk.disableInput();
 	    	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 		}
 
 		function _onAnswerReceived(response) {
 			_hideInputTalk.call(this);
+	    	this.botIcon.changeState("waiting");
 	    	this.contentBubble.loadTomBotAnswer(response);
 		}
 

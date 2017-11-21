@@ -385,15 +385,16 @@ function _addInputTalk() {
 
 		function _onNewQuestionReceived(newQuestion) {
 	    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
-	    	// this.botIcon.changeState("thinking");
-	    	// this.inputTalk.disableInput();
-
+	    	
+	    	this.botIcon.changeState("thinking");
+	    	this.inputTalk.disableInput();
 	    	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 		}
 
 		function _onAnswerReceived(response) {
 			_hideInputTalk.call(this);
+	    	this.botIcon.changeState("waiting");
 	    	this.contentBubble.loadTomBotAnswer(response);
 		}
 
@@ -455,7 +456,6 @@ const _ = require("lodash");
 //----------------------------
 // REQUIRE 
 //----------------------------
-const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 const Utils_SRV = require('../services/Utils-srv'); 
 const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
@@ -671,7 +671,7 @@ InputTalk_Ctrl.prototype.show = function () {
 
 
 module.exports = InputTalk_Ctrl;
-},{"../services/AIAgent-srv":7,"../services/DisplayGlobals-srv":10,"../services/Utils-srv":13,"eventemitter3":56,"lodash":57,"util":63}],5:[function(require,module,exports){
+},{"../services/AIAgent-srv":7,"../services/Utils-srv":13,"eventemitter3":56,"lodash":57,"util":63}],5:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -1897,7 +1897,10 @@ _nodeUtil.inherits(Utils_SRV,_eventEmitter3); // extend _eventEmitter3 so we can
 
 
 
-
+var dispatchCopyAnimationFinished = function(inputDOM) {
+    inputDOM.attr("disabled", false);
+    _Utils.emit("copy_animation_finished");
+};
 
 
 Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
@@ -1915,19 +1918,24 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
             copyAnim += copyArray.shift();
             inputDOM.val(copyAnim);
         }else{
-            inputDOM.attr("disabled", false);
             clearInterval(copyInterval);
+            copyInterval = null;
             botIcon.changeState("waiting");
             
-            _Utils.emit("copy_animation_finished");
+            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),1000);
 
             return false;
         }
 
     }
 
+
+
 };
 
+
+
+ 
 
 
 
