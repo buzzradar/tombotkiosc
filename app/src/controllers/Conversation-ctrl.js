@@ -53,26 +53,36 @@ function _addInputTalk() {
 
 		//Add Input Listeners
 		this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
-
-		function _onNewQuestionReceived(newQuestion) {
-	    	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
-	    	
-	    	this.botIcon.changeState("thinking");
-	    	this.inputTalk.disableInput();
-	    	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
-
-		}
-
-		function _onAnswerReceived(response) {
-			_hideInputTalk.call(this);
-	    	this.botIcon.changeState("waiting");
-	    	this.contentBubble.loadTomBotAnswer(response);
-		}
+		this.inputTalk.on("show_AI_agent_answer", _onShowAIAgentAnswerReceived, this);
 
 	}else{
 		this.inputTalk.show();
 	}
 
+}
+
+
+
+function _onNewQuestionReceived(newQuestion) {
+	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
+	
+	this.botIcon.changeState("thinking");
+	this.inputTalk.disableInput();
+	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
+
+}
+
+function _onAnswerReceived(response) {
+	_hideInputTalk.call(this);
+	this.botIcon.changeState("waiting");
+	this.contentBubble.loadTomBotAnswer(response);
+}
+
+
+function _onShowAIAgentAnswerReceived(answer_MOD) {
+	_hideInputTalk.call(this);
+	this.botIcon.changeState("waiting");
+	this.contentBubble.loadCopyAnswer(answer_MOD);
 }
 
 

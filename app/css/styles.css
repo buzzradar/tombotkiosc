@@ -159,24 +159,24 @@ footer {
   margin-top: 0px;
 }
 
-.intro-slide {
+.intro-slide, .copy-item {
   z-index: 999;
 }
-.intro-slide .title {
+.intro-slide .title, .copy-item .title {
   font-family: "Open Sans Condensed", sans-serif;
   color: #ff8900;
   font-weight: 600;
   font-size: 30px;
 }
-.intro-slide .question {
+.intro-slide .question, .copy-item .question {
   font-weight: 600;
   font-size: 24px;
   margin-bottom: 10px;
 }
-.intro-slide p {
+.intro-slide p, .copy-item p {
   font-size: 20px;
 }
-.intro-slide .btn {
+.intro-slide .btn, .copy-item .btn {
   font-weight: 600;
   font-size: 20px;
 }

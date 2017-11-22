@@ -123,15 +123,20 @@ function _addFocusOutKeyDownListener() {
 function _checkQuestion() {
 
 	var question = this.input_DOM.val();
+	this.input_DOM.val('');
 	var AIAgent_pre_check_answer = AIAgent_SRV.checkQuestion(question);
 
-	console.log("AI Agent pre check.....",question, AIAgent_pre_check_answer);
+	//console.log("AI Agent pre check.....",question, AIAgent_pre_check_answer);
 
 	if ( AIAgent_pre_check_answer ){
-		console.log("AI Return TRUE so understood the question");
+		console.log("AI Return TRUE so understood the question", AIAgent_pre_check_answer);
 
-		_changeOwner.call(this,'tombot');
-		Utils_SRV.animateCopy(this.input_DOM,AIAgent_pre_check_answer, this.botIcon);
+		if( _.isObject(AIAgent_pre_check_answer) ) {
+			this.emit("show_AI_agent_answer",AIAgent_pre_check_answer);   //For Help and other questions that I understand without Marius
+		}else{
+			_changeOwner.call(this,'tombot');
+			Utils_SRV.animateCopy(this.input_DOM,AIAgent_pre_check_answer, this.botIcon);
+		}
 
 	}else{
 		console.log("AI Return FALSE so ask Marius");
