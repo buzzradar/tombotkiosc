@@ -1169,7 +1169,7 @@ AIAgent.prototype.checkQuestion = function(question) {
 		answer = Utils_SRV.getRandomShy();
 	}else if(_checkHello(question)){
 		console.log("AIAGENT SRV --> User is saying hello!");
-		answer = "Hello";
+		answer = _.capitalize(question);
 	}else if(_checkHelp(question)){
 		answer = {
 			title : 'Help',
