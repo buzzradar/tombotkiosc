@@ -67,7 +67,7 @@ function _checkHello(question) {
 
 	var isHello = false;
 	question = question.toLowerCase();
-	if ( question.length < 10 && !question.includes("help") ) {
+	if ( question.length <= 5 && !question.includes("help") ) {
 		isHello = true;
 	}
 	return isHello;

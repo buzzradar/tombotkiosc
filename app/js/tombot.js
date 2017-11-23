@@ -435,13 +435,17 @@ function _onShowAIAgentAnswerReceived(answer_MOD) {
 
 function _hideInputTalk() {
 
-	$('.conversation').hide();
+	// $('.conversation').hide();
+	this.inputTalk.hide();
 
 }
 
 function _showInputTalk() {
 
-	$('.conversation').fadeIn(500);
+	//$('.conversation').fadeIn(500);
+
+	this.inputTalk.show();
+
 
 }
 
@@ -517,9 +521,7 @@ function _init() {
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
 	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
-	this.conversation_DOM.fadeIn(500);
-
-	_addFocusInListener.call(this);
+	_showInput.call(this);
 
 }
 
@@ -566,12 +568,14 @@ function _changeOwner(newOwner) {
 function _addFocusInListener() {
 
 	var self = this;
-	this.input_DOM.on('click', onInputClicked);
+	this.input_DOM.off('click').on('click', onInputClicked);
 
 	function onInputClicked() {
+		console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
+
 		this.value = '';
 	    _changeOwner.call(self,'user');
-    	_addFocusOutKeyDownListener.call(self);
+    	// _addFocusOutKeyDownListener.call(self);
 	}
 
 }
@@ -580,7 +584,7 @@ function _addFocusInListener() {
 
 function _addFocusOutKeyDownListener() {
 
-	this.input_DOM.on('focusout keydown', onFocusOutKeydown.bind(this));
+	this.input_DOM.off('focusout keydown').on('focusout keydown', onFocusOutKeydown.bind(this));
 
 	function onFocusOutKeydown(e) {
 		console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
@@ -590,6 +594,7 @@ function _addFocusOutKeyDownListener() {
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
+			_addFocusOutKeyDownListener.call(this);
     	}
 	}
 
@@ -621,6 +626,7 @@ function _checkQuestion() {
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
 	}
 
+
 	function _onAcknowledgeAnimationFinished() {
 		this.emit("question_ready",question);
 		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
@@ -634,19 +640,22 @@ function _checkQuestion() {
 
 
 
+function _showInput() {
 
+	this.conversation_DOM.fadeIn(500);
 
-
-function _sayHello() {
-
-	_changeOwner.call(this,'tombot');
-	Utils_SRV.animateCopy(this.input_DOM,"Hello!", this.botIcon);
+	_addFocusInListener.call(this);
+	_addFocusOutKeyDownListener.call(this);
 
 }
 
 
 
+function _hideInput() {
 
+	this.conversation_DOM.hide();
+	
+}
 
 
 
@@ -685,8 +694,13 @@ InputTalk_Ctrl.prototype.disableInput = function () {
 
 
 InputTalk_Ctrl.prototype.show = function () {
-	this.conversation_DOM.fadeIn(500);
+	_showInput.call(this);
 	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+};
+
+
+InputTalk_Ctrl.prototype.hide = function () {
+	_hideInput.call(this);
 };
 
 
@@ -1185,7 +1199,7 @@ function _checkHello(question) {
 
 	var isHello = false;
 	question = question.toLowerCase();
-	if ( question.length < 10 && !question.includes("help") ) {
+	if ( question.length <= 5 && !question.includes("help") ) {
 		isHello = true;
 	}
 	return isHello;
@@ -1409,6 +1423,7 @@ const Utils_SRV = require('./Utils-srv');
 //--------------------------------------
 
 let _Charts_SRV;
+let _arrayColors = ['#404040','#F6921E','#77C0B2','#ff0000'];
 
 function Charts_SRV () {
 
@@ -1442,19 +1457,7 @@ function _loadBarChart(dataProvider) {
 				"balloonPointerOrientation": " vertical"
 			},
 			"trendLines": [],
-			"graphs": [
-				{
-					"balloonText": "Paid Reach: [[value]]",
-					"fillAlphas": 1,
-					"fillColors": "#77C0B2",
-					"id": "AmGraph-2",
-					"lineColor": "#77C0B2",
-					"lineThickness": 0,
-					"title": "Paid Reach",
-					"type": "column",
-					"valueField": "paid_reach"
-				}
-			],
+			"graphs": _getBarGraphsObject(dataProvider),
 			"guides": [],
 			"valueAxes": [
 				{
@@ -1475,6 +1478,95 @@ function _loadBarChart(dataProvider) {
 	return barChart;
 
 }
+
+
+function _getBarGraphsObject(dataProvider) {
+
+	var graphs = [];
+	var i = 0;
+
+	for (var property in dataProvider[0]) {
+
+		if ( !property.includes("date") ) {
+			console.log(property);
+
+			var color = _arrayColors[i];
+			var obj = 	{
+					//"balloonText": "Paid Reach: [[value]]",
+					"fillAlphas": 1,
+					"fillColors": color,
+					"lineColor": color,
+					"title": "XXXXXX",
+					"type": "column",
+					"valueField": "XXXXXX",
+				};
+
+			obj.title = _transformTitle(property);
+			obj.valueField = property;
+			graphs.push(obj);
+
+			i++;
+
+		}
+
+
+	}
+
+	return graphs;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1501,33 +1593,7 @@ function _loadSerialChart(dataProvider) {
 				"oneBalloonOnly": true
 			},
 			"trendLines": [],
-			"graphs": [
-				{
-					"balloonText": "[[title]]: £[[value]]",
-					"bullet": "round",
-					"id": "AmGraph-1",
-					"lineColor": "#F6921E",
-					"title": "CPC",
-					"valueField": "CPC"
-				},
-				{
-					"balloonText": "[[title]]: £[[value]]",
-					"bullet": "round",
-					"id": "AmGraph-3",
-					"lineColor": "#77C0B2",
-					"title": "CPM",
-					"valueField": "CPM"
-				},
-				{
-					"balloonText": "[[title]]: £[[value]]",
-					"bullet": "round",
-					"id": "AmGraph-6",
-					"lineColor": "#404040",
-					"title": "Total Spend",
-					"valueAxis": "ValueAxis-2",
-					"valueField": "Spend"
-				}
-			],
+			"graphs": _getSerialGraphsObject(dataProvider),
 			"guides": [],
 			"valueAxes": [
 				{
@@ -1567,6 +1633,92 @@ function _loadSerialChart(dataProvider) {
 
 
 
+function _getSerialGraphsObject(dataProvider) {
+
+	var graphs = [];
+	var i = 0;
+
+	for (var property in dataProvider[0]) {
+
+		if ( !property.includes("date") ) {
+			console.log(property);
+
+			var obj = 	{
+					//"balloonText": "[[title]]: £[[value]]",
+					"bullet": "round",
+					"lineColor": _arrayColors[i],
+					"title": "XXXXXX",
+					"valueField": "XXXXXXX"
+				};
+
+			obj.title = _transformTitle(property);
+			obj.valueField = property;
+			graphs.push(obj);
+
+			i++;
+
+		}
+
+
+	}
+
+	return graphs;
+
+}
+
+
+
+function _transformTitle(valueField) {
+
+	var newName = '';
+
+	$.each(valueField.split("_"), function( index, value ) {
+	  newName += ' '+_.capitalize(value);
+	});
+	return newName;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function _loadPieChart(dataProvider) {
 
@@ -1596,6 +1748,53 @@ function _loadPieChart(dataProvider) {
 	return pieChart;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1989,7 +2188,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, 20);
+    let copyInterval = setInterval(onEachInterval, 35);
 
     function onEachInterval() {
 

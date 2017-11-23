@@ -40,9 +40,7 @@ function _init() {
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
 	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
-	this.conversation_DOM.fadeIn(500);
-
-	_addFocusInListener.call(this);
+	_showInput.call(this);
 
 }
 
@@ -89,12 +87,14 @@ function _changeOwner(newOwner) {
 function _addFocusInListener() {
 
 	var self = this;
-	this.input_DOM.on('click', onInputClicked);
+	this.input_DOM.off('click').on('click', onInputClicked);
 
 	function onInputClicked() {
+		console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
+
 		this.value = '';
 	    _changeOwner.call(self,'user');
-    	_addFocusOutKeyDownListener.call(self);
+    	// _addFocusOutKeyDownListener.call(self);
 	}
 
 }
@@ -103,7 +103,7 @@ function _addFocusInListener() {
 
 function _addFocusOutKeyDownListener() {
 
-	this.input_DOM.on('focusout keydown', onFocusOutKeydown.bind(this));
+	this.input_DOM.off('focusout keydown').on('focusout keydown', onFocusOutKeydown.bind(this));
 
 	function onFocusOutKeydown(e) {
 		console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
@@ -113,6 +113,7 @@ function _addFocusOutKeyDownListener() {
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
+			_addFocusOutKeyDownListener.call(this);
     	}
 	}
 
@@ -144,6 +145,7 @@ function _checkQuestion() {
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
 	}
 
+
 	function _onAcknowledgeAnimationFinished() {
 		this.emit("question_ready",question);
 		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
@@ -157,19 +159,22 @@ function _checkQuestion() {
 
 
 
+function _showInput() {
 
+	this.conversation_DOM.fadeIn(500);
 
-
-function _sayHello() {
-
-	_changeOwner.call(this,'tombot');
-	Utils_SRV.animateCopy(this.input_DOM,"Hello!", this.botIcon);
+	_addFocusInListener.call(this);
+	_addFocusOutKeyDownListener.call(this);
 
 }
 
 
 
+function _hideInput() {
 
+	this.conversation_DOM.hide();
+	
+}
 
 
 
@@ -208,8 +213,13 @@ InputTalk_Ctrl.prototype.disableInput = function () {
 
 
 InputTalk_Ctrl.prototype.show = function () {
-	this.conversation_DOM.fadeIn(500);
+	_showInput.call(this);
 	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+};
+
+
+InputTalk_Ctrl.prototype.hide = function () {
+	_hideInput.call(this);
 };
 
 

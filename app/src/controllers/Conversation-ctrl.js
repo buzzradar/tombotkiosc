@@ -88,13 +88,17 @@ function _onShowAIAgentAnswerReceived(answer_MOD) {
 
 function _hideInputTalk() {
 
-	$('.conversation').hide();
+	// $('.conversation').hide();
+	this.inputTalk.hide();
 
 }
 
 function _showInputTalk() {
 
-	$('.conversation').fadeIn(500);
+	//$('.conversation').fadeIn(500);
+
+	this.inputTalk.show();
+
 
 }
 

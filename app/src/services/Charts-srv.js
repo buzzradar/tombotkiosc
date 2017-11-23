@@ -13,6 +13,7 @@ const Utils_SRV = require('./Utils-srv');
 //--------------------------------------
 
 let _Charts_SRV;
+let _arrayColors = ['#404040','#F6921E','#77C0B2','#ff0000'];
 
 function Charts_SRV () {
 
@@ -46,19 +47,7 @@ function _loadBarChart(dataProvider) {
 				"balloonPointerOrientation": " vertical"
 			},
 			"trendLines": [],
-			"graphs": [
-				{
-					"balloonText": "Paid Reach: [[value]]",
-					"fillAlphas": 1,
-					"fillColors": "#77C0B2",
-					"id": "AmGraph-2",
-					"lineColor": "#77C0B2",
-					"lineThickness": 0,
-					"title": "Paid Reach",
-					"type": "column",
-					"valueField": "paid_reach"
-				}
-			],
+			"graphs": _getBarGraphsObject(dataProvider),
 			"guides": [],
 			"valueAxes": [
 				{
@@ -79,6 +68,95 @@ function _loadBarChart(dataProvider) {
 	return barChart;
 
 }
+
+
+function _getBarGraphsObject(dataProvider) {
+
+	var graphs = [];
+	var i = 0;
+
+	for (var property in dataProvider[0]) {
+
+		if ( !property.includes("date") ) {
+			console.log(property);
+
+			var color = _arrayColors[i];
+			var obj = 	{
+					//"balloonText": "Paid Reach: [[value]]",
+					"fillAlphas": 1,
+					"fillColors": color,
+					"lineColor": color,
+					"title": "XXXXXX",
+					"type": "column",
+					"valueField": "XXXXXX",
+				};
+
+			obj.title = _transformTitle(property);
+			obj.valueField = property;
+			graphs.push(obj);
+
+			i++;
+
+		}
+
+
+	}
+
+	return graphs;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -105,33 +183,7 @@ function _loadSerialChart(dataProvider) {
 				"oneBalloonOnly": true
 			},
 			"trendLines": [],
-			"graphs": [
-				{
-					"balloonText": "[[title]]: £[[value]]",
-					"bullet": "round",
-					"id": "AmGraph-1",
-					"lineColor": "#F6921E",
-					"title": "CPC",
-					"valueField": "CPC"
-				},
-				{
-					"balloonText": "[[title]]: £[[value]]",
-					"bullet": "round",
-					"id": "AmGraph-3",
-					"lineColor": "#77C0B2",
-					"title": "CPM",
-					"valueField": "CPM"
-				},
-				{
-					"balloonText": "[[title]]: £[[value]]",
-					"bullet": "round",
-					"id": "AmGraph-6",
-					"lineColor": "#404040",
-					"title": "Total Spend",
-					"valueAxis": "ValueAxis-2",
-					"valueField": "Spend"
-				}
-			],
+			"graphs": _getSerialGraphsObject(dataProvider),
 			"guides": [],
 			"valueAxes": [
 				{
@@ -171,6 +223,92 @@ function _loadSerialChart(dataProvider) {
 
 
 
+function _getSerialGraphsObject(dataProvider) {
+
+	var graphs = [];
+	var i = 0;
+
+	for (var property in dataProvider[0]) {
+
+		if ( !property.includes("date") ) {
+			console.log(property);
+
+			var obj = 	{
+					//"balloonText": "[[title]]: £[[value]]",
+					"bullet": "round",
+					"lineColor": _arrayColors[i],
+					"title": "XXXXXX",
+					"valueField": "XXXXXXX"
+				};
+
+			obj.title = _transformTitle(property);
+			obj.valueField = property;
+			graphs.push(obj);
+
+			i++;
+
+		}
+
+
+	}
+
+	return graphs;
+
+}
+
+
+
+function _transformTitle(valueField) {
+
+	var newName = '';
+
+	$.each(valueField.split("_"), function( index, value ) {
+	  newName += ' '+_.capitalize(value);
+	});
+	return newName;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function _loadPieChart(dataProvider) {
 
@@ -200,6 +338,53 @@ function _loadPieChart(dataProvider) {
 	return pieChart;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
