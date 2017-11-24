@@ -78,8 +78,11 @@ module.exports = App_NODE;
 /*jslint node: true, unused: true, esnext: true */
 
 
+const _ = require("lodash");
+const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 const HBTemplates_SRV = require('../services/HBTemplates-srv');
 const Charts_SRV = require('../services/Charts-srv');
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 let _nodeUtil = require('util');
 let _eventEmitter3 = require('eventemitter3');
@@ -95,35 +98,8 @@ function ContentBubble_Ctrl (botIcon) {
 	this.bubble_DOM = $('.content-info');
 	this.botIcon = botIcon;
 	this.content_DOM = null;
-	this.introId = 0;
-	this.introInTimer = null;
-	this.introOutTimer = null;
 	this.chart = null;
-
-	this.introMOD_Array = 	[
-							{
-								type : 'bar',
-								title : 'Hi! I am CESBot the AI Social Data Analyst',
-								copy : 'Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.',
-								question : 'What are the top trends at CES today?',
-								dataProvider: [{"date":"2017-02-11","organic_reach":5918,"paid_reach":6208},{"date":"2017-02-12","organic_reach":14377,"paid_reach":72589},{"date":"2017-02-13","organic_reach":14079,"paid_reach":51783},{"date":"2017-02-14","organic_reach":23749,"paid_reach":106508},{"date":"2017-02-15","organic_reach":24137,"paid_reach":114305},{"date":"2017-02-16","organic_reach":10125,"paid_reach":47634},{"date":"2017-02-17","organic_reach":7982,"paid_reach":17067},{"date":"2017-02-18","organic_reach":2241,"paid_reach":14692},{"date":"2017-02-19","organic_reach":17246,"paid_reach":54426},{"date":"2017-02-20","organic_reach":14706,"paid_reach":74782},{"date":"2017-02-21","organic_reach":21557,"paid_reach":97222},{"date":"2017-02-22","organic_reach":22246,"paid_reach":117480},{"date":"2017-02-23","organic_reach":18460,"paid_reach":71019},{"date":"2017-02-24","organic_reach":8747,"paid_reach":18952},{"date":"2017-02-25","organic_reach":5456,"paid_reach":29563},{"date":"2017-02-26","organic_reach":17430,"paid_reach":40745},{"date":"2017-02-27","organic_reach":15525,"paid_reach":56324},{"date":"2017-02-28","organic_reach":27813,"paid_reach":119911},{"date":"2017-03-01","organic_reach":29418,"paid_reach":84731},{"date":"2017-03-02","organic_reach":17480,"paid_reach":45396},{"date":"2017-03-03","organic_reach":4713,"paid_reach":7466},{"date":"2017-03-04","organic_reach":1450,"paid_reach":27545},{"date":"2017-03-05","organic_reach":16468,"paid_reach":51824},{"date":"2017-03-06","organic_reach":12940,"paid_reach":42163},{"date":"2017-03-07","organic_reach":23687,"paid_reach":93645},{"date":"2017-03-08","organic_reach":29495,"paid_reach":116639},{"date":"2017-03-09","organic_reach":15853,"paid_reach":59688},{"date":"2017-03-10","organic_reach":9530,"paid_reach":12281},{"date":"2017-03-11","organic_reach":4655,"paid_reach":25650},{"date":"2017-03-12","organic_reach":10306,"paid_reach":62717},{"date":"2017-03-13","organic_reach":12054,"paid_reach":41944}],
-							},
-							{
-								type : 'serial',
-								title : 'Hi! I am CESBot the AI Social Data Analyst',
-								copy : 'Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.',
-								question : 'What is the most talked about industry right now? ',
-								dataProvider: [{"date":"2017-02-11","CPC":"3.61","CPM":"8.43","Spend":"38.14"},{"date":"2017-02-12","CPC":"5.95","CPM":"7.71","Spend":"27.05"},{"date":"2017-02-13","CPC":"2.67","CPM":"8.08","Spend":"30.39"},{"date":"2017-02-14","CPC":"4.33","CPM":"8.19","Spend":"20.13"},{"date":"2017-02-15","CPC":"2.26","CPM":"8.99","Spend":"20"},{"date":"2017-02-16","CPC":"2.94","CPM":"7.5","Spend":"33.99"},{"date":"2017-02-17","CPC":"5.71","CPM":"8.08","Spend":"30.77"},{"date":"2017-02-18","CPC":"5.92","CPM":"7.37","Spend":"35.42"},{"date":"2017-02-19","CPC":"1.8","CPM":"8.97","Spend":"37.64"},{"date":"2017-02-20","CPC":"5.08","CPM":"7.91","Spend":"37.34"},{"date":"2017-02-21","CPC":"2.71","CPM":"8.28","Spend":"29.18"},{"date":"2017-02-22","CPC":"4.73","CPM":"7.98","Spend":"23.92"},{"date":"2017-02-23","CPC":"3.47","CPM":"7.52","Spend":"39.55"},{"date":"2017-02-24","CPC":"4.06","CPM":"8.2","Spend":"38.72"},{"date":"2017-02-25","CPC":"5.59","CPM":"8.71","Spend":"25.17"},{"date":"2017-02-26","CPC":"4.75","CPM":"7.67","Spend":"31.79"},{"date":"2017-02-27","CPC":"3.91","CPM":"7.12","Spend":"20.29"},{"date":"2017-02-28","CPC":"3.29","CPM":"8.66","Spend":"27.76"},{"date":"2017-03-01","CPC":"3.87","CPM":"7.01","Spend":"34.17"},{"date":"2017-03-02","CPC":"3.04","CPM":"7.31","Spend":"37.01"},{"date":"2017-03-03","CPC":"2.88","CPM":"8.77","Spend":"31.8"},{"date":"2017-03-04","CPC":"3.97","CPM":"8.35","Spend":"26.87"},{"date":"2017-03-05","CPC":"5.05","CPM":"8.19","Spend":"21.88"},{"date":"2017-03-06","CPC":"2.28","CPM":"7.06","Spend":"25.22"},{"date":"2017-03-07","CPC":"2.14","CPM":"7.2","Spend":"25.06"},{"date":"2017-03-08","CPC":"5.48","CPM":"7.38","Spend":"30.98"},{"date":"2017-03-09","CPC":"5.44","CPM":"8","Spend":"38.47"},{"date":"2017-03-10","CPC":"1.61","CPM":"8.73","Spend":"30.28"},{"date":"2017-03-11","CPC":"5.58","CPM":"8.5","Spend":"24.6"},{"date":"2017-03-12","CPC":"5.62","CPM":"8.9","Spend":"36.4"},{"date":"2017-03-13","CPC":"3.54","CPM":"8.98","Spend":"31.64"}],
-							},
-							{
-								type : 'pie',
-								title : 'Hi! I am CESBot the AI Social Data Analyst',
-								copy : 'Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.',
-								question : 'How many people are talking about CES this week?',
-								dataProvider: [{category:"13-17","column-1":"518",color:"#F6921E"},{category:"18-24","column-1":"1043",color:"#F79E37"},{category:"25-34","column-1":"1630",color:"#F79E37"},{category:"35-44","column-1":"1824",color:"#F9B669"},{category:"45-54","column-1":"1093",color:"#FAC282"},{category:"55-64","column-1":"675",color:"#FBCE9B"},{category:"65+","column-1":"183",color:"#FCDAB4"}],
-							},
-	];
-
+	
 	_init.call(this);
 
 }
@@ -133,79 +109,36 @@ _nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 
 
 function _init() {
 	
-	_initTimer.call(this);
-	_startIntro.call(this);
+	// _initTimer.call(this);
+	// _startIntro.call(this);
 
 }
 
 
 
 
-function _initTimer() {
 
-	var self = this;
+function _renderContent(content_MOD) {
 
-	//Anim In Timer
-	this.introInTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_animBubbleOut.bind(self), 5000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
+	switch(content_MOD.type) {
 
-	//Anim Out Timer
-	this.introOutTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
+		case "help":
+			this.content_DOM = HBTemplates_SRV.getTemplate('help_item', content_MOD);
+		break;
+		case "intro":
+			this.content_DOM = HBTemplates_SRV.getTemplate('intro_item', content_MOD);
+		break;
+		case "graph":
+			this.content_DOM = HBTemplates_SRV.getTemplate('graph_item', content_MOD);
+		break;
 
-}
-
-
-
-
-function _loadNextIntro(){
-
-	_destroyChart.call(this);
-	_renderContent.call(this, 'intro_content',this.introMOD_Array[this.introId]);		
-
-	//prepare next slideId
-	this.introId ++;
-	if (this.introId >= this.introMOD_Array.length){
-		this.introId = 0;
 	}
 
-}
-
-
-function _renderContent(templateId, content_MOD) {
-
-	console.log("_renderContent....", templateId, content_MOD);
-
-	this.content_DOM = HBTemplates_SRV.getTemplate(templateId, content_MOD);
-
-	//Add the layout to the Speechbubble and then update with the MODEL
 	this.bubble_DOM.html( this.content_DOM );
 
 	//Content
-	if(content_MOD.hasOwnProperty("type")){
-		switch(content_MOD.type) {
+	if(content_MOD.hasOwnProperty("graph")){
+		switch(content_MOD.graph) {
 			case 'bar':
 				this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
 			break;
@@ -221,7 +154,7 @@ function _renderContent(templateId, content_MOD) {
 	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
 	_animBubbleIn.call(this);
 	
-	if(templateId === "intro_content") this.introInTimer.start();
+
 
 }
 
@@ -238,7 +171,6 @@ function _animBubbleOut() {
 
 	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
 	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-	this.introOutTimer.start();
 
 }
 
@@ -250,8 +182,7 @@ function _stopSlides() {
 
 	console.log("stop intro....");
 	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-	this.introOutTimer.stop();
-	this.introInTimer.stop();
+
 
 	setTimeout(_dispatchIntroStopped.bind(this),500);
 
@@ -261,7 +192,7 @@ function _stopSlides() {
 function _dispatchIntroStopped() {
 
 	_destroyChart.call(this);
-	this.emit.call(this,"intro_slides_stopped");
+	this.emit.call(this,"intro_stopped");
 
 }
 
@@ -313,21 +244,20 @@ function _destroyChart() {
 
 
 
+ContentBubble_Ctrl.prototype.renderAnswer = function(content_MOD) {
 
-
-
-ContentBubble_Ctrl.prototype.loadTomBotAnswer = function(answer_MOD) {
-
-	_renderContent.call(this, 'graph_item',answer_MOD);		
+	_renderContent.call(this, content_MOD);		
 
 };
 
 
-ContentBubble_Ctrl.prototype.loadCopyAnswer = function(answer_MOD) {
+ContentBubble_Ctrl.prototype.animContentOut = function() {
 
-	_renderContent.call(this, 'copy_item',answer_MOD);		
+	_animBubbleOut.call(this);		
 
 };
+
+
 
 
 
@@ -344,7 +274,7 @@ ContentBubble_Ctrl.prototype.loadCopyAnswer = function(answer_MOD) {
 
 
 module.exports = ContentBubble_Ctrl;
-},{"../services/Charts-srv":9,"../services/HBTemplates-srv":11,"eventemitter3":56,"util":63}],3:[function(require,module,exports){
+},{"../services/AIAgent-srv":7,"../services/Charts-srv":9,"../services/DisplayGlobals-srv":10,"../services/HBTemplates-srv":11,"eventemitter3":56,"lodash":57,"util":63}],3:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -353,6 +283,7 @@ const APICalls_SRV = require('../services/APICalls-srv');
 const TomBotIcon_CTRL = require('./TomBotIcon-ctrl');
 const InputTalk_CTRL = require('./InputTalk-ctrl');
 const ContentBubble_CTRL = require('./ContentBubble-ctrl');
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 
 
@@ -369,6 +300,10 @@ function Conversation_Ctrl () {
 	this.inputTalk = null;
 	this.contentBubble = null;
 	this.state = "listening";
+	this.introQuestions_Array = DisplayGlobals_SRV.getSentencesJSON().sentences.intro_questions;	
+	this.introId = 0;
+	this.introInTimer = null;
+	this.introOutTimer = null;
 
 	_init.call(this);
 
@@ -376,13 +311,32 @@ function Conversation_Ctrl () {
 
 
 
+
+
+// ------------------------------------
+// Init
+// ------------------------------------
+
 function _init() {
 
+	_initTimer.call(this);
 	this.botIcon = new TomBotIcon_CTRL($('.tomboticon'));
-	//this.botIcon.on("bot_ready",_addContentBubble,this);
+	this.botIcon.on("bot_ready",_addContentAndInput,this);
+
+}
+
+
+
+
+function _addContentAndInput() {
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
-	this.contentBubble.on("intro_slides_stopped",_addInputTalk,this);
+	this.contentBubble.on("intro_stopped",_showInputTalk,this);
+
+	this.inputTalk = new InputTalk_CTRL(this.botIcon);
+	this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
+
+	_startIntro.call(this);
 
 }
 
@@ -392,21 +346,118 @@ function _init() {
 
 
 
-function _addInputTalk() {
 
-	if (!this.inputTalk) {
 
-		this.inputTalk = new InputTalk_CTRL(this.botIcon);
 
-		//Add Input Listeners
-		this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
-		this.inputTalk.on("show_AI_agent_answer", _onShowAIAgentAnswerReceived, this);
 
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------
+// Intro
+// ------------------------------------
+
+
+function _startIntro() {
+
+	_loadNextIntro.call(this);
+	
+}
+
+
+
+function _loadNextIntro(){
+
+	var question = this.introQuestions_Array[this.introId];
+	var content_MOD = AIAgent_SRV.getModel(question);
+
+
+	if (!content_MOD) {
+		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
 	}else{
-		this.inputTalk.show();
+		_onAnswerReceived.call(this,content_MOD);
+	}
+
+	this.introInTimer.start();
+
+
+	//prepare next slideId
+	this.introId ++;
+	if (this.introId >= this.introQuestions_Array.length){
+		this.introId = 0;
 	}
 
 }
+
+
+
+function _initTimer() {
+
+	var self = this;
+
+	//Anim In Timer
+	this.introInTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_animContentOut.bind(self), 5000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+	//Anim Out Timer
+	this.introOutTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+}
+
+
+function _animContentOut() {
+
+	this.contentBubble.animContentOut();
+	this.introOutTimer.start();
+
+}
+
+function _onAnswerReceived(response) {
+
+	console.log("_onAnswerReceived:", response);
+
+
+	if (response.type != 'input') {
+		this.contentBubble.renderAnswer(response);
+		_hideInputTalk.call(this);
+	}else{
+		_showInputTalk.call(this);
+	}
+
+}
+
+
 
 
 
@@ -415,51 +466,18 @@ function _onNewQuestionReceived(newQuestion) {
 	
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
-	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
+	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
-}
-
-function _onAnswerReceived(response) {
-	_hideInputTalk.call(this);
-	this.botIcon.changeState("waiting");
-	this.contentBubble.loadTomBotAnswer(response);
-}
-
-
-function _onShowAIAgentAnswerReceived(answer_MOD) {
-	_hideInputTalk.call(this);
-	this.botIcon.changeState("waiting");
-	this.contentBubble.loadCopyAnswer(answer_MOD);
 }
 
 
 function _hideInputTalk() {
-
-	// $('.conversation').hide();
 	this.inputTalk.hide();
-
 }
 
 function _showInputTalk() {
-
-	//$('.conversation').fadeIn(500);
-
 	this.inputTalk.show();
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -478,7 +496,7 @@ function _showInputTalk() {
 
 
 module.exports = Conversation_Ctrl;
-},{"../services/APICalls-srv":8,"../services/DisplayGlobals-srv":10,"./ContentBubble-ctrl":2,"./InputTalk-ctrl":4,"./TomBotIcon-ctrl":5}],4:[function(require,module,exports){
+},{"../services/AIAgent-srv":7,"../services/APICalls-srv":8,"../services/DisplayGlobals-srv":10,"./ContentBubble-ctrl":2,"./InputTalk-ctrl":4,"./TomBotIcon-ctrl":5}],4:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -520,8 +538,7 @@ function _init() {
 
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
-	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
-	_showInput.call(this);
+	_hideInput.call(this);
 
 }
 
@@ -643,7 +660,8 @@ function _checkQuestion() {
 function _showInput() {
 
 	this.conversation_DOM.fadeIn(500);
-
+	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+	
 	_addFocusInListener.call(this);
 	_addFocusOutKeyDownListener.call(this);
 
@@ -1160,38 +1178,55 @@ function AIAgent () {
 
 
 
-AIAgent.prototype.checkQuestion = function(question) {
+AIAgent.prototype.getModel = function(question) {
 
-	var answer = false;
+	var answerMOD = false;
 
 	if ($.trim(question) === "") {
-		console.log("AIAGENT SRV --> Question is empty!");
-		answer = Utils_SRV.getRandomShy();
+		answerMOD = {
+			type : 'input',
+			answer : Utils_SRV.getRandomShy()
+		};
 	}else if(_checkHello(question)){
-		console.log("AIAGENT SRV --> User is saying hello!");
-		answer = _.capitalize(question);
+		answerMOD = {
+			type : 'input',
+			answer : _.capitalize(question)
+		};
+
 	}else if(_checkHelp(question)){
-		answer = {
-			title : 'Help',
-			copy : 'This is the copy that will be supplied by Patrick.',
-			btnCopy : 'GOT IT! ASK A QUESTION NOW',
+		answerMOD = {
+			type : 'help',
 		};
 	}else if(_checkHowAreYou(question)) {
-		answer = "I am very good thanks for asking.";
+		answerMOD = {
+			type : 'input',
+			answer : 'I am very good thanks for asking.'
+		};
 	}else if(_checkWhatIsCES(question)) {
-		answer = {
+		answerMOD = {
+			type : 'text',
 			title : 'CES is The Global Stage for Innovation',
 			copy : "CES is the world's gathering place for all who thrive on the business of consumer technologies. It has served as the proving ground for innovators and breakthrough technologies for 50 years — the global stage where next-generation innovations are introduced to the marketplace. As the largest hands-on event of its kind, CES features all aspects of the industry. <br><br>CES, formerly The International Consumer Electronics Show (International CES®), showcases more than 3,900 exhibiting companies, including manufacturers, developers and suppliers of consumer technology hardware, content, technology delivery systems and more; a conference program with more than 300 conference sessions and more than 170K attendees from 150 countries.<br><br>And because it is owned and produced by the Consumer Technology Association (CTA)™ — the technology trade association representing the $292 billion U.S. consumer technology industry — it attracts the world’s business leaders and pioneering thinkers to a forum where the industry’s most relevant issues are addressed.",
 			btnCopy : 'ASK MORE QUESTIONS',
 		};
 	}else if(_checkWhoAreYou(question)) {
-		answer = "My name is CESBot and I am a AI Social Agent.";
+		answerMOD = {
+			type : 'input',
+			answer : 'My name is CESBot and I am a AI Social Agent.'
+		};
 	}
-
-
-	return answer;
+	
+	return answerMOD;
 
 };
+
+
+
+function _onAnswerReceived(response) {
+
+	console.log("AI AGENT -> Api Call received:", response);
+
+}
 
 
 
@@ -1199,7 +1234,7 @@ function _checkHello(question) {
 
 	var isHello = false;
 	question = question.toLowerCase();
-	if ( question.length <= 5 && !question.includes("help") ) {
+	if ( question.length <= 5 && !question.includes("help") && !question.includes("reach") ) {
 		isHello = true;
 	}
 	return isHello;
@@ -1303,7 +1338,7 @@ function ApiCalls () {
 
 
 
-ApiCalls.prototype.callPOST = function(urlCall, dataObj, callBack) {
+ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 
 	console.log ("%c -> ", "background:#c5f442;", "APICalls-> POST : URL =>" , urlCall, dataObj);
 
@@ -1331,64 +1366,6 @@ ApiCalls.prototype.callPOST = function(urlCall, dataObj, callBack) {
 
 
 
-
-
-// ApiCalls.prototype.callGet = function(urlCall, dataObj, callBack) {
-
-
-// 	if (type === 'GET') {
-
-// 		//-------------
-// 		//GET
-// 		//-------------
-
-
-// 		console.log ("%c -> ", "background:#87eb9d;", "APICalls-> GET  : URL =>" , urlCall, dataObj);
-
-
-		// $.ajax({
-		// 	type: 'GET',
-		// 	url: urlCall,
-		// 	async: false,
-		// 	jsonpCallback: 'jsonCallback',
-		// 	contentType: "application/json",
-		// 	dataType: 'jsonp',
-		// 	success: function(json) {
-		// 		console.log("Success!", json);
-		// 		if(callBack) callBack(json);
-		// 	},
-		// 	error: function(e) {
-		// 		console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error" + e.responseText);
-		// 	}
-		// });
-
-// 	}else{
-
-// 		//-------------
-// 		//POST
-// 		//-------------
-
-// 		console.log ("%c -> ", "background:#c5f442;", "APICalls-> POST : URL =>" , urlCall, dataObj);
-
-
-// 		$.post(urlCall, dataObj)
-// 			.done(function( data ) {
-// 					console.log ("%c -> ", "background:#87eb9d;", "APICalls.ajaxCall() ---> ", data);
-// 					if(callBack) callBack(data);
-// 			})
-// 			.fail(function() {
-// 				console.log ("%c -> ", "background:#ff0000;", "POST APICalls.ajaxCall() ---> Error");
-// 			})
-// 			.always(function() {
-				
-// 			});
-
-// 	}
-
-
-
-
-// };
 
 
 
@@ -1424,6 +1401,7 @@ const Utils_SRV = require('./Utils-srv');
 
 let _Charts_SRV;
 let _arrayColors = ['#404040','#F6921E','#77C0B2','#ff0000'];
+let _arrayColorsSentiment = ['#8dd73e','#e44e5c','#acacac'];
 
 function Charts_SRV () {
 
@@ -1488,7 +1466,6 @@ function _getBarGraphsObject(dataProvider) {
 	for (var property in dataProvider[0]) {
 
 		if ( !property.includes("date") ) {
-			console.log(property);
 
 			var color = _arrayColors[i];
 			var obj = 	{
@@ -1731,7 +1708,7 @@ function _loadPieChart(dataProvider) {
 			"colorField": "color",
 			"hideLabelsPercent": 5,
 			"titleField": "category",
-			"valueField": "column-1",
+			"valueField": "value",
 			"color": "#FFFFFF",
 			"allLabels": [],
 			"balloon": {},
@@ -1741,7 +1718,7 @@ function _loadPieChart(dataProvider) {
 				"markerType": "circle"
 			},
 			"titles": [],
-			"dataProvider": dataProvider
+			"dataProvider": _getPieColors(dataProvider)
 		}
 	);
 
@@ -1751,7 +1728,28 @@ function _loadPieChart(dataProvider) {
 
 
 
+function _getPieColors(dataProvider) {
 
+
+	var i = 0;
+	$.each(dataProvider, function( index, value ) {
+
+	  	if (value.category.toLowerCase() === "positive"){
+	  		value['color'] = _arrayColorsSentiment[0];
+	  	}else if (value.category.toLowerCase() === "negative"){
+	  		value['color'] = _arrayColorsSentiment[1];
+	  	}else if (value.category.toLowerCase() === "neutral"){
+	  		value['color'] = _arrayColorsSentiment[2];
+	  	}else{
+	  		value['color'] = _arrayColors[i];
+	  		i++;
+	  	}
+
+	});
+
+	return dataProvider;
+
+}
 
 
 
@@ -1962,7 +1960,7 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"intro_content":"           <div class=\"intro-slide\">        <div>          <span class=\"title\">{{title}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK ME QUESTIONS</button>          </span>        </div>        <p>{{copy}}</p>        <div class=\"question\">          <span>Question <i class=\"fa fa-arrow-right\"></i></span> <span class=\"q\">{{question}} </span>         <!--  <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold\">ASK ME QUESTIONS</button>          </span> -->        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","graph_item":"           <div class=\"graph-item\">        <div>          <span class=\"title\">{{title}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK MORE QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","copy_item":"               <div class=\"copy-item\">          <div>            <span class=\"title\">{{title}}</span>            <span class=\"pull-right\">              <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">{{btnCopy}}</button>            </span>          </div>          <p>{{{copy}}}</p>                 </div>              "}
+var templates = {"intro_item":"           <div class=\"intro-slide\">        <div>          <span class=\"title\">{{question}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK ME QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","graph_item":"           <div class=\"graph-item\">        <div>          <span class=\"title\">{{title}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK MORE QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","copy_item":"               <div class=\"copy-item\">          <div>            <span class=\"title\">{{title}}</span>            <span class=\"pull-right\">              <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">{{btnCopy}}</button>            </span>          </div>          <p>{{{copy}}}</p>                 </div>              ","help_item":"               <div class=\"copy-item\">          <div>            <span class=\"title\">{{title}}</span>            <span class=\"pull-right\">              <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">GOT IT! ASK A QUESTION</button>            </span>          </div>          <p>Let me see if I can help! Here are some of the questions I can answer...</p>          <ul>            <li><a href=\"#\">What are the top trends at CES this hour?</a></li>            <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>            <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>            <li><a href=\"#\">What are the big news stories at CES today?</a></li>            <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>            <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>            <li><a href=\"#\">How many people attended CES last year?</a></li>          </ul>                 </div>              "}
 /*jslint node: true, unused: true, esnext: true */
 
 

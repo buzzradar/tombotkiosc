@@ -32,6 +32,18 @@
         "It seems you have not written anything. Try again please.",
         "Oh no, I did not get that, try again please.",
         "You do not come across like a shy person, come on ask me something."
+    ],
+
+
+    "intro_questions" : [
+        "help",
+        "instagram",
+        "sentiment",
+        "help",        
+        "volume",
+        "instagram",
+        "sentiment",
+        "help"
     ]
 
 

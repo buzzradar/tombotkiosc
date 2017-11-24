@@ -39,8 +39,7 @@ function _init() {
 
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
-	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
-	_showInput.call(this);
+	_hideInput.call(this);
 
 }
 
@@ -162,7 +161,8 @@ function _checkQuestion() {
 function _showInput() {
 
 	this.conversation_DOM.fadeIn(500);
-
+	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+	
 	_addFocusInListener.call(this);
 	_addFocusOutKeyDownListener.call(this);
 

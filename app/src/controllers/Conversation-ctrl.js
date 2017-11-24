@@ -6,6 +6,7 @@ const APICalls_SRV = require('../services/APICalls-srv');
 const TomBotIcon_CTRL = require('./TomBotIcon-ctrl');
 const InputTalk_CTRL = require('./InputTalk-ctrl');
 const ContentBubble_CTRL = require('./ContentBubble-ctrl');
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 
 
@@ -22,6 +23,10 @@ function Conversation_Ctrl () {
 	this.inputTalk = null;
 	this.contentBubble = null;
 	this.state = "listening";
+	this.introQuestions_Array = DisplayGlobals_SRV.getSentencesJSON().sentences.intro_questions;	
+	this.introId = 0;
+	this.introInTimer = null;
+	this.introOutTimer = null;
 
 	_init.call(this);
 
@@ -29,13 +34,32 @@ function Conversation_Ctrl () {
 
 
 
+
+
+// ------------------------------------
+// Init
+// ------------------------------------
+
 function _init() {
 
+	_initTimer.call(this);
 	this.botIcon = new TomBotIcon_CTRL($('.tomboticon'));
-	//this.botIcon.on("bot_ready",_addContentBubble,this);
+	this.botIcon.on("bot_ready",_addContentAndInput,this);
+
+}
+
+
+
+
+function _addContentAndInput() {
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
-	this.contentBubble.on("intro_slides_stopped",_addInputTalk,this);
+	this.contentBubble.on("intro_stopped",_showInputTalk,this);
+
+	this.inputTalk = new InputTalk_CTRL(this.botIcon);
+	this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
+
+	_startIntro.call(this);
 
 }
 
@@ -45,21 +69,118 @@ function _init() {
 
 
 
-function _addInputTalk() {
 
-	if (!this.inputTalk) {
 
-		this.inputTalk = new InputTalk_CTRL(this.botIcon);
 
-		//Add Input Listeners
-		this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
-		this.inputTalk.on("show_AI_agent_answer", _onShowAIAgentAnswerReceived, this);
 
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------
+// Intro
+// ------------------------------------
+
+
+function _startIntro() {
+
+	_loadNextIntro.call(this);
+	
+}
+
+
+
+function _loadNextIntro(){
+
+	var question = this.introQuestions_Array[this.introId];
+	var content_MOD = AIAgent_SRV.getModel(question);
+
+
+	if (!content_MOD) {
+		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
 	}else{
-		this.inputTalk.show();
+		_onAnswerReceived.call(this,content_MOD);
+	}
+
+	this.introInTimer.start();
+
+
+	//prepare next slideId
+	this.introId ++;
+	if (this.introId >= this.introQuestions_Array.length){
+		this.introId = 0;
 	}
 
 }
+
+
+
+function _initTimer() {
+
+	var self = this;
+
+	//Anim In Timer
+	this.introInTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_animContentOut.bind(self), 5000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+	//Anim Out Timer
+	this.introOutTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+}
+
+
+function _animContentOut() {
+
+	this.contentBubble.animContentOut();
+	this.introOutTimer.start();
+
+}
+
+function _onAnswerReceived(response) {
+
+	console.log("_onAnswerReceived:", response);
+
+
+	if (response.type != 'input') {
+		this.contentBubble.renderAnswer(response);
+		_hideInputTalk.call(this);
+	}else{
+		_showInputTalk.call(this);
+	}
+
+}
+
+
 
 
 
@@ -68,51 +189,18 @@ function _onNewQuestionReceived(newQuestion) {
 	
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
-	APICalls_SRV.callPOST('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw&question=test',{question:newQuestion}, _onAnswerReceived.bind(this));
+	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
-}
-
-function _onAnswerReceived(response) {
-	_hideInputTalk.call(this);
-	this.botIcon.changeState("waiting");
-	this.contentBubble.loadTomBotAnswer(response);
-}
-
-
-function _onShowAIAgentAnswerReceived(answer_MOD) {
-	_hideInputTalk.call(this);
-	this.botIcon.changeState("waiting");
-	this.contentBubble.loadCopyAnswer(answer_MOD);
 }
 
 
 function _hideInputTalk() {
-
-	// $('.conversation').hide();
 	this.inputTalk.hide();
-
 }
 
 function _showInputTalk() {
-
-	//$('.conversation').fadeIn(500);
-
 	this.inputTalk.show();
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

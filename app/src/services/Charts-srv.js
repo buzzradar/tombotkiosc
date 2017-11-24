@@ -14,6 +14,7 @@ const Utils_SRV = require('./Utils-srv');
 
 let _Charts_SRV;
 let _arrayColors = ['#404040','#F6921E','#77C0B2','#ff0000'];
+let _arrayColorsSentiment = ['#8dd73e','#e44e5c','#acacac'];
 
 function Charts_SRV () {
 
@@ -78,7 +79,6 @@ function _getBarGraphsObject(dataProvider) {
 	for (var property in dataProvider[0]) {
 
 		if ( !property.includes("date") ) {
-			console.log(property);
 
 			var color = _arrayColors[i];
 			var obj = 	{
@@ -321,7 +321,7 @@ function _loadPieChart(dataProvider) {
 			"colorField": "color",
 			"hideLabelsPercent": 5,
 			"titleField": "category",
-			"valueField": "column-1",
+			"valueField": "value",
 			"color": "#FFFFFF",
 			"allLabels": [],
 			"balloon": {},
@@ -331,7 +331,7 @@ function _loadPieChart(dataProvider) {
 				"markerType": "circle"
 			},
 			"titles": [],
-			"dataProvider": dataProvider
+			"dataProvider": _getPieColors(dataProvider)
 		}
 	);
 
@@ -341,7 +341,28 @@ function _loadPieChart(dataProvider) {
 
 
 
+function _getPieColors(dataProvider) {
 
+
+	var i = 0;
+	$.each(dataProvider, function( index, value ) {
+
+	  	if (value.category.toLowerCase() === "positive"){
+	  		value['color'] = _arrayColorsSentiment[0];
+	  	}else if (value.category.toLowerCase() === "negative"){
+	  		value['color'] = _arrayColorsSentiment[1];
+	  	}else if (value.category.toLowerCase() === "neutral"){
+	  		value['color'] = _arrayColorsSentiment[2];
+	  	}else{
+	  		value['color'] = _arrayColors[i];
+	  		i++;
+	  	}
+
+	});
+
+	return dataProvider;
+
+}
 
 
 
