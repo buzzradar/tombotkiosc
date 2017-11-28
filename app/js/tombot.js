@@ -273,6 +273,9 @@ ContentBubble_Ctrl.prototype.animContentOut = function() {
 
 
 
+
+
+
 module.exports = ContentBubble_Ctrl;
 },{"../services/AIAgent-srv":7,"../services/Charts-srv":9,"../services/DisplayGlobals-srv":10,"../services/HBTemplates-srv":11,"eventemitter3":56,"lodash":57,"util":63}],3:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
@@ -335,6 +338,7 @@ function _addContentAndInput() {
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
 	this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
+	this.inputTalk.on("show_help", _onHelpReceived, this);
 
 	_startIntro.call(this);
 
@@ -388,8 +392,7 @@ function _loadNextIntro(){
 
 	this.introInTimer.start();
 
-
-	//prepare next slideId
+	//prepare next intro Slide
 	this.introId ++;
 	if (this.introId >= this.introQuestions_Array.length){
 		this.introId = 0;
@@ -446,18 +449,21 @@ function _animContentOut() {
 function _onAnswerReceived(response) {
 
 	console.log("_onAnswerReceived:", response);
+	this.botIcon.changeState("waiting");
 
-
-	if (response.type != 'input') {
-		this.contentBubble.renderAnswer(response);
-		_hideInputTalk.call(this);
-	}else{
-		_showInputTalk.call(this);
-	}
+	this.contentBubble.renderAnswer(response);
+	_hideInputTalk.call(this);
 
 }
 
 
+
+function _onHelpReceived(response) {
+
+	this.contentBubble.renderAnswer(response);
+	_hideInputTalk.call(this);
+
+}
 
 
 
@@ -476,6 +482,8 @@ function _hideInputTalk() {
 }
 
 function _showInputTalk() {
+	this.introInTimer.stop();
+	this.introOutTimer.stop();
 	this.inputTalk.show();
 }
 
@@ -623,31 +631,29 @@ function _checkQuestion() {
 
 	var question = this.input_DOM.val();
 	this.input_DOM.val('');
-	var AIAgent_pre_check_answer = AIAgent_SRV.checkQuestion(question);
+	var content_MOD = AIAgent_SRV.getModel(question);
 
-	//console.log("AI Agent pre check.....",question, AIAgent_pre_check_answer);
+	console.log("AI Agent pre check.....",question, content_MOD);
 
-	if ( AIAgent_pre_check_answer ){
-		console.log("AI Return TRUE so understood the question", AIAgent_pre_check_answer);
-
-		if( _.isObject(AIAgent_pre_check_answer) ) {
-			this.emit("show_AI_agent_answer",AIAgent_pre_check_answer);   //For Help and other questions that I understand without Marius
-		}else{
-			_changeOwner.call(this,'tombot');
-			Utils_SRV.animateCopy(this.input_DOM,AIAgent_pre_check_answer, this.botIcon);
-		}
-
-	}else{
+	if (!content_MOD) {
+		//Make API Call
 		console.log("AI Return FALSE so ask Marius");
 		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
+	}else{
+		if (content_MOD.type == "input"){
+			_changeOwner.call(this,'tombot');
+			Utils_SRV.animateCopy(this.input_DOM,content_MOD.answer, this.botIcon);
+		}else if(content_MOD.type == "help") {
+			this.emit("show_help", content_MOD);
+		}
 	}
-
 
 	function _onAcknowledgeAnimationFinished() {
 		this.emit("question_ready",question);
 		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
+
 
 }
 
@@ -713,7 +719,6 @@ InputTalk_Ctrl.prototype.disableInput = function () {
 
 InputTalk_Ctrl.prototype.show = function () {
 	_showInput.call(this);
-	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
 };
 
 
@@ -1618,7 +1623,7 @@ function _getSerialGraphsObject(dataProvider) {
 	for (var property in dataProvider[0]) {
 
 		if ( !property.includes("date") ) {
-			console.log(property);
+			//console.log(property);
 
 			var obj = 	{
 					//"balloonText": "[[title]]: £[[value]]",

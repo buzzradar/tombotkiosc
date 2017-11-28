@@ -58,6 +58,7 @@ function _addContentAndInput() {
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
 	this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
+	this.inputTalk.on("show_help", _onHelpReceived, this);
 
 	_startIntro.call(this);
 
@@ -111,8 +112,7 @@ function _loadNextIntro(){
 
 	this.introInTimer.start();
 
-
-	//prepare next slideId
+	//prepare next intro Slide
 	this.introId ++;
 	if (this.introId >= this.introQuestions_Array.length){
 		this.introId = 0;
@@ -169,18 +169,21 @@ function _animContentOut() {
 function _onAnswerReceived(response) {
 
 	console.log("_onAnswerReceived:", response);
+	this.botIcon.changeState("waiting");
 
-
-	if (response.type != 'input') {
-		this.contentBubble.renderAnswer(response);
-		_hideInputTalk.call(this);
-	}else{
-		_showInputTalk.call(this);
-	}
+	this.contentBubble.renderAnswer(response);
+	_hideInputTalk.call(this);
 
 }
 
 
+
+function _onHelpReceived(response) {
+
+	this.contentBubble.renderAnswer(response);
+	_hideInputTalk.call(this);
+
+}
 
 
 
@@ -199,6 +202,8 @@ function _hideInputTalk() {
 }
 
 function _showInputTalk() {
+	this.introInTimer.stop();
+	this.introOutTimer.stop();
 	this.inputTalk.show();
 }
 

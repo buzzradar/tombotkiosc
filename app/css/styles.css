@@ -13,6 +13,7 @@ html, body {
 }
 
 body {
+  background: orange;
   background: url("../assets/bg.jpg") no-repeat center center fixed;
   -moz-background-size: cover;
   -o-background-size: cover;

@@ -231,7 +231,7 @@ function _getSerialGraphsObject(dataProvider) {
 	for (var property in dataProvider[0]) {
 
 		if ( !property.includes("date") ) {
-			console.log(property);
+			//console.log(property);
 
 			var obj = 	{
 					//"balloonText": "[[title]]: £[[value]]",

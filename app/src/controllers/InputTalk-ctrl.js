@@ -124,31 +124,29 @@ function _checkQuestion() {
 
 	var question = this.input_DOM.val();
 	this.input_DOM.val('');
-	var AIAgent_pre_check_answer = AIAgent_SRV.checkQuestion(question);
+	var content_MOD = AIAgent_SRV.getModel(question);
 
-	//console.log("AI Agent pre check.....",question, AIAgent_pre_check_answer);
+	console.log("AI Agent pre check.....",question, content_MOD);
 
-	if ( AIAgent_pre_check_answer ){
-		console.log("AI Return TRUE so understood the question", AIAgent_pre_check_answer);
-
-		if( _.isObject(AIAgent_pre_check_answer) ) {
-			this.emit("show_AI_agent_answer",AIAgent_pre_check_answer);   //For Help and other questions that I understand without Marius
-		}else{
-			_changeOwner.call(this,'tombot');
-			Utils_SRV.animateCopy(this.input_DOM,AIAgent_pre_check_answer, this.botIcon);
-		}
-
-	}else{
+	if (!content_MOD) {
+		//Make API Call
 		console.log("AI Return FALSE so ask Marius");
 		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
+	}else{
+		if (content_MOD.type == "input"){
+			_changeOwner.call(this,'tombot');
+			Utils_SRV.animateCopy(this.input_DOM,content_MOD.answer, this.botIcon);
+		}else if(content_MOD.type == "help") {
+			this.emit("show_help", content_MOD);
+		}
 	}
-
 
 	function _onAcknowledgeAnimationFinished() {
 		this.emit("question_ready",question);
 		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
+
 
 }
 
@@ -214,7 +212,6 @@ InputTalk_Ctrl.prototype.disableInput = function () {
 
 InputTalk_Ctrl.prototype.show = function () {
 	_showInput.call(this);
-	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
 };
 
 
