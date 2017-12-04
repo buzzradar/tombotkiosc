@@ -208,14 +208,14 @@ footer{
 
 
 /* --------------------------------------- */
-/* Intro Slides */
+/*  Slides */
 /* --------------------------------------- */
 
 .margin-top-0{
   margin-top:0px;
 }
 
-.intro-slide,.copy-item {
+.slide {
   
   z-index:999;
 
@@ -235,11 +235,15 @@ footer{
   }
 
   p{
-    font-size:20px;
+    font-size:inherit;
+  }
+
+  a {
+
   }
 
   .btn {  
-    font-weight:600;
+    //font-weight:600;
     font-size:20px;
   }
 
@@ -254,45 +258,15 @@ footer{
 
 
 
-/* --------------------------------------- */
-/* Intro Slides */
-/* --------------------------------------- */
-
-
-.graph-item {
+.help-list-questions{
   
-  z-index:999;
-
-
-
-
-  .title{
-    font-family: $primary_font;
-    color:$primary-color;
-    font-weight:600;
-    font-size:30px;
+  li {
+    margin-top:2px;
   }
 
-  .question {
-
-    font-weight:600;
-    font-size:24px;
-    margin-bottom:10px;
-
+  a {
+    color:$dark-color;
   }
-
-  p{
-    font-size:20px;
-  }
-
-  .btn {  
-    font-weight:600;
-    font-size:20px;
-  }
-
-
-
-
 
 }
 

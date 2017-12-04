@@ -154,57 +154,38 @@ footer {
   }
 }
 /* --------------------------------------- */
-/* Intro Slides */
+/*  Slides */
 /* --------------------------------------- */
 .margin-top-0 {
   margin-top: 0px;
 }
 
-.intro-slide, .copy-item {
+.slide {
   z-index: 999;
 }
-.intro-slide .title, .copy-item .title {
+.slide .title {
   font-family: "Open Sans Condensed", sans-serif;
   color: #ff8900;
   font-weight: 600;
   font-size: 30px;
 }
-.intro-slide .question, .copy-item .question {
+.slide .question {
   font-weight: 600;
   font-size: 24px;
   margin-bottom: 10px;
 }
-.intro-slide p, .copy-item p {
-  font-size: 20px;
+.slide p {
+  font-size: inherit;
 }
-.intro-slide .btn, .copy-item .btn {
-  font-weight: 600;
+.slide .btn {
   font-size: 20px;
 }
 
-/* --------------------------------------- */
-/* Intro Slides */
-/* --------------------------------------- */
-.graph-item {
-  z-index: 999;
+.help-list-questions li {
+  margin-top: 2px;
 }
-.graph-item .title {
-  font-family: "Open Sans Condensed", sans-serif;
-  color: #ff8900;
-  font-weight: 600;
-  font-size: 30px;
-}
-.graph-item .question {
-  font-weight: 600;
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-.graph-item p {
-  font-size: 20px;
-}
-.graph-item .btn {
-  font-weight: 600;
-  font-size: 20px;
+.help-list-questions a {
+  color: #404040;
 }
 
 /* --------------------------------------- */
