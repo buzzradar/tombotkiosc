@@ -108,28 +108,44 @@ _nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 
 
 
 function _init() {
-	
-	// _initTimer.call(this);
-	// _startIntro.call(this);
+
 
 }
 
 
 
 
+function _setChartHeight() {
+
+	var height = $(window).height();
+	var topOffset = this.bubble_DOM.offset().top;
+	var footerHeight = $('footer').height() * 1.7;
+	var chartHeight = Math.round((height-topOffset-footerHeight) - 50);
+
+	//console.log(height, topOffset, footerHeight, chartHeight)
+
+	$('#chartdiv').css('height', chartHeight);
+
+}
+
+
 
 function _renderContent(content_MOD) {
 
+	this.bubble_DOM.height('auto');
 	switch(content_MOD.type) {
 
 		case "help":
 			this.content_DOM = HBTemplates_SRV.getTemplate('help_item', content_MOD);
 		break;
-		case "intro":
-			this.content_DOM = HBTemplates_SRV.getTemplate('intro_item', content_MOD);
-		break;
 		case "graph":
 			this.content_DOM = HBTemplates_SRV.getTemplate('graph_item', content_MOD);
+		break;
+		case "photo":
+			this.content_DOM = HBTemplates_SRV.getTemplate('photo_item', content_MOD);
+		break;
+		case "tweet":
+			this.content_DOM = HBTemplates_SRV.getTemplate('tweet_item', content_MOD);
 		break;
 
 	}
@@ -138,6 +154,9 @@ function _renderContent(content_MOD) {
 
 	//Content
 	if(content_MOD.hasOwnProperty("graph")){
+
+		_setChartHeight.call(this);
+
 		switch(content_MOD.graph) {
 			case 'bar':
 				this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
@@ -176,8 +195,6 @@ function _animBubbleOut() {
 
 
 
-
-
 function _stopSlides() {
 
 	console.log("stop intro....");
@@ -197,12 +214,6 @@ function _dispatchIntroStopped() {
 }
 
 
-function _startIntro() {
-
-	console.log("start intro....");
-	_loadNextIntro.call(this);
-	
-}
 
 function _destroyChart() {
 
@@ -383,7 +394,6 @@ function _loadNextIntro(){
 	var question = this.introQuestions_Array[this.introId];
 	var content_MOD = AIAgent_SRV.getModel(question);
 
-
 	if (!content_MOD) {
 		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
 	}else{
@@ -441,8 +451,8 @@ function _initTimer() {
 
 function _animContentOut() {
 
-	// this.contentBubble.animContentOut();
-	// this.introOutTimer.start();
+	this.contentBubble.animContentOut();
+	this.introOutTimer.start();
 
 }
 
@@ -641,12 +651,17 @@ function _checkQuestion() {
 		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
 	}else{
+
+		console.clear();
+		console.log("estoy aqui")
+
 		if (content_MOD.type == "input"){
 			_changeOwner.call(this,'tombot');
 			Utils_SRV.animateCopy(this.input_DOM,content_MOD.answer, this.botIcon);
 		}else if(content_MOD.type == "help") {
 			this.emit("show_help", content_MOD);
 		}
+		
 	}
 
 	function _onAcknowledgeAnimationFinished() {
@@ -1207,19 +1222,37 @@ AIAgent.prototype.getModel = function(question) {
 			type : 'input',
 			answer : 'I am very good thanks for asking.'
 		};
-	}else if(_checkWhatIsCES(question)) {
-		answerMOD = {
-			type : 'text',
-			title : 'CES is The Global Stage for Innovation',
-			copy : "CES is the world's gathering place for all who thrive on the business of consumer technologies. It has served as the proving ground for innovators and breakthrough technologies for 50 years — the global stage where next-generation innovations are introduced to the marketplace. As the largest hands-on event of its kind, CES features all aspects of the industry. <br><br>CES, formerly The International Consumer Electronics Show (International CES®), showcases more than 3,900 exhibiting companies, including manufacturers, developers and suppliers of consumer technology hardware, content, technology delivery systems and more; a conference program with more than 300 conference sessions and more than 170K attendees from 150 countries.<br><br>And because it is owned and produced by the Consumer Technology Association (CTA)™ — the technology trade association representing the $292 billion U.S. consumer technology industry — it attracts the world’s business leaders and pioneering thinkers to a forum where the industry’s most relevant issues are addressed.",
-			btnCopy : 'ASK MORE QUESTIONS',
-		};
 	}else if(_checkWhoAreYou(question)) {
 		answerMOD = {
 			type : 'input',
 			answer : 'My name is CESBot and I am a AI Social Agent.'
 		};
 	}
+
+
+
+
+
+
+
+
+	//Delete when is photo is done
+
+	if (question == "photo") {
+		answerMOD = {
+			type : 'photo',
+			title : 'Most viewed photo in 2017',
+			answer : 'ssssssssss'
+		};
+	}
+	if (question == "tweet") {
+		answerMOD = {
+			type : 'tweet',
+			title : 'Most retweeted in 2017',
+			answer : 'this is the tweeeeet'
+		};
+	}
+
 	
 	return answerMOD;
 
@@ -1239,7 +1272,7 @@ function _checkHello(question) {
 
 	var isHello = false;
 	question = question.toLowerCase();
-	if ( question.length <= 5 && !question.includes("help") && !question.includes("reach") ) {
+	if ( question.length <= 5 && !question.includes("help") && !question.includes("reach") && !question.includes("photo") ) {
 		isHello = true;
 	}
 	return isHello;
@@ -1270,16 +1303,7 @@ function _checkHelp(question) {
 
 }
 
-function _checkWhatIsCES(question) {
 
-	var isCES = false;
-	question = question.toLowerCase();
-	if ( question.includes("what") && question.includes("is") && question.includes("ces") ) {
-		isCES = true;
-	}
-	return isCES;
-
-}
 
 
 function _checkWhoAreYou(question) {
@@ -1452,7 +1476,13 @@ function _loadBarChart(dataProvider) {
 			"balloon": {},
 			"legend": {
 				"enabled": true,
-				"align": "center"
+				"align": "center",
+			    "autoMargins":false,
+			    "fontSize" : 25,
+			    "markerType" : "square",
+			    "markerSize" : 25,
+			    "markerLabelGap" : 20,
+
 			},
 			"dataProvider": dataProvider
 		}
@@ -1602,7 +1632,13 @@ function _loadSerialChart(dataProvider) {
 			"balloon": {},
 			"legend": {
 				"enabled": true,
-				"align": "center"
+				"align": "center",
+			    "autoMargins":false,
+			    "fontSize" : 25,
+			    "markerType" : "square",
+			    "markerSize" : 25,
+			    "markerLabelGap" : 20,
+
 			},
 			"titles": [],
 			"dataProvider": dataProvider
@@ -1707,6 +1743,7 @@ function _loadPieChart(dataProvider) {
 	var pieChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "pie",
+			"fontFamily" :  'Quicksand, sans-serif',
 			"balloonText": "",
 			"labelRadius": "-30%",
 			"labelText": "[[percents]]%",
@@ -1714,13 +1751,20 @@ function _loadPieChart(dataProvider) {
 			"hideLabelsPercent": 5,
 			"titleField": "category",
 			"valueField": "value",
-			"color": "#FFFFFF",
+			"color": "#404040",
 			"allLabels": [],
 			"balloon": {},
+			"fontSize" : 25,
+			"addClassNames": true,
 			"legend": {
-				"enabled": true,
-				"align": "center",
-				"markerType": "circle"
+			   	"position":"right",
+			    "marginRight":100,
+			    "autoMargins":false,
+			    "fontSize" : 25,
+			    "markerType" : "square",
+			    "markerSize" : 25,
+			    "markerLabelGap" : 20,
+			    "verticalGap" : 20,
 			},
 			"titles": [],
 			"dataProvider": _getPieColors(dataProvider)
@@ -1965,7 +2009,7 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"intro_item":"           <div class=\"intro-slide\">        <div>          <span class=\"title\">{{question}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK ME QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","graph_item":"           <div class=\"graph-item\">        <div>          <span class=\"title\">{{title}}</span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">ASK MORE QUESTIONS</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; height: 450px; background-color: #FFFFFF;\"></div>      </div>          ","copy_item":"               <div class=\"copy-item\">          <div>            <span class=\"title\">{{title}}</span>            <span class=\"pull-right\">              <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">{{btnCopy}}</button>            </span>          </div>          <p>{{{copy}}}</p>                 </div>              ","help_item":"               <div class=\"slide\">          <div>            <span class=\"title\">Let me see if I can help you! </span>            <span class=\"pull-right\">              <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">GOT IT! ASK A QUESTION</button>            </span>          </div>          <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>          <ul class=\"help-list-questions\">            <li><a href=\"#\">What are the top trends at CES this hour?</a></li>            <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>            <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>            <li><a href=\"#\">What are the big news stories at CES today?</a></li>            <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>            <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>            <li><a href=\"#\">How many people attended CES last year?</a></li>          </ul>                 </div>              "}
+var templates = {"help_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-info\"></i></div>            <div class=\"title-copy\">Let me see if I can help you!</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Got It! Ask a question</button>          </span>        </div>        <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>        <ul class=\"help-list-questions\">          <li><a href=\"#\">What are the top trends at CES this hour?</a></li>          <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>          <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>          <li><a href=\"#\">What are the big news stories at CES today?</a></li>          <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>          <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>          <li><a href=\"#\">How many people attended CES last year?</a></li>        </ul>             </div>          ","graph_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"https://cdn.iphonephotographyschool.com/wp-content/uploads/Eric-Ward-iPhone-Photos-18.jpg\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-instagram\"></i> This is the title              </div>              <div class=\"description\">                 Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">PETER MALONE <small>@petermalone</small></div>            <div class=\"date\">On the 13th October 2017 at 17:19h</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"https://s-media-cache-ak0.pinimg.com/originals/cb/96/bb/cb96bbecf8b5bc9f114fde6f8be8ccc7.jpg\" width=\"100%\">            </div>            <div class=\"col-md-9\">               Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.            </div>          </div>                  </div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 

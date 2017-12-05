@@ -31,28 +31,44 @@ _nodeUtil.inherits(ContentBubble_Ctrl,_eventEmitter3); // extend _eventEmitter3 
 
 
 function _init() {
-	
-	// _initTimer.call(this);
-	// _startIntro.call(this);
+
 
 }
 
 
 
 
+function _setChartHeight() {
+
+	var height = $(window).height();
+	var topOffset = this.bubble_DOM.offset().top;
+	var footerHeight = $('footer').height() * 1.7;
+	var chartHeight = Math.round((height-topOffset-footerHeight) - 50);
+
+	//console.log(height, topOffset, footerHeight, chartHeight)
+
+	$('#chartdiv').css('height', chartHeight);
+
+}
+
+
 
 function _renderContent(content_MOD) {
 
+	this.bubble_DOM.height('auto');
 	switch(content_MOD.type) {
 
 		case "help":
 			this.content_DOM = HBTemplates_SRV.getTemplate('help_item', content_MOD);
 		break;
-		case "intro":
-			this.content_DOM = HBTemplates_SRV.getTemplate('intro_item', content_MOD);
-		break;
 		case "graph":
 			this.content_DOM = HBTemplates_SRV.getTemplate('graph_item', content_MOD);
+		break;
+		case "photo":
+			this.content_DOM = HBTemplates_SRV.getTemplate('photo_item', content_MOD);
+		break;
+		case "tweet":
+			this.content_DOM = HBTemplates_SRV.getTemplate('tweet_item', content_MOD);
 		break;
 
 	}
@@ -61,6 +77,9 @@ function _renderContent(content_MOD) {
 
 	//Content
 	if(content_MOD.hasOwnProperty("graph")){
+
+		_setChartHeight.call(this);
+
 		switch(content_MOD.graph) {
 			case 'bar':
 				this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
@@ -99,8 +118,6 @@ function _animBubbleOut() {
 
 
 
-
-
 function _stopSlides() {
 
 	console.log("stop intro....");
@@ -120,12 +137,6 @@ function _dispatchIntroStopped() {
 }
 
 
-function _startIntro() {
-
-	console.log("start intro....");
-	_loadNextIntro.call(this);
-	
-}
 
 function _destroyChart() {
 

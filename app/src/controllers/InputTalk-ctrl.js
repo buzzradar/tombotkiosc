@@ -134,12 +134,17 @@ function _checkQuestion() {
 		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
 		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
 	}else{
+
+		console.clear();
+		console.log("estoy aqui")
+
 		if (content_MOD.type == "input"){
 			_changeOwner.call(this,'tombot');
 			Utils_SRV.animateCopy(this.input_DOM,content_MOD.answer, this.botIcon);
 		}else if(content_MOD.type == "help") {
 			this.emit("show_help", content_MOD);
 		}
+		
 	}
 
 	function _onAcknowledgeAnimationFinished() {

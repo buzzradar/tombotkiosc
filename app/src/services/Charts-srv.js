@@ -60,7 +60,13 @@ function _loadBarChart(dataProvider) {
 			"balloon": {},
 			"legend": {
 				"enabled": true,
-				"align": "center"
+				"align": "center",
+			    "autoMargins":false,
+			    "fontSize" : 25,
+			    "markerType" : "square",
+			    "markerSize" : 25,
+			    "markerLabelGap" : 20,
+
 			},
 			"dataProvider": dataProvider
 		}
@@ -210,7 +216,13 @@ function _loadSerialChart(dataProvider) {
 			"balloon": {},
 			"legend": {
 				"enabled": true,
-				"align": "center"
+				"align": "center",
+			    "autoMargins":false,
+			    "fontSize" : 25,
+			    "markerType" : "square",
+			    "markerSize" : 25,
+			    "markerLabelGap" : 20,
+
 			},
 			"titles": [],
 			"dataProvider": dataProvider
@@ -315,6 +327,7 @@ function _loadPieChart(dataProvider) {
 	var pieChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "pie",
+			"fontFamily" :  'Quicksand, sans-serif',
 			"balloonText": "",
 			"labelRadius": "-30%",
 			"labelText": "[[percents]]%",
@@ -322,13 +335,20 @@ function _loadPieChart(dataProvider) {
 			"hideLabelsPercent": 5,
 			"titleField": "category",
 			"valueField": "value",
-			"color": "#FFFFFF",
+			"color": "#404040",
 			"allLabels": [],
 			"balloon": {},
+			"fontSize" : 25,
+			"addClassNames": true,
 			"legend": {
-				"enabled": true,
-				"align": "center",
-				"markerType": "circle"
+			   	"position":"right",
+			    "marginRight":100,
+			    "autoMargins":false,
+			    "fontSize" : 25,
+			    "markerType" : "square",
+			    "markerSize" : 25,
+			    "markerLabelGap" : 20,
+			    "verticalGap" : 20,
 			},
 			"titles": [],
 			"dataProvider": _getPieColors(dataProvider)

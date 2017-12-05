@@ -52,19 +52,37 @@ AIAgent.prototype.getModel = function(question) {
 			type : 'input',
 			answer : 'I am very good thanks for asking.'
 		};
-	}else if(_checkWhatIsCES(question)) {
-		answerMOD = {
-			type : 'text',
-			title : 'CES is The Global Stage for Innovation',
-			copy : "CES is the world's gathering place for all who thrive on the business of consumer technologies. It has served as the proving ground for innovators and breakthrough technologies for 50 years — the global stage where next-generation innovations are introduced to the marketplace. As the largest hands-on event of its kind, CES features all aspects of the industry. <br><br>CES, formerly The International Consumer Electronics Show (International CES®), showcases more than 3,900 exhibiting companies, including manufacturers, developers and suppliers of consumer technology hardware, content, technology delivery systems and more; a conference program with more than 300 conference sessions and more than 170K attendees from 150 countries.<br><br>And because it is owned and produced by the Consumer Technology Association (CTA)™ — the technology trade association representing the $292 billion U.S. consumer technology industry — it attracts the world’s business leaders and pioneering thinkers to a forum where the industry’s most relevant issues are addressed.",
-			btnCopy : 'ASK MORE QUESTIONS',
-		};
 	}else if(_checkWhoAreYou(question)) {
 		answerMOD = {
 			type : 'input',
 			answer : 'My name is CESBot and I am a AI Social Agent.'
 		};
 	}
+
+
+
+
+
+
+
+
+	//Delete when is photo is done
+
+	if (question == "photo") {
+		answerMOD = {
+			type : 'photo',
+			title : 'Most viewed photo in 2017',
+			answer : 'ssssssssss'
+		};
+	}
+	if (question == "tweet") {
+		answerMOD = {
+			type : 'tweet',
+			title : 'Most retweeted in 2017',
+			answer : 'this is the tweeeeet'
+		};
+	}
+
 	
 	return answerMOD;
 
@@ -84,7 +102,7 @@ function _checkHello(question) {
 
 	var isHello = false;
 	question = question.toLowerCase();
-	if ( question.length <= 5 && !question.includes("help") && !question.includes("reach") ) {
+	if ( question.length <= 5 && !question.includes("help") && !question.includes("reach") && !question.includes("photo") ) {
 		isHello = true;
 	}
 	return isHello;
@@ -115,16 +133,7 @@ function _checkHelp(question) {
 
 }
 
-function _checkWhatIsCES(question) {
 
-	var isCES = false;
-	question = question.toLowerCase();
-	if ( question.includes("what") && question.includes("is") && question.includes("ces") ) {
-		isCES = true;
-	}
-	return isCES;
-
-}
 
 
 function _checkWhoAreYou(question) {

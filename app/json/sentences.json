@@ -36,13 +36,13 @@
 
 
     "intro_questions" : [
+        "What is the sentiment like for CES?",      
         "help",
-        "instagram",
-        "sentiment",
-        "help",        
-        "volume",
-        "instagram",
-        "sentiment"
+        "tweet",
+        "photo",
+        "What is the sentiment like for CES?",      
+        "What is the estimated social reach today?",
+        "How many time people mentioned CES on twitter last week?"
     ]
 
 

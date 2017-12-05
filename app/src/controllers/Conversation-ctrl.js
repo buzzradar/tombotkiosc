@@ -103,7 +103,6 @@ function _loadNextIntro(){
 	var question = this.introQuestions_Array[this.introId];
 	var content_MOD = AIAgent_SRV.getModel(question);
 
-
 	if (!content_MOD) {
 		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
 	}else{
@@ -161,8 +160,8 @@ function _initTimer() {
 
 function _animContentOut() {
 
-	// this.contentBubble.animContentOut();
-	// this.introOutTimer.start();
+	this.contentBubble.animContentOut();
+	this.introOutTimer.start();
 
 }
 

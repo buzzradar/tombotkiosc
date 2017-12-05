@@ -5,11 +5,14 @@
 @import "compass/utilities";
 
 
-$primary_font: 'Open Sans Condensed', sans-serif;
+$primary_font: 'Quicksand', sans-serif;
 
 $primary-color: #ff8900;
 $secondary-color: #77C0B2;
 $dark-color: #404040;
+$twitter-color: #1ca2f3;
+
+$par-size: 25px;
 
 
 /* --------------------------------------- */
@@ -22,7 +25,6 @@ html,body {
   margin:0px;
   width:100%;
   height:100%;
-  font-weight:300;
   overflow:hidden;
 }
 
@@ -31,6 +33,7 @@ body{
   background: url("../assets/bg.jpg") no-repeat center center fixed;
   @include background-size(cover);
   color: $primary-color;
+  font-size: $par-size;
 }
 
 footer{
@@ -80,7 +83,7 @@ footer{
   
   input {
     padding:30px 20px;
-    font-size:40px;
+    font-size:1.8vw;
     font-weight:300;
     border:1px solid rgba(255, 255, 255, 0.1);
   }
@@ -134,7 +137,6 @@ footer{
     @include border-radius(25px);
     background:rgba(255, 255, 255, 1);
     padding:30px;
-    font-size:25px;
     color: $dark-color;
   }
 
@@ -221,9 +223,26 @@ footer{
 
   .title{
     font-family: $primary_font;
-    color:$primary-color;
+    color:$secondary-color;
     font-weight:600;
     font-size:30px;
+
+    .circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: #fff;
+      line-height: 40px;
+      text-align: center;
+      background: $dark-color;
+      display:inline-block;
+    }
+
+    .title-copy{
+      display:inline-block;
+    }
+
+
   }
 
   .question {
@@ -274,13 +293,94 @@ footer{
 
 
 
+.amcharts-chart-div,.amcharts-legend-div {
+
+  text{
+    font-family: $primary_font;  
+  }
+
+  a{
+    display:none !important;
+  }
+
+}
 
 
 
 
 
 
+/* --------------------------------------- */
+/*  Tweet */
+/* --------------------------------------- */
 
+
+.tweet {
+
+  margin-top:50px;
+  
+  .tweet__user {
+
+    margin-bottom:5px;
+
+    .tw-icon {
+      float:right;
+      color: $twitter-color;
+      margin-top:30px;
+    }
+
+    .name {
+      font-weight:bold;
+      font-size:35px;
+    }
+
+    .date {
+      font-size:25px;
+    }
+
+  }
+
+  .tweet__main {
+
+    margin-top:10px;
+    font-size:30px;
+
+  }
+
+}
+
+
+
+
+
+
+/* --------------------------------------- */
+/*  Photo */
+/* --------------------------------------- */
+
+
+.photo {
+
+  margin-top:50px;
+
+  .photo__main {
+
+    font-size:30px;
+
+    .title {
+      padding:3px 8px;
+      display:inline-block;
+      background: $dark-color;
+      color:white;
+
+      span {
+        //padding-left: 3%;
+      }
+    }
+
+  }
+
+}
 
 
 
