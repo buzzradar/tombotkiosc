@@ -193,10 +193,16 @@ footer {
   font-size: 20px;
 }
 
-.help-list-questions li {
+/* --------------------------------------- */
+/*  Help */
+/* --------------------------------------- */
+.help {
+  font-size: 2.2vh;
+}
+.help .help-list-questions li {
   margin-top: 2px;
 }
-.help-list-questions a {
+.help .help-list-questions a {
   color: #404040;
 }
 
@@ -219,18 +225,18 @@ footer {
 .tweet .tweet__user .tw-icon {
   float: right;
   color: #1ca2f3;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 .tweet .tweet__user .name {
   font-weight: bold;
-  font-size: 35px;
+  font-size: 3vh;
 }
 .tweet .tweet__user .date {
-  font-size: 25px;
+  font-size: 2.5vh;
 }
 .tweet .tweet__main {
   margin-top: 10px;
-  font-size: 30px;
+  font-size: 3.2vh;
 }
 
 /* --------------------------------------- */
@@ -240,13 +246,14 @@ footer {
   margin-top: 30px;
 }
 .photo .photo__main {
-  font-size: 30px;
+  font-size: 3vh;
 }
 .photo .photo__main .title {
   padding: 3px 8px;
   display: inline-block;
   background: #404040;
   color: white;
+  font-size: 3.5vh;
 }
 
 /* --------------------------------------- */

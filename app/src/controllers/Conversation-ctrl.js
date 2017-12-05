@@ -224,7 +224,7 @@ function _showInputTalk() {
 	this.introOutTimer.stop();
 
 
-	this.waitingTimer.start();
+	// this.waitingTimer.start();
 	this.inputTalk.show();
 }
 
