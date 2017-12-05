@@ -35,8 +35,7 @@
     ],
 
 
-    "intro_questions" : [
-        "What is the sentiment like for CES?",      
+    "intro_questions" : [ 
         "help",
         "tweet",
         "photo",

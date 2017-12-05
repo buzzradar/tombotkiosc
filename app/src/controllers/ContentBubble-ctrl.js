@@ -103,7 +103,7 @@ function _renderContent(content_MOD) {
 
 function _animBubbleIn() {
 
-	console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
+	// console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
 	this.bubble_DOM.removeClass('anim-out').addClass('anim-in');
 
 }
@@ -111,7 +111,7 @@ function _animBubbleIn() {
 
 function _animBubbleOut() {
 
-	console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
+	// console.log("anim-out!!!!!!!!!!!!!!!!!!!!!!");
 	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
 
 }

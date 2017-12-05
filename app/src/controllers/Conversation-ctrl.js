@@ -27,6 +27,7 @@ function Conversation_Ctrl () {
 	this.introId = 0;
 	this.introInTimer = null;
 	this.introOutTimer = null;
+	this.waitingTimer = null;
 
 	_init.call(this);
 
@@ -100,6 +101,8 @@ function _startIntro() {
 
 function _loadNextIntro(){
 
+	this.waitingTimer.stop();
+
 	var question = this.introQuestions_Array[this.introId];
 	var content_MOD = AIAgent_SRV.getModel(question);
 
@@ -146,6 +149,22 @@ function _initTimer() {
 	    start: function() {
 	        this.stop();
 	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
+	    },
+	    stop: function() {
+	        if (this.handle) {
+	            clearTimeout(this.handle);
+	            this.handle = 0;
+	        }
+	    }
+	};
+
+
+	//Anim Out Timer
+	this.waitingTimer = {
+	    handle: 0,
+	    start: function() {
+	        this.stop();
+	        this.handle = setTimeout(_startIntro.bind(self), 20000);
 	    },
 	    stop: function() {
 	        if (this.handle) {
@@ -203,6 +222,9 @@ function _hideInputTalk() {
 function _showInputTalk() {
 	this.introInTimer.stop();
 	this.introOutTimer.stop();
+
+
+	this.waitingTimer.start();
 	this.inputTalk.show();
 }
 
