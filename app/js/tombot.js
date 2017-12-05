@@ -595,7 +595,7 @@ function _setClass() {
 
 function _setOwner() {
 
-	var owner_says = 'TomBot says:';
+	var owner_says = 'CESBot says:';
 	if(this.owner != 'tombot') {
 		owner_says = 'User Says:';
 	}
@@ -683,7 +683,7 @@ function _checkQuestion() {
 		}else if(content_MOD.type == "help") {
 			this.emit("show_help", content_MOD);
 		}
-		
+
 	}
 
 	function _onAcknowledgeAnimationFinished() {
