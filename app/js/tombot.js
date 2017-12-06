@@ -470,8 +470,8 @@ function _initTimer() {
 
 function _animContentOut() {
 
-	this.contentBubble.animContentOut();
-	this.introOutTimer.start();
+	// this.contentBubble.animContentOut();
+	// this.introOutTimer.start();
 
 }
 
@@ -1468,6 +1468,10 @@ function Charts_SRV () {
 
 function _loadBarChart(dataProvider) {
 
+
+	console.clear();
+	console.log(_getBarGraphsObject(dataProvider));
+
 	var barChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
@@ -1478,7 +1482,6 @@ function _loadBarChart(dataProvider) {
 			},
 			"categoryAxis": {
 				"gridPosition": "start",
-				"parseDates": true
 			},
 			"chartCursor": {
 				"enabled": true,
@@ -1486,26 +1489,35 @@ function _loadBarChart(dataProvider) {
 				"balloonPointerOrientation": " vertical"
 			},
 			"trendLines": [],
-			"graphs": _getBarGraphsObject(dataProvider),
+			"graphs": [
+						{
+							"balloonText": "[[value]]",
+							"fillAlphas": 1,
+							"fillColors": '#77C0B2',
+							"lineColor": '#57b1a0',
+							"lineThickness": 2,
+							"type": "column",
+							"valueField": "percent",
+						}
+					],
 			"guides": [],
 			"valueAxes": [
 				{
 					"id": "ValueAxis-1",
-					"stackType": "regular",
 				}
 			],
 			"allLabels": [],
 			"balloon": {},
-			"legend": {
-				"enabled": true,
-				"align": "center",
-			    "autoMargins":false,
-			    "fontSize" : 25,
-			    "markerType" : "square",
-			    "markerSize" : 25,
-			    "markerLabelGap" : 20,
+			// "legend": {
+			// 	"enabled": true,
+			// 	"align": "center",
+			//     "autoMargins":false,
+			//     "fontSize" : 25,
+			//     "markerType" : "square",
+			//     "markerSize" : 25,
+			//     "markerLabelGap" : 20,
 
-			},
+			// },
 			"dataProvider": dataProvider
 		}
 	);
@@ -1517,34 +1529,42 @@ function _loadBarChart(dataProvider) {
 
 function _getBarGraphsObject(dataProvider) {
 
+	console.clear();
+
 	var graphs = [];
 	var i = 0;
 
-	for (var property in dataProvider[0]) {
-
-		if ( !property.includes("date") ) {
-
-			var color = _arrayColors[i];
-			var obj = 	{
-					//"balloonText": "Paid Reach: [[value]]",
-					"fillAlphas": 1,
-					"fillColors": color,
-					"lineColor": color,
-					"title": "XXXXXX",
-					"type": "column",
-					"valueField": "XXXXXX",
-				};
-
-			obj.title = _transformTitle(property);
-			obj.valueField = property;
-			graphs.push(obj);
-
-			i++;
-
-		}
+	// $.each(dataProvider, function( index, item ) {
 
 
-	}
+	// 	console.log(item.percent, Number(item.percent))
+
+
+	// 		var color = _arrayColors[i];
+	// 		var obj = 	{
+	// 				"balloonText": "[[category]] [[value]]",
+	// 				"fillAlphas": 1,
+	// 				"fillColors": color,
+	// 				"lineColor": color,
+	// 				"type": "column",
+	// 				"valueField": "percent",
+	// 				"id"
+	// 			};
+
+	// 		// obj.title = _transformTitle(item);
+	// 		// obj.valueField = item;
+	// 		graphs.push(obj);
+	// 		return false;
+
+	// 		i++;
+
+
+
+	// });
+
+
+	console.log("graphs object ready.....");
+	console.log(graphs)
 
 	return graphs;
 
@@ -2031,7 +2051,7 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"help_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-info\"></i></div>            <div class=\"title-copy\">Let me see if I can help you!</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Got It! Ask a question</button>          </span>        </div>        <div class=\"help\">          <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>          <ul class=\"help-list-questions\">            <li><a href=\"#\">What are the top trends at CES this hour?</a></li>            <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>            <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>            <li><a href=\"#\">What are the big news stories at CES today?</a></li>            <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>            <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>            <li><a href=\"#\">How many people attended CES last year?</a></li>          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"https://cdn.iphonephotographyschool.com/wp-content/uploads/Eric-Ward-iPhone-Photos-18.jpg\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-instagram\"></i> This is the title              </div>              <div class=\"description\">                 Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">PETER MALONE <small>@petermalone</small></div>            <div class=\"date\">On the 13th October 2017 at 17:19h</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"https://s-media-cache-ak0.pinimg.com/originals/cb/96/bb/cb96bbecf8b5bc9f114fde6f8be8ccc7.jpg\" width=\"100%\">            </div>            <div class=\"col-md-9\">               Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.            </div>          </div>                  </div>      </div>          "}
+var templates = {"help_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-info\"></i></div>            <div class=\"title-copy\">Let me see if I can help you!</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Got It! Ask a question</button>          </span>        </div>        <div class=\"help\">          <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>          <ul class=\"help-list-questions\">            <li><a href=\"#\">What are the top trends at CES this hour?</a></li>            <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>            <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>            <li><a href=\"#\">What are the big news stories at CES today?</a></li>            <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>            <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>            <li><a href=\"#\">How many people attended CES last year?</a></li>          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"https://cdn.iphonephotographyschool.com/wp-content/uploads/Eric-Ward-iPhone-Photos-18.jpg\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-instagram\"></i> This is the title              </div>              <div class=\"description\">                 Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 

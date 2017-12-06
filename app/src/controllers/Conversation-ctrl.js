@@ -179,8 +179,8 @@ function _initTimer() {
 
 function _animContentOut() {
 
-	this.contentBubble.animContentOut();
-	this.introOutTimer.start();
+	// this.contentBubble.animContentOut();
+	// this.introOutTimer.start();
 
 }
 

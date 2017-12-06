@@ -30,6 +30,10 @@ function Charts_SRV () {
 
 function _loadBarChart(dataProvider) {
 
+
+	console.clear();
+	console.log(_getBarGraphsObject(dataProvider));
+
 	var barChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
@@ -40,7 +44,6 @@ function _loadBarChart(dataProvider) {
 			},
 			"categoryAxis": {
 				"gridPosition": "start",
-				"parseDates": true
 			},
 			"chartCursor": {
 				"enabled": true,
@@ -48,26 +51,35 @@ function _loadBarChart(dataProvider) {
 				"balloonPointerOrientation": " vertical"
 			},
 			"trendLines": [],
-			"graphs": _getBarGraphsObject(dataProvider),
+			"graphs": [
+						{
+							"balloonText": "[[value]]",
+							"fillAlphas": 1,
+							"fillColors": '#77C0B2',
+							"lineColor": '#57b1a0',
+							"lineThickness": 2,
+							"type": "column",
+							"valueField": "percent",
+						}
+					],
 			"guides": [],
 			"valueAxes": [
 				{
 					"id": "ValueAxis-1",
-					"stackType": "regular",
 				}
 			],
 			"allLabels": [],
 			"balloon": {},
-			"legend": {
-				"enabled": true,
-				"align": "center",
-			    "autoMargins":false,
-			    "fontSize" : 25,
-			    "markerType" : "square",
-			    "markerSize" : 25,
-			    "markerLabelGap" : 20,
+			// "legend": {
+			// 	"enabled": true,
+			// 	"align": "center",
+			//     "autoMargins":false,
+			//     "fontSize" : 25,
+			//     "markerType" : "square",
+			//     "markerSize" : 25,
+			//     "markerLabelGap" : 20,
 
-			},
+			// },
 			"dataProvider": dataProvider
 		}
 	);
@@ -79,34 +91,42 @@ function _loadBarChart(dataProvider) {
 
 function _getBarGraphsObject(dataProvider) {
 
+	console.clear();
+
 	var graphs = [];
 	var i = 0;
 
-	for (var property in dataProvider[0]) {
-
-		if ( !property.includes("date") ) {
-
-			var color = _arrayColors[i];
-			var obj = 	{
-					//"balloonText": "Paid Reach: [[value]]",
-					"fillAlphas": 1,
-					"fillColors": color,
-					"lineColor": color,
-					"title": "XXXXXX",
-					"type": "column",
-					"valueField": "XXXXXX",
-				};
-
-			obj.title = _transformTitle(property);
-			obj.valueField = property;
-			graphs.push(obj);
-
-			i++;
-
-		}
+	// $.each(dataProvider, function( index, item ) {
 
 
-	}
+	// 	console.log(item.percent, Number(item.percent))
+
+
+	// 		var color = _arrayColors[i];
+	// 		var obj = 	{
+	// 				"balloonText": "[[category]] [[value]]",
+	// 				"fillAlphas": 1,
+	// 				"fillColors": color,
+	// 				"lineColor": color,
+	// 				"type": "column",
+	// 				"valueField": "percent",
+	// 				"id"
+	// 			};
+
+	// 		// obj.title = _transformTitle(item);
+	// 		// obj.valueField = item;
+	// 		graphs.push(obj);
+	// 		return false;
+
+	// 		i++;
+
+
+
+	// });
+
+
+	console.log("graphs object ready.....");
+	console.log(graphs)
 
 	return graphs;
 
