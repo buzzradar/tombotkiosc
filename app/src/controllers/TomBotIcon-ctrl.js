@@ -164,7 +164,7 @@ function _changeState(newState) {
 
 		this.state = newState;
 
-		console.log("Change State.....", this.state);
+		//console.log("Change State.....", this.state);
 
 		switch(newState) {
 			case "waiting":

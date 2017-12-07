@@ -31,25 +31,21 @@ function ApiCalls () {
 
 ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 
-	console.log ("%c -> ", "background:#c5f442;", "APICalls-> POST : URL =>" , urlCall, dataObj);
+	console.log ("%c -> ", "background:#c5f442;", "APICalls-> GET : URL =>" , urlCall, dataObj);
 
-
-		$.ajax({
-			type: 'GET',
-			url: urlCall,
-			contentType: "application/json",
-			data: dataObj,
-			success: function(json) {
-				console.log("Success!", json);
-				if(callBack) callBack(json);
-			},
-			error: function(e) {
-				console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
-			}
-		});
-
-
-
+	$.ajax({
+		type: 'GET',
+		url: urlCall,
+		data: dataObj,
+		cache : false,
+		success: function(json) {
+			console.log("Success!", json);
+			if(callBack) callBack(json);
+		},
+		error: function(e) {
+			console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
+		}
+	});
 
 
 };

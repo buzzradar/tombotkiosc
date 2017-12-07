@@ -78,12 +78,21 @@ footer{
 }
 
 
+.control_timer{
+  width:auto;
+  background:white;
+  color:black;
+  padding:10px 20px;
+  position:absolute;
+  font-size:15px;
+}
+
 
 .conversation {
   
   input {
     padding:30px 20px;
-    font-size:1.8vw;
+    font-size:1.5vw;
     font-weight:300;
     border:1px solid rgba(255, 255, 255, 0.1);
   }

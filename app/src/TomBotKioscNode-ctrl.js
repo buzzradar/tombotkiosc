@@ -51,8 +51,7 @@ function _loadSentencesJSON() {
         console.log ("%c -> Master Config Succesfully Loaded => ", "background:#00ff00;", sentencesConfJSON);
 
         DisplayGlobals_SRV.setSentencesJSON(sentencesConfJSON);
-
-        var conversation = new Conversation_CTRL();
+        DisplayGlobals_SRV.setConversationRef(new Conversation_CTRL());
 
     }.bind(this));
 

@@ -52,8 +52,7 @@ function _loadSentencesJSON() {
         console.log ("%c -> Master Config Succesfully Loaded => ", "background:#00ff00;", sentencesConfJSON);
 
         DisplayGlobals_SRV.setSentencesJSON(sentencesConfJSON);
-
-        var conversation = new Conversation_CTRL();
+        DisplayGlobals_SRV.setConversationRef(new Conversation_CTRL());
 
     }.bind(this));
 
@@ -313,12 +312,16 @@ function Conversation_Ctrl () {
 	this.botIcon = null;
 	this.inputTalk = null;
 	this.contentBubble = null;
-	this.state = "listening";
+	this.state = "waiting";
 	this.introQuestions_Array = DisplayGlobals_SRV.getSentencesJSON().sentences.intro_questions;	
 	this.introId = 0;
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
+	this.waitingTime = 5;
+	this.currentWaitingTime = 0;
+	this.state = "working";
+
 
 	_init.call(this);
 
@@ -334,7 +337,6 @@ function Conversation_Ctrl () {
 
 function _init() {
 
-	_initTimer.call(this);
 	this.botIcon = new TomBotIcon_CTRL($('.tomboticon'));
 	this.botIcon.on("bot_ready",_addContentAndInput,this);
 
@@ -349,10 +351,12 @@ function _addContentAndInput() {
 	this.contentBubble.on("intro_stopped",_showInputTalk,this);
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
-	this.inputTalk.on("question_ready", _onNewQuestionReceived, this);
+	this.inputTalk.on("question_ready", _onQuestionReceived, this);
 	this.inputTalk.on("show_help", _onHelpReceived, this);
 
-	_startIntro.call(this);
+
+	_startControlTimer.call(this);
+	_addMouseMoveEvent.call(this);
 
 }
 
@@ -360,8 +364,63 @@ function _addContentAndInput() {
 
 
 
+// ------------------------------------
+// Timer
+// ------------------------------------
+
+function _startControlTimer() {
+
+	var self = this;
+	_printDebugTimer.call(this);
+	_checkState.call(this);
+
+	setTimeout(_startControlTimer.bind(self),1000);
+
+}
 
 
+function _checkState() {
+
+	switch(this.state){
+		case "waiting":
+			_increaseWaitingTime.call(this);
+		break;
+		case "working":
+		break;
+		case "content_displayed":
+			_increaseWaitingTime.call(this);
+		break;
+
+	}
+
+}
+
+
+function _increaseWaitingTime() {
+
+	if (this.currentWaitingTime == this.waitingTime){
+    	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
+		_askIntroQuestion.call(this);
+	}
+	this.currentWaitingTime ++;
+
+}
+
+
+function _printDebugTimer() {
+	$('.control_timer').find('.state').html('<strong>State: </strong>' + this.state);
+	$('.control_timer').find('.time').html(this.currentWaitingTime + ' ' + this.waitingTime);
+}
+
+
+
+function _addMouseMoveEvent() {
+
+	$(document).on('mousemove', function(event) {
+		this.currentWaitingTime = 0;
+    }.bind(this));
+
+}
 
 
 
@@ -381,107 +440,104 @@ function _addContentAndInput() {
 // Intro
 // ------------------------------------
 
+function _askIntroQuestion() {
 
-function _startIntro() {
+	_setState.call(this,'working');
+	this.contentBubble.animContentOut();
 
-	_loadNextIntro.call(this);
+	var randomQuestion = this.introQuestions_Array[this.introId];
+
+	this.inputTalk.askRandomQuestion(randomQuestion);
+
+	this.introId ++;
 	
 }
 
 
+// function _startIntro() {
 
-function _loadNextIntro(){
-
-	this.waitingTimer.stop();
-
-	var question = this.introQuestions_Array[this.introId];
-	var content_MOD = AIAgent_SRV.getModel(question);
-
-	if (!content_MOD) {
-		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
-	}else{
-		_onAnswerReceived.call(this,content_MOD);
-	}
-
-	this.introInTimer.start();
-
-	//prepare next intro Slide
-	this.introId ++;
-	if (this.introId >= this.introQuestions_Array.length){
-		this.introId = 0;
-	}
-
-}
+// 	_loadNextIntro.call(this);
+	
+// }
 
 
 
-function _initTimer() {
+// function _loadNextIntro(){
 
-	var self = this;
+// 	var question = this.introQuestions_Array[this.introId];
+// 	var content_MOD = AIAgent_SRV.getModel(question);
 
-	//Anim In Timer
-	this.introInTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_animContentOut.bind(self), 5000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
+// 	if (!content_MOD) {
+// 		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
+// 	}else{
+// 		_onAnswerReceived.call(this,content_MOD);
+// 	}
 
-	//Anim Out Timer
-	this.introOutTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
+// 	this.introInTimer.start();
+
+// 	//prepare next intro Slide
+// 	this.introId ++;
+// 	if (this.introId >= this.introQuestions_Array.length){
+// 		this.introId = 0;
+// 	}
+
+// }
 
 
-	//Anim Out Timer
-	this.waitingTimer = {
-	    handle: 0,
-	    start: function() {
-	        this.stop();
-	        this.handle = setTimeout(_startIntro.bind(self), 20000);
-	    },
-	    stop: function() {
-	        if (this.handle) {
-	            clearTimeout(this.handle);
-	            this.handle = 0;
-	        }
-	    }
-	};
 
-}
+// function _initTimer() {
+
+// 	var self = this;
+
+// 	//Anim In Timer
+// 	this.introInTimer = {
+// 	    handle: 0,
+// 	    start: function() {
+// 	        this.stop();
+// 	        this.handle = setTimeout(_animContentOut.bind(self), 5000);
+// 	    },
+// 	    stop: function() {
+// 	        if (this.handle) {
+// 	            clearTimeout(this.handle);
+// 	            this.handle = 0;
+// 	        }
+// 	    }
+// 	};
+
+// 	//Anim Out Timer
+// 	this.introOutTimer = {
+// 	    handle: 0,
+// 	    start: function() {
+// 	        this.stop();
+// 	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
+// 	    },
+// 	    stop: function() {
+// 	        if (this.handle) {
+// 	            clearTimeout(this.handle);
+// 	            this.handle = 0;
+// 	        }
+// 	    }
+// 	};
 
 
-function _animContentOut() {
+// }
 
-	// this.contentBubble.animContentOut();
-	// this.introOutTimer.start();
 
-}
+// function _animContentOut() {
+
+// 	this.contentBubble.animContentOut();
+// 	this.introOutTimer.start();
+
+// }
 
 function _onAnswerReceived(response) {
 
-	console.log("_onAnswerReceived:", response);
 	this.botIcon.changeState("waiting");
 
 	this.contentBubble.renderAnswer(response);
 	_hideInputTalk.call(this);
+	_setState.call(this, 'content_displayed');
+
 
 }
 
@@ -496,9 +552,10 @@ function _onHelpReceived(response) {
 
 
 
-function _onNewQuestionReceived(newQuestion) {
+function _onQuestionReceived(newQuestion) {
 	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
 	
+	this.setState = 'working';
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
 	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
@@ -506,22 +563,59 @@ function _onNewQuestionReceived(newQuestion) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function _hideInputTalk() {
 	this.inputTalk.hide();
 }
 
 function _showInputTalk() {
-	this.introInTimer.stop();
-	this.introOutTimer.stop();
-
-
-	// this.waitingTimer.start();
 	this.inputTalk.show();
+}
+
+function _setState(newState){
+	
+	this.state = newState;
+	if (this.state == 'waiting') this.currentWaitingTime = 0;
+	_printDebugTimer.call(this);
+
 }
 
 
 
 
+
+
+
+
+Conversation_Ctrl.prototype.changeState = function(newState) {
+
+	_setState.call(this, newState);
+
+};
+
+
+Conversation_Ctrl.prototype.getState = function() {
+
+	return this.state;
+
+};
 
 
 
@@ -546,6 +640,7 @@ const _ = require("lodash");
 //----------------------------
 // REQUIRE 
 //----------------------------
+const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 const Utils_SRV = require('../services/Utils-srv'); 
 const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
@@ -564,7 +659,8 @@ function InputTalk_Ctrl (botIcon) {
 	this.conversation_DOM = $('.conversation');
 	this.label_DOM = this.conversation_DOM.find('label');
 	this.input_DOM = this.conversation_DOM.find('input');
-	this.owner = "tombot";   //tombot or user
+	this.owner = "cesbot";   //cesbot or user
+	this.question = '';
 
 	_init.call(this);
 
@@ -578,7 +674,7 @@ function _init() {
 
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
-	_hideInput.call(this);
+	_showInput.call(this);
 
 }
 
@@ -588,7 +684,7 @@ function _setClass() {
 
 	var conv_class = 'conversation ';
 	this.conversation_DOM.removeClass();
-	conv_class += (this.owner === 'tombot') ? 'question' : 'answer';
+	conv_class += (this.owner === 'cesbot') ? 'question' : 'answer';
 	this.conversation_DOM.addClass(conv_class);
 
 }
@@ -596,19 +692,20 @@ function _setClass() {
 function _setOwner() {
 
 	var owner_says = 'CESBot says:';
-	if(this.owner != 'tombot') {
-		owner_says = 'User Says:';
+	if(this.owner != 'cesbot') {
+		owner_says = 'Ask a question here:';
 	}
 	this.label_DOM.html(owner_says);
 
 }
 
-function _setCopy(copy) {
+function _setCopy(owner, copy, onAnimationFinished) {
 	
-	_changeOwner.call(this,'tombot');
+	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
+	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
 	Utils_SRV.animateCopy(this.input_DOM,copy,this.botIcon);
-
+	DisplayGlobals_SRV.getConversationRef().changeState('working');
 }
 
 
@@ -625,18 +722,18 @@ function _changeOwner(newOwner) {
 function _addFocusInListener() {
 
 	var self = this;
-	this.input_DOM.off('click').on('click', onInputClicked);
-
-	function onInputClicked() {
-		console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
-
-		this.value = '';
-	    _changeOwner.call(self,'user');
-    	// _addFocusOutKeyDownListener.call(self);
-	}
+	this.input_DOM.off('click').on('click', onInputClicked.bind(this));
 
 }
 
+
+function onInputClicked() {
+	console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
+
+	this.input_DOM.val('');
+    _changeOwner.call(this,'user');
+
+}
 
 
 function _addFocusOutKeyDownListener() {
@@ -646,7 +743,10 @@ function _addFocusOutKeyDownListener() {
 	function onFocusOutKeydown(e) {
 		console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
         
-        if (e.type == "keydown") this.botIcon.changeState("listening");
+        if (e.type == "keydown") {
+        	this.botIcon.changeState("listening");
+			DisplayGlobals_SRV.getConversationRef().changeState('working');
+        }
 
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
@@ -661,34 +761,24 @@ function _addFocusOutKeyDownListener() {
 
 function _checkQuestion() {
 
-	var question = this.input_DOM.val();
+	this.question = this.input_DOM.val();
 	this.input_DOM.val('');
-	var content_MOD = AIAgent_SRV.getModel(question);
+	var content_MOD = AIAgent_SRV.getModel(this.question);
 
-	console.log("AI Agent pre check.....",question, content_MOD);
+	console.log("AI Agent pre check.....",this.question, content_MOD);
 
 	if (!content_MOD) {
 		//Make API Call
 		console.log("AI Return FALSE so ask Marius");
-		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
-		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
+		_setCopy.call(this,'cesbot',Utils_SRV.getRandomAcknowledge(),_onAcknowledgeAnimationFinished);
 	}else{
 
-		console.clear();
-		console.log("estoy aqui")
-
 		if (content_MOD.type == "input"){
-			_changeOwner.call(this,'tombot');
-			Utils_SRV.animateCopy(this.input_DOM,content_MOD.answer, this.botIcon);
+			_setCopy.call(this,'cesbot',content_MOD.answer,_onGreetingAnimationFinished);
 		}else if(content_MOD.type == "help") {
 			this.emit("show_help", content_MOD);
 		}
 
-	}
-
-	function _onAcknowledgeAnimationFinished() {
-		this.emit("question_ready",question);
-		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
 
 
@@ -696,14 +786,32 @@ function _checkQuestion() {
 
 
 
+function _onAcknowledgeAnimationFinished() {
+	console.log("on acknowledege animation finished!");
+	Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
+	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
+	this.emit("question_ready",this.question);
+}
 
 
+function _onGreetingAnimationFinished() {
+	console.log("on greeting animation finished!");
+	Utils_SRV.removeListener ("copy_animation_finished", _onGreetingAnimationFinished);
+	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
+}
+
+
+function _autoQuestionAnimationFinished() {
+	console.log("on _auto Question Animation Finished!");
+	Utils_SRV.removeListener ("copy_animation_finished", _autoQuestionAnimationFinished);
+	_checkQuestion.call(this);
+}
 
 
 function _showInput() {
 
 	this.conversation_DOM.fadeIn(500);
-	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+	_setCopy.call(this,'cesbot',Utils_SRV.getRandomGreeting(), _onGreetingAnimationFinished);	//set the copy of the input
 	
 	_addFocusInListener.call(this);
 	_addFocusOutKeyDownListener.call(this);
@@ -764,6 +872,15 @@ InputTalk_Ctrl.prototype.hide = function () {
 };
 
 
+InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
+	
+	console.log(this);
+	this.conversation_DOM.fadeIn(500);
+	_setCopy.call(this,'user',newQuestion, _autoQuestionAnimationFinished);	//set the copy of the input
+	
+};
+
+
 
 
 
@@ -778,7 +895,7 @@ InputTalk_Ctrl.prototype.hide = function () {
 
 
 module.exports = InputTalk_Ctrl;
-},{"../services/AIAgent-srv":7,"../services/Utils-srv":13,"eventemitter3":56,"lodash":57,"util":63}],5:[function(require,module,exports){
+},{"../services/AIAgent-srv":7,"../services/DisplayGlobals-srv":10,"../services/Utils-srv":13,"eventemitter3":56,"lodash":57,"util":63}],5:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -945,7 +1062,7 @@ function _changeState(newState) {
 
 		this.state = newState;
 
-		console.log("Change State.....", this.state);
+		//console.log("Change State.....", this.state);
 
 		switch(newState) {
 			case "waiting":
@@ -1391,25 +1508,21 @@ function ApiCalls () {
 
 ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 
-	console.log ("%c -> ", "background:#c5f442;", "APICalls-> POST : URL =>" , urlCall, dataObj);
+	console.log ("%c -> ", "background:#c5f442;", "APICalls-> GET : URL =>" , urlCall, dataObj);
 
-
-		$.ajax({
-			type: 'GET',
-			url: urlCall,
-			contentType: "application/json",
-			data: dataObj,
-			success: function(json) {
-				console.log("Success!", json);
-				if(callBack) callBack(json);
-			},
-			error: function(e) {
-				console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
-			}
-		});
-
-
-
+	$.ajax({
+		type: 'GET',
+		url: urlCall,
+		data: dataObj,
+		cache : false,
+		success: function(json) {
+			console.log("Success!", json);
+			if(callBack) callBack(json);
+		},
+		error: function(e) {
+			console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
+		}
+	});
 
 
 };
@@ -1468,10 +1581,6 @@ function Charts_SRV () {
 
 function _loadBarChart(dataProvider) {
 
-
-	console.clear();
-	console.log(_getBarGraphsObject(dataProvider));
-
 	var barChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
@@ -1526,49 +1635,6 @@ function _loadBarChart(dataProvider) {
 
 }
 
-
-function _getBarGraphsObject(dataProvider) {
-
-	console.clear();
-
-	var graphs = [];
-	var i = 0;
-
-	// $.each(dataProvider, function( index, item ) {
-
-
-	// 	console.log(item.percent, Number(item.percent))
-
-
-	// 		var color = _arrayColors[i];
-	// 		var obj = 	{
-	// 				"balloonText": "[[category]] [[value]]",
-	// 				"fillAlphas": 1,
-	// 				"fillColors": color,
-	// 				"lineColor": color,
-	// 				"type": "column",
-	// 				"valueField": "percent",
-	// 				"id"
-	// 			};
-
-	// 		// obj.title = _transformTitle(item);
-	// 		// obj.valueField = item;
-	// 		graphs.push(obj);
-	// 		return false;
-
-	// 		i++;
-
-
-
-	// });
-
-
-	console.log("graphs object ready.....");
-	console.log(graphs)
-
-	return graphs;
-
-}
 
 
 
@@ -1628,6 +1694,8 @@ function _getBarGraphsObject(dataProvider) {
 
 
 function _loadSerialChart(dataProvider) {
+
+	console.log("que pasa....", dataProvider)
 
 	var serialChart = AmCharts.makeChart("chartdiv",
 		{
@@ -2012,6 +2080,34 @@ DisplayGlobals.prototype.getAppNodeRef = function() {
 
 
 
+
+//----------------------------
+// Conversation Reference
+//----------------------------
+
+let _conversation;
+
+DisplayGlobals.prototype.setConversationRef = function(conversation) {
+
+  _conversation = conversation;
+
+};
+
+
+DisplayGlobals.prototype.getConversationRef = function() {
+
+    return _conversation;
+
+};
+
+
+
+
+
+
+
+
+
 //----------------------------
 // Sentences JSON
 //----------------------------
@@ -2030,6 +2126,8 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
     return _sentencesJSON;
 
 };
+
+
 
 
 
@@ -2277,7 +2375,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, 35);
+    let copyInterval = setInterval(onEachInterval, 20);
 
     function onEachInterval() {
 
@@ -2289,7 +2387,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
             copyInterval = null;
             botIcon.changeState("waiting");
             
-            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),500);
+            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),1000);
 
             return false;
         }

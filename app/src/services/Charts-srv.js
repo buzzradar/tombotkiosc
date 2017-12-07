@@ -30,10 +30,6 @@ function Charts_SRV () {
 
 function _loadBarChart(dataProvider) {
 
-
-	console.clear();
-	console.log(_getBarGraphsObject(dataProvider));
-
 	var barChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
@@ -88,49 +84,6 @@ function _loadBarChart(dataProvider) {
 
 }
 
-
-function _getBarGraphsObject(dataProvider) {
-
-	console.clear();
-
-	var graphs = [];
-	var i = 0;
-
-	// $.each(dataProvider, function( index, item ) {
-
-
-	// 	console.log(item.percent, Number(item.percent))
-
-
-	// 		var color = _arrayColors[i];
-	// 		var obj = 	{
-	// 				"balloonText": "[[category]] [[value]]",
-	// 				"fillAlphas": 1,
-	// 				"fillColors": color,
-	// 				"lineColor": color,
-	// 				"type": "column",
-	// 				"valueField": "percent",
-	// 				"id"
-	// 			};
-
-	// 		// obj.title = _transformTitle(item);
-	// 		// obj.valueField = item;
-	// 		graphs.push(obj);
-	// 		return false;
-
-	// 		i++;
-
-
-
-	// });
-
-
-	console.log("graphs object ready.....");
-	console.log(graphs)
-
-	return graphs;
-
-}
 
 
 
@@ -190,6 +143,8 @@ function _getBarGraphsObject(dataProvider) {
 
 
 function _loadSerialChart(dataProvider) {
+
+	console.log("que pasa....", dataProvider)
 
 	var serialChart = AmCharts.makeChart("chartdiv",
 		{

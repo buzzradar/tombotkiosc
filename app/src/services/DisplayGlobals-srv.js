@@ -79,6 +79,34 @@ DisplayGlobals.prototype.getAppNodeRef = function() {
 
 
 
+
+//----------------------------
+// Conversation Reference
+//----------------------------
+
+let _conversation;
+
+DisplayGlobals.prototype.setConversationRef = function(conversation) {
+
+  _conversation = conversation;
+
+};
+
+
+DisplayGlobals.prototype.getConversationRef = function() {
+
+    return _conversation;
+
+};
+
+
+
+
+
+
+
+
+
 //----------------------------
 // Sentences JSON
 //----------------------------
@@ -97,6 +125,8 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
     return _sentencesJSON;
 
 };
+
+
 
 
 

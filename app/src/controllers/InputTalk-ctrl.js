@@ -7,6 +7,7 @@ const _ = require("lodash");
 //----------------------------
 // REQUIRE 
 //----------------------------
+const DisplayGlobals_SRV = require('../services/DisplayGlobals-srv'); 
 const Utils_SRV = require('../services/Utils-srv'); 
 const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
@@ -25,7 +26,8 @@ function InputTalk_Ctrl (botIcon) {
 	this.conversation_DOM = $('.conversation');
 	this.label_DOM = this.conversation_DOM.find('label');
 	this.input_DOM = this.conversation_DOM.find('input');
-	this.owner = "tombot";   //tombot or user
+	this.owner = "cesbot";   //cesbot or user
+	this.question = '';
 
 	_init.call(this);
 
@@ -39,7 +41,7 @@ function _init() {
 
 	_setClass.call(this);	//Set question or answer class in the DOM
 	_setOwner.call(this);	//Changes the owner copy on top of the input
-	_hideInput.call(this);
+	_showInput.call(this);
 
 }
 
@@ -49,7 +51,7 @@ function _setClass() {
 
 	var conv_class = 'conversation ';
 	this.conversation_DOM.removeClass();
-	conv_class += (this.owner === 'tombot') ? 'question' : 'answer';
+	conv_class += (this.owner === 'cesbot') ? 'question' : 'answer';
 	this.conversation_DOM.addClass(conv_class);
 
 }
@@ -57,19 +59,20 @@ function _setClass() {
 function _setOwner() {
 
 	var owner_says = 'CESBot says:';
-	if(this.owner != 'tombot') {
-		owner_says = 'User Says:';
+	if(this.owner != 'cesbot') {
+		owner_says = 'Ask a question here:';
 	}
 	this.label_DOM.html(owner_says);
 
 }
 
-function _setCopy(copy) {
+function _setCopy(owner, copy, onAnimationFinished) {
 	
-	_changeOwner.call(this,'tombot');
+	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
+	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
 	Utils_SRV.animateCopy(this.input_DOM,copy,this.botIcon);
-
+	DisplayGlobals_SRV.getConversationRef().changeState('working');
 }
 
 
@@ -86,18 +89,18 @@ function _changeOwner(newOwner) {
 function _addFocusInListener() {
 
 	var self = this;
-	this.input_DOM.off('click').on('click', onInputClicked);
-
-	function onInputClicked() {
-		console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
-
-		this.value = '';
-	    _changeOwner.call(self,'user');
-    	// _addFocusOutKeyDownListener.call(self);
-	}
+	this.input_DOM.off('click').on('click', onInputClicked.bind(this));
 
 }
 
+
+function onInputClicked() {
+	console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
+
+	this.input_DOM.val('');
+    _changeOwner.call(this,'user');
+
+}
 
 
 function _addFocusOutKeyDownListener() {
@@ -107,7 +110,10 @@ function _addFocusOutKeyDownListener() {
 	function onFocusOutKeydown(e) {
 		console.log ("%c -> NOTE => ", "background:#ff0000;", "KeyDown Focus Out");
         
-        if (e.type == "keydown") this.botIcon.changeState("listening");
+        if (e.type == "keydown") {
+        	this.botIcon.changeState("listening");
+			DisplayGlobals_SRV.getConversationRef().changeState('working');
+        }
 
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
@@ -122,34 +128,24 @@ function _addFocusOutKeyDownListener() {
 
 function _checkQuestion() {
 
-	var question = this.input_DOM.val();
+	this.question = this.input_DOM.val();
 	this.input_DOM.val('');
-	var content_MOD = AIAgent_SRV.getModel(question);
+	var content_MOD = AIAgent_SRV.getModel(this.question);
 
-	console.log("AI Agent pre check.....",question, content_MOD);
+	console.log("AI Agent pre check.....",this.question, content_MOD);
 
 	if (!content_MOD) {
 		//Make API Call
 		console.log("AI Return FALSE so ask Marius");
-		Utils_SRV.on("copy_animation_finished",_onAcknowledgeAnimationFinished,this);
-		_setCopy.call(this,Utils_SRV.getRandomAcknowledge());
+		_setCopy.call(this,'cesbot',Utils_SRV.getRandomAcknowledge(),_onAcknowledgeAnimationFinished);
 	}else{
 
-		console.clear();
-		console.log("estoy aqui")
-
 		if (content_MOD.type == "input"){
-			_changeOwner.call(this,'tombot');
-			Utils_SRV.animateCopy(this.input_DOM,content_MOD.answer, this.botIcon);
+			_setCopy.call(this,'cesbot',content_MOD.answer,_onGreetingAnimationFinished);
 		}else if(content_MOD.type == "help") {
 			this.emit("show_help", content_MOD);
 		}
 
-	}
-
-	function _onAcknowledgeAnimationFinished() {
-		this.emit("question_ready",question);
-		Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	}
 
 
@@ -157,14 +153,32 @@ function _checkQuestion() {
 
 
 
+function _onAcknowledgeAnimationFinished() {
+	console.log("on acknowledege animation finished!");
+	Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
+	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
+	this.emit("question_ready",this.question);
+}
 
 
+function _onGreetingAnimationFinished() {
+	console.log("on greeting animation finished!");
+	Utils_SRV.removeListener ("copy_animation_finished", _onGreetingAnimationFinished);
+	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
+}
+
+
+function _autoQuestionAnimationFinished() {
+	console.log("on _auto Question Animation Finished!");
+	Utils_SRV.removeListener ("copy_animation_finished", _autoQuestionAnimationFinished);
+	_checkQuestion.call(this);
+}
 
 
 function _showInput() {
 
 	this.conversation_DOM.fadeIn(500);
-	_setCopy.call(this,Utils_SRV.getRandomGreeting());	//set the copy of the input
+	_setCopy.call(this,'cesbot',Utils_SRV.getRandomGreeting(), _onGreetingAnimationFinished);	//set the copy of the input
 	
 	_addFocusInListener.call(this);
 	_addFocusOutKeyDownListener.call(this);
@@ -222,6 +236,15 @@ InputTalk_Ctrl.prototype.show = function () {
 
 InputTalk_Ctrl.prototype.hide = function () {
 	_hideInput.call(this);
+};
+
+
+InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
+	
+	console.log(this);
+	this.conversation_DOM.fadeIn(500);
+	_setCopy.call(this,'user',newQuestion, _autoQuestionAnimationFinished);	//set the copy of the input
+	
 };
 
 
