@@ -102,7 +102,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			_increaseWaitingTime.call(this);
+			// _increaseWaitingTime.call(this);
 		break;
 
 	}

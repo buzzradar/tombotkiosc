@@ -41,7 +41,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, 20);
+    let copyInterval = setInterval(onEachInterval, 50);
 
     function onEachInterval() {
 

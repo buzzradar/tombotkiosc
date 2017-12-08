@@ -38,6 +38,10 @@ footer {
   margin-bottom: 1%;
   width: 200px;
   height: 200px;
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 .tomboticon .robot {
   position: absolute;
@@ -76,7 +80,7 @@ footer {
 }
 .conversation.question input {
   background-color: rgba(255, 255, 255, 0.1);
-  color: #ff8900;
+  color: white;
 }
 .conversation.answer label {
   float: right;
