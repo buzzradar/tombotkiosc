@@ -146,6 +146,9 @@ function _renderContent(content_MOD) {
 		case "tweet":
 			this.content_DOM = HBTemplates_SRV.getTemplate('tweet_item', content_MOD);
 		break;
+		case "news":
+			this.content_DOM = HBTemplates_SRV.getTemplate('news_item', content_MOD);
+		break;
 
 	}
 
@@ -355,7 +358,7 @@ function _addContentAndInput() {
 	this.inputTalk.on("show_help", _onHelpReceived, this);
 
 
-	_startControlTimer.call(this);
+	_onEachTickSecond.call(this);
 	_addMouseMoveEvent.call(this);
 
 }
@@ -368,13 +371,13 @@ function _addContentAndInput() {
 // Timer
 // ------------------------------------
 
-function _startControlTimer() {
+function _onEachTickSecond() {
 
 	var self = this;
 	_printDebugTimer.call(this);
 	_checkState.call(this);
 
-	setTimeout(_startControlTimer.bind(self),1000);
+	setTimeout(_onEachTickSecond.bind(self),1000);
 
 }
 
@@ -382,10 +385,14 @@ function _startControlTimer() {
 function _checkState() {
 
 	switch(this.state){
+		case "calling_api":
+			//do nothing
+		break;
 		case "waiting":
 			_increaseWaitingTime.call(this);
 		break;
 		case "working":
+			//do nothing
 		break;
 		case "content_displayed":
 			_increaseWaitingTime.call(this);
@@ -449,7 +456,11 @@ function _askIntroQuestion() {
 
 	this.inputTalk.askRandomQuestion(randomQuestion);
 
+	//prepare next intro Slide
 	this.introId ++;
+	if (this.introId >= this.introQuestions_Array.length){
+		this.introId = 0;
+	}
 	
 }
 
@@ -555,9 +566,55 @@ function _onHelpReceived(response) {
 function _onQuestionReceived(newQuestion) {
 	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
 	
-	this.setState = 'working';
+	_setState.call(this, 'calling_api');
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
+
+
+// var content_MOD = {
+// 					"type": "photo",
+// 					"question": "What is the most shared Photo at CES today / this week / this hour?",
+// 					"title": "Most liked instagram post",
+// 					"source": "instagram",
+// 					"user": {
+// 						"username": "gopro",
+// 						"full_name": "GoPro",
+// 						"profile_image": "http://testcms.buzzradar.com/api/external/image/instagram-avatar/3790/38357106.jpg",
+// 						"profile_image_big": "http://testcms.buzzradar.com/api/external/image/instagram-avatar/3790/38357106.jpg",
+// 						"name": "GoPro",
+// 						"description": ""
+// 					},
+// 					"tweet_date": "1512493014",
+// 					"tweet_date_ago": "2 days ago",
+// 					"group": "",
+// 					"image_url": "http://testcms.buzzradar.com/api/external/image/instagram/3790/38357106.jpg",
+// 					"followers": 0,
+// 					"friends": 0,
+// 					"retweets": 0,
+// 					"comments": 32,
+// 					"likes": 10468,
+// 					"content": "Photo of the Day: Feeling #fall. 🍂 Escape to the shoreline of a glassy lake in northern #Italy with a perspective from @albeross_. Enjoying the #outdoors? Share with us at GoPro.com/Awards.\n•\n•\n•\n@GoProIT #GoProIT #HERO5 #Lake #Reflection #LandscapePhotography",
+// 					"place": "",
+// 					"tags": "reflection,lake,goproit,fall,landscapephotography,outdoors,italy,hero5",
+// 					"tweet_id": "1663234416238347508_28902942",
+// 					"lang": "",
+// 					"sentiment": 0,
+// 					"influencer": 0,
+// 					"categories": [],
+// 						"original_tweet_info": {
+// 						"original_twitter_username": "",
+// 						"original_tweet_date": "",
+// 						"original_profile_image_url": "",
+// 						"original_name": "",
+// 						"original_followers_count": 0
+// 					}
+		
+// 				};
+// console.log(content_MOD);
+// _onAnswerReceived.call(this,content_MOD);
+
+
+
 	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 }
@@ -701,6 +758,7 @@ function _setOwner() {
 
 function _setCopy(owner, copy, onAnimationFinished) {
 	
+	if (owner == 'user') this.input_DOM.attr("disabled", true);
 	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
 	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
@@ -730,6 +788,7 @@ function _addFocusInListener() {
 function onInputClicked() {
 	console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
 
+	this.input_DOM.attr("disabled", false);
 	this.input_DOM.val('');
     _changeOwner.call(this,'user');
 
@@ -1367,31 +1426,6 @@ AIAgent.prototype.getModel = function(question) {
 			answer : 'My name is CESBot and I am a AI Social Agent.'
 		};
 	}
-
-
-
-
-
-
-
-
-	//Delete when is photo is done
-
-	if (question == "photo") {
-		answerMOD = {
-			type : 'photo',
-			title : 'Most viewed photo in 2017',
-			answer : 'ssssssssss'
-		};
-	}
-	if (question == "tweet") {
-		answerMOD = {
-			type : 'tweet',
-			title : 'Most retweeted in 2017',
-			answer : 'this is the tweeeeet'
-		};
-	}
-
 	
 	return answerMOD;
 
@@ -1399,11 +1433,11 @@ AIAgent.prototype.getModel = function(question) {
 
 
 
-function _onAnswerReceived(response) {
+// function _onAnswerReceived(response) {
 
-	console.log("AI AGENT -> Api Call received:", response);
+// 	console.log("AI AGENT -> Api Call received:", response);
 
-}
+// }
 
 
 
@@ -1518,6 +1552,7 @@ ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 		success: function(json) {
 			console.log("Success!", json);
 			if(callBack) callBack(json);
+
 		},
 		error: function(e) {
 			console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
@@ -1617,6 +1652,8 @@ function _loadBarChart(dataProvider) {
 			],
 			"allLabels": [],
 			"balloon": {},
+			"fontSize" : 15,
+
 			// "legend": {
 			// 	"enabled": true,
 			// 	"align": "center",
@@ -1632,6 +1669,20 @@ function _loadBarChart(dataProvider) {
 	);
 
 	return barChart;
+
+}
+
+
+
+function _fixDataProviderFromMarius(dataProvider) {
+
+	$.each(dataProvider, function( index, item ) {
+	  console.log(item);
+	  item.date = String(item.date);
+	  item.percent = String(item.percent);
+	});
+
+	return dataProvider;
 
 }
 
@@ -1692,10 +1743,7 @@ function _loadBarChart(dataProvider) {
 
 
 
-
 function _loadSerialChart(dataProvider) {
-
-	console.log("que pasa....", dataProvider)
 
 	var serialChart = AmCharts.makeChart("chartdiv",
 		{
@@ -1724,7 +1772,6 @@ function _loadSerialChart(dataProvider) {
 					"precision": 2,
 					"stackType": "regular",
 					"totalTextOffset": -2,
-					"unit": "£",
 					"unitPosition": "left"
 				},
 				{
@@ -1732,7 +1779,6 @@ function _loadSerialChart(dataProvider) {
 					"minimum": 1,
 					"position": "right",
 					"precision": 2,
-					"unit": "£",
 					"unitPosition": "left",
 					"gridAlpha": 0,
 					"titleRotation": 0
@@ -1740,16 +1786,18 @@ function _loadSerialChart(dataProvider) {
 			],
 			"allLabels": [],
 			"balloon": {},
-			"legend": {
-				"enabled": true,
-				"align": "center",
-			    "autoMargins":false,
-			    "fontSize" : 25,
-			    "markerType" : "square",
-			    "markerSize" : 25,
-			    "markerLabelGap" : 20,
+			"fontSize" : 15,
 
-			},
+			// "legend": {
+			// 	"enabled": true,
+			// 	"align": "center",
+			//     "autoMargins":false,
+			//     "fontSize" : 25,
+			//     "markerType" : "square",
+			//     "markerSize" : 25,
+			//     "markerLabelGap" : 20,
+
+			// },
 			"titles": [],
 			"dataProvider": dataProvider
 		}
@@ -1864,7 +1912,7 @@ function _loadPieChart(dataProvider) {
 			"color": "#404040",
 			"allLabels": [],
 			"balloon": {},
-			"fontSize" : 25,
+			"fontSize" : 15,
 			"addClassNames": true,
 			"legend": {
 			   	"position":"right",
@@ -1872,7 +1920,7 @@ function _loadPieChart(dataProvider) {
 			    "autoMargins":false,
 			    "fontSize" : 25,
 			    "markerType" : "square",
-			    "markerSize" : 25,
+			    "markerSize" : 15,
 			    "markerLabelGap" : 20,
 			    "verticalGap" : 20,
 			},
@@ -2149,7 +2197,7 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"help_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-info\"></i></div>            <div class=\"title-copy\">Let me see if I can help you!</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Got It! Ask a question</button>          </span>        </div>        <div class=\"help\">          <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>          <ul class=\"help-list-questions\">            <li><a href=\"#\">What are the top trends at CES this hour?</a></li>            <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>            <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>            <li><a href=\"#\">What are the big news stories at CES today?</a></li>            <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>            <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>            <li><a href=\"#\">How many people attended CES last year?</a></li>          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"https://cdn.iphonephotographyschool.com/wp-content/uploads/Eric-Ward-iPhone-Photos-18.jpg\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-instagram\"></i> This is the title              </div>              <div class=\"description\">                 Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div>            <div class=\"title-copy\">{{title}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          "}
+var templates = {"help_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <div class=\"circle\"><i class=\"fa fa-info\"></i></div>            <div class=\"title-copy\">Let me see if I can help you!</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Got It! Ask a question</button>          </span>        </div>        <div class=\"help\">          <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>          <ul class=\"help-list-questions\">            <li><a href=\"#\">What are the top trends at CES this hour?</a></li>            <li><a href=\"#\">What has been the biggest moment at CES so far?</a></li>            <li><a href=\"#\">Where in the world are people talking about CES 2018 the most?</a></li>            <li><a href=\"#\">What are the big news stories at CES today?</a></li>            <li><a href=\"#\">How many conference sessions are there at CES this year?</a></li>            <li><a href=\"#\">How many exhibitors are attending CES this year? </a></li>            <li><a href=\"#\">How many people attended CES last year?</a></li>          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <!-- <div class=\"circle\"><i class=\"fa fa-lightbulb-o\"></i></div> -->            <div class=\"title-copy\">{{answer}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <!-- <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div> -->            <div class=\"title-copy\">{{answer}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-5\">              <img src=\"{{image_url}}\" width=\"100%\">            </div>            <div class=\"col-md-7\">              <div class=\"title\">                <i class=\"fa fa-1x fa-twitter\"></i> {{user.full_name}}               </div>              <span class=\"date\">{{tweet_date_ago}}</span>              <div class=\"description\">                 {{content}}              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <!-- <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div> -->            <div class=\"title-copy\">{{answer}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          ","news_item":"           <div class=\"slide\">        <div>          <span class=\"title\">            <!-- <div class=\"circle\"><i class=\"fa fa-bolt\"></i></div> -->            <div class=\"title-copy\">{{answer}}</div>          </span>          <span class=\"pull-right\">            <button type=\"button\" class=\"btn btn-lg yellow-gold ask-me\">Ask a new question</button>          </span>        </div>        <div class=\"news\">                    <div class=\"row news__main\">            <div class=\"col-md-4\">              <img src=\"{{image_url}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-instagram\"></i> {{user.full_name}}               </div>              <span class=\"date\">{{tweet_date_ago}}</span>              <div class=\"description\">                 {{content}}              </div>            </div>          </div>                  </div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 

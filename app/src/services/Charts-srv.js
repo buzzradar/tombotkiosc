@@ -66,6 +66,8 @@ function _loadBarChart(dataProvider) {
 			],
 			"allLabels": [],
 			"balloon": {},
+			"fontSize" : 15,
+
 			// "legend": {
 			// 	"enabled": true,
 			// 	"align": "center",
@@ -81,6 +83,20 @@ function _loadBarChart(dataProvider) {
 	);
 
 	return barChart;
+
+}
+
+
+
+function _fixDataProviderFromMarius(dataProvider) {
+
+	$.each(dataProvider, function( index, item ) {
+	  console.log(item);
+	  item.date = String(item.date);
+	  item.percent = String(item.percent);
+	});
+
+	return dataProvider;
 
 }
 
@@ -141,10 +157,7 @@ function _loadBarChart(dataProvider) {
 
 
 
-
 function _loadSerialChart(dataProvider) {
-
-	console.log("que pasa....", dataProvider)
 
 	var serialChart = AmCharts.makeChart("chartdiv",
 		{
@@ -173,7 +186,6 @@ function _loadSerialChart(dataProvider) {
 					"precision": 2,
 					"stackType": "regular",
 					"totalTextOffset": -2,
-					"unit": "£",
 					"unitPosition": "left"
 				},
 				{
@@ -181,7 +193,6 @@ function _loadSerialChart(dataProvider) {
 					"minimum": 1,
 					"position": "right",
 					"precision": 2,
-					"unit": "£",
 					"unitPosition": "left",
 					"gridAlpha": 0,
 					"titleRotation": 0
@@ -189,16 +200,18 @@ function _loadSerialChart(dataProvider) {
 			],
 			"allLabels": [],
 			"balloon": {},
-			"legend": {
-				"enabled": true,
-				"align": "center",
-			    "autoMargins":false,
-			    "fontSize" : 25,
-			    "markerType" : "square",
-			    "markerSize" : 25,
-			    "markerLabelGap" : 20,
+			"fontSize" : 15,
 
-			},
+			// "legend": {
+			// 	"enabled": true,
+			// 	"align": "center",
+			//     "autoMargins":false,
+			//     "fontSize" : 25,
+			//     "markerType" : "square",
+			//     "markerSize" : 25,
+			//     "markerLabelGap" : 20,
+
+			// },
 			"titles": [],
 			"dataProvider": dataProvider
 		}
@@ -313,7 +326,7 @@ function _loadPieChart(dataProvider) {
 			"color": "#404040",
 			"allLabels": [],
 			"balloon": {},
-			"fontSize" : 25,
+			"fontSize" : 15,
 			"addClassNames": true,
 			"legend": {
 			   	"position":"right",
@@ -321,7 +334,7 @@ function _loadPieChart(dataProvider) {
 			    "autoMargins":false,
 			    "fontSize" : 25,
 			    "markerType" : "square",
-			    "markerSize" : 25,
+			    "markerSize" : 15,
 			    "markerLabelGap" : 20,
 			    "verticalGap" : 20,
 			},

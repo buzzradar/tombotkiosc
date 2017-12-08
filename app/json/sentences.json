@@ -28,11 +28,10 @@
 
 
     "intro_questions" : [ 
-        "What are the top trends at CES today?",
-        "What is the most shared Tweet at CES  today?",
-        "What is the sentiment like for CES?",      
-        "How many time people mentioned CES on twitter last week?",
-        "photo"
+        "Where is my brand in the listing of top brands?",
+        "How many people are talking about CES today / this week / this hour?"
+
+
     ]
 
 

@@ -70,6 +70,9 @@ function _renderContent(content_MOD) {
 		case "tweet":
 			this.content_DOM = HBTemplates_SRV.getTemplate('tweet_item', content_MOD);
 		break;
+		case "news":
+			this.content_DOM = HBTemplates_SRV.getTemplate('news_item', content_MOD);
+		break;
 
 	}
 

@@ -125,7 +125,6 @@ footer{
       background-color: rgba(255, 255, 255, 0);
       color:white;
       text-align:right;
-      cursor:default;
     }
 
   }
@@ -145,7 +144,7 @@ footer{
     position:relative;
     @include border-radius(25px);
     background:rgba(255, 255, 255, 1);
-    padding:30px;
+    padding:25px;
     color: $dark-color;
   }
 
@@ -232,13 +231,13 @@ footer{
 
   .title{
     font-family: $primary_font;
-    color:$secondary-color;
     font-weight:600;
-    font-size:30px;
+    font-size:1.8vw;
 
     .circle {
       width: 40px;
       height: 40px;
+      font-size:30px;
       border-radius: 50%;
       color: #fff;
       line-height: 40px;
@@ -252,6 +251,10 @@ footer{
     }
 
 
+  }
+
+  .ask-me{
+    font-size:1.2vw !important;
   }
 
   .question {
@@ -347,6 +350,7 @@ footer{
   .tweet__user {
 
     margin-bottom:5px;
+    color: $secondary-color;
 
     .tw-icon {
       float:right;
@@ -361,6 +365,7 @@ footer{
 
     .date {
       font-size:2.5vh;
+      color: $dark-color;
     }
 
   }
@@ -390,6 +395,43 @@ footer{
 
   .photo__main {
 
+    font-size:2.5vh;
+
+    .title {
+      padding:3px 8px;
+      display:inline-block;
+      background: $dark-color;
+      color:white;
+      font-size:2.5vh;
+
+      margin-bottom:10px;
+    }
+
+    .date {
+      font-size:2.5vh;
+      padding:5px 0;
+      color: $secondary-color;
+    }
+
+  }
+
+}
+
+
+
+
+
+/* --------------------------------------- */
+/*  News */
+/* --------------------------------------- */
+
+
+.news {
+
+  margin-top:30px;
+
+  .news__main {
+
     font-size:3vh;
 
     .title {
@@ -397,11 +439,15 @@ footer{
       display:inline-block;
       background: $dark-color;
       color:white;
-      font-size:3.5vh;
+      font-size:2.5vh;
 
-      span {
-        //padding-left: 3%;
-      }
+      margin-bottom:10px;
+    }
+
+    .date {
+      font-size:2.5vh;
+      padding:5px 0;
+      color: $secondary-color;
     }
 
   }

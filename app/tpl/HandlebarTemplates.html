@@ -77,11 +77,11 @@
 
         <div>
           <span class="title">
-            <div class="circle"><i class="fa fa-bolt"></i></div>
-            <div class="title-copy">{{title}}</div>
+            <!-- <div class="circle"><i class="fa fa-lightbulb-o"></i></div> -->
+            <div class="title-copy">{{answer}}</div>
           </span>
           <span class="pull-right">
-            <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
+            <button type="button" class="btn yellow-gold ask-me">Ask a new question</button>
           </span>
         </div>
 
@@ -104,8 +104,8 @@
 
         <div>
           <span class="title">
-            <div class="circle"><i class="fa fa-bolt"></i></div>
-            <div class="title-copy">{{title}}</div>
+            <!-- <div class="circle"><i class="fa fa-bolt"></i></div> -->
+            <div class="title-copy">{{answer}}</div>
           </span>
           <span class="pull-right">
             <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
@@ -115,16 +115,17 @@
         <div class="photo">
           
           <div class="row photo__main">
-            <div class="col-md-4">
-              <img src="https://cdn.iphonephotographyschool.com/wp-content/uploads/Eric-Ward-iPhone-Photos-18.jpg" width="100%"/>
+            <div class="col-md-5">
+              <img src="{{image_url}}" width="100%"/>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-md-7">
               <div class="title">
-                <i class="fa fa-1x fa-instagram"></i> This is the title
+                <i class="fa fa-1x fa-twitter"></i> {{user.full_name}} 
               </div>
+              <span class="date">{{tweet_date_ago}}</span>
               <div class="description">
-                 Namaste. Do you want to sell a New Age product and/or service? Tired of coming up with meaningless copy for your starry-eyed customers? Want to join the ranks of bestselling self-help authors? We can help.
+                 {{content}}
               </div>
             </div>
           </div>
@@ -152,8 +153,8 @@
 
         <div>
           <span class="title">
-            <div class="circle"><i class="fa fa-bolt"></i></div>
-            <div class="title-copy">{{title}}</div>
+            <!-- <div class="circle"><i class="fa fa-bolt"></i></div> -->
+            <div class="title-copy">{{answer}}</div>
           </span>
           <span class="pull-right">
             <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
@@ -177,6 +178,58 @@
 
             <div class="col-md-9">
               {{content}}
+            </div>
+          </div>
+
+          
+        </div>
+
+      </div>
+      
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="news_item">
+     
+      <div class="slide">
+
+        <div>
+          <span class="title">
+            <!-- <div class="circle"><i class="fa fa-bolt"></i></div> -->
+            <div class="title-copy">{{answer}}</div>
+          </span>
+          <span class="pull-right">
+            <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
+          </span>
+        </div>
+
+        <div class="news">
+          
+          <div class="row news__main">
+            <div class="col-md-4">
+              <img src="{{image_url}}" width="100%"/>
+            </div>
+
+            <div class="col-md-8">
+              <div class="title">
+                <i class="fa fa-1x fa-instagram"></i> {{user.full_name}} 
+              </div>
+              <span class="date">{{tweet_date_ago}}</span>
+              <div class="description">
+                 {{content}}
+              </div>
             </div>
           </div>
 

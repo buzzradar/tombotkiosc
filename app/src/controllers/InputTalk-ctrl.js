@@ -68,6 +68,7 @@ function _setOwner() {
 
 function _setCopy(owner, copy, onAnimationFinished) {
 	
+	if (owner == 'user') this.input_DOM.attr("disabled", true);
 	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
 	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
@@ -97,6 +98,7 @@ function _addFocusInListener() {
 function onInputClicked() {
 	console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
 
+	this.input_DOM.attr("disabled", false);
 	this.input_DOM.val('');
     _changeOwner.call(this,'user');
 

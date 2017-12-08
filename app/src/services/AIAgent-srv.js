@@ -58,31 +58,6 @@ AIAgent.prototype.getModel = function(question) {
 			answer : 'My name is CESBot and I am a AI Social Agent.'
 		};
 	}
-
-
-
-
-
-
-
-
-	//Delete when is photo is done
-
-	if (question == "photo") {
-		answerMOD = {
-			type : 'photo',
-			title : 'Most viewed photo in 2017',
-			answer : 'ssssssssss'
-		};
-	}
-	if (question == "tweet") {
-		answerMOD = {
-			type : 'tweet',
-			title : 'Most retweeted in 2017',
-			answer : 'this is the tweeeeet'
-		};
-	}
-
 	
 	return answerMOD;
 
@@ -90,11 +65,11 @@ AIAgent.prototype.getModel = function(question) {
 
 
 
-function _onAnswerReceived(response) {
+// function _onAnswerReceived(response) {
 
-	console.log("AI AGENT -> Api Call received:", response);
+// 	console.log("AI AGENT -> Api Call received:", response);
 
-}
+// }
 
 
 

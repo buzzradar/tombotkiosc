@@ -86,7 +86,6 @@ footer {
   background-color: rgba(255, 255, 255, 0);
   color: white;
   text-align: right;
-  cursor: default;
 }
 
 .content-info {
@@ -100,7 +99,7 @@ footer {
   -webkit-border-radius: 25px;
   border-radius: 25px;
   background: white;
-  padding: 30px;
+  padding: 25px;
   color: #404040;
 }
 .content-info.speechbubble:after {
@@ -173,13 +172,13 @@ footer {
 }
 .slide .title {
   font-family: "Quicksand", sans-serif;
-  color: #77C0B2;
   font-weight: 600;
-  font-size: 30px;
+  font-size: 1.8vw;
 }
 .slide .title .circle {
   width: 40px;
   height: 40px;
+  font-size: 30px;
   border-radius: 50%;
   color: #fff;
   line-height: 40px;
@@ -189,6 +188,9 @@ footer {
 }
 .slide .title .title-copy {
   display: inline-block;
+}
+.slide .ask-me {
+  font-size: 1.2vw !important;
 }
 .slide .question {
   font-weight: 600;
@@ -230,6 +232,7 @@ footer {
 }
 .tweet .tweet__user {
   margin-bottom: 5px;
+  color: #77C0B2;
 }
 .tweet .tweet__user .tw-icon {
   float: right;
@@ -242,6 +245,7 @@ footer {
 }
 .tweet .tweet__user .date {
   font-size: 2.5vh;
+  color: #404040;
 }
 .tweet .tweet__main {
   margin-top: 10px;
@@ -255,14 +259,43 @@ footer {
   margin-top: 30px;
 }
 .photo .photo__main {
-  font-size: 3vh;
+  font-size: 2.5vh;
 }
 .photo .photo__main .title {
   padding: 3px 8px;
   display: inline-block;
   background: #404040;
   color: white;
-  font-size: 3.5vh;
+  font-size: 2.5vh;
+  margin-bottom: 10px;
+}
+.photo .photo__main .date {
+  font-size: 2.5vh;
+  padding: 5px 0;
+  color: #77C0B2;
+}
+
+/* --------------------------------------- */
+/*  News */
+/* --------------------------------------- */
+.news {
+  margin-top: 30px;
+}
+.news .news__main {
+  font-size: 3vh;
+}
+.news .news__main .title {
+  padding: 3px 8px;
+  display: inline-block;
+  background: #404040;
+  color: white;
+  font-size: 2.5vh;
+  margin-bottom: 10px;
+}
+.news .news__main .date {
+  font-size: 2.5vh;
+  padding: 5px 0;
+  color: #77C0B2;
 }
 
 /* --------------------------------------- */

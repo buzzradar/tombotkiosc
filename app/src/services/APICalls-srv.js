@@ -41,6 +41,7 @@ ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 		success: function(json) {
 			console.log("Success!", json);
 			if(callBack) callBack(json);
+
 		},
 		error: function(e) {
 			console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);

@@ -65,7 +65,7 @@ function _addContentAndInput() {
 	this.inputTalk.on("show_help", _onHelpReceived, this);
 
 
-	_startControlTimer.call(this);
+	_onEachTickSecond.call(this);
 	_addMouseMoveEvent.call(this);
 
 }
@@ -78,13 +78,13 @@ function _addContentAndInput() {
 // Timer
 // ------------------------------------
 
-function _startControlTimer() {
+function _onEachTickSecond() {
 
 	var self = this;
 	_printDebugTimer.call(this);
 	_checkState.call(this);
 
-	setTimeout(_startControlTimer.bind(self),1000);
+	setTimeout(_onEachTickSecond.bind(self),1000);
 
 }
 
@@ -92,10 +92,14 @@ function _startControlTimer() {
 function _checkState() {
 
 	switch(this.state){
+		case "calling_api":
+			//do nothing
+		break;
 		case "waiting":
 			_increaseWaitingTime.call(this);
 		break;
 		case "working":
+			//do nothing
 		break;
 		case "content_displayed":
 			_increaseWaitingTime.call(this);
@@ -159,7 +163,11 @@ function _askIntroQuestion() {
 
 	this.inputTalk.askRandomQuestion(randomQuestion);
 
+	//prepare next intro Slide
 	this.introId ++;
+	if (this.introId >= this.introQuestions_Array.length){
+		this.introId = 0;
+	}
 	
 }
 
@@ -265,9 +273,55 @@ function _onHelpReceived(response) {
 function _onQuestionReceived(newQuestion) {
 	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
 	
-	this.setState = 'working';
+	_setState.call(this, 'calling_api');
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
+
+
+// var content_MOD = {
+// 					"type": "photo",
+// 					"question": "What is the most shared Photo at CES today / this week / this hour?",
+// 					"title": "Most liked instagram post",
+// 					"source": "instagram",
+// 					"user": {
+// 						"username": "gopro",
+// 						"full_name": "GoPro",
+// 						"profile_image": "http://testcms.buzzradar.com/api/external/image/instagram-avatar/3790/38357106.jpg",
+// 						"profile_image_big": "http://testcms.buzzradar.com/api/external/image/instagram-avatar/3790/38357106.jpg",
+// 						"name": "GoPro",
+// 						"description": ""
+// 					},
+// 					"tweet_date": "1512493014",
+// 					"tweet_date_ago": "2 days ago",
+// 					"group": "",
+// 					"image_url": "http://testcms.buzzradar.com/api/external/image/instagram/3790/38357106.jpg",
+// 					"followers": 0,
+// 					"friends": 0,
+// 					"retweets": 0,
+// 					"comments": 32,
+// 					"likes": 10468,
+// 					"content": "Photo of the Day: Feeling #fall. 🍂 Escape to the shoreline of a glassy lake in northern #Italy with a perspective from @albeross_. Enjoying the #outdoors? Share with us at GoPro.com/Awards.\n•\n•\n•\n@GoProIT #GoProIT #HERO5 #Lake #Reflection #LandscapePhotography",
+// 					"place": "",
+// 					"tags": "reflection,lake,goproit,fall,landscapephotography,outdoors,italy,hero5",
+// 					"tweet_id": "1663234416238347508_28902942",
+// 					"lang": "",
+// 					"sentiment": 0,
+// 					"influencer": 0,
+// 					"categories": [],
+// 						"original_tweet_info": {
+// 						"original_twitter_username": "",
+// 						"original_tweet_date": "",
+// 						"original_profile_image_url": "",
+// 						"original_name": "",
+// 						"original_followers_count": 0
+// 					}
+		
+// 				};
+// console.log(content_MOD);
+// _onAnswerReceived.call(this,content_MOD);
+
+
+
 	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 }
