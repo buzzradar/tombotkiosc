@@ -28,7 +28,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = 5;
+	this.waitingTime = 2;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -172,82 +172,6 @@ function _askIntroQuestion() {
 }
 
 
-// function _startIntro() {
-
-// 	_loadNextIntro.call(this);
-	
-// }
-
-
-
-// function _loadNextIntro(){
-
-// 	var question = this.introQuestions_Array[this.introId];
-// 	var content_MOD = AIAgent_SRV.getModel(question);
-
-// 	if (!content_MOD) {
-// 		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:question}, _onAnswerReceived.bind(this));
-// 	}else{
-// 		_onAnswerReceived.call(this,content_MOD);
-// 	}
-
-// 	this.introInTimer.start();
-
-// 	//prepare next intro Slide
-// 	this.introId ++;
-// 	if (this.introId >= this.introQuestions_Array.length){
-// 		this.introId = 0;
-// 	}
-
-// }
-
-
-
-// function _initTimer() {
-
-// 	var self = this;
-
-// 	//Anim In Timer
-// 	this.introInTimer = {
-// 	    handle: 0,
-// 	    start: function() {
-// 	        this.stop();
-// 	        this.handle = setTimeout(_animContentOut.bind(self), 5000);
-// 	    },
-// 	    stop: function() {
-// 	        if (this.handle) {
-// 	            clearTimeout(this.handle);
-// 	            this.handle = 0;
-// 	        }
-// 	    }
-// 	};
-
-// 	//Anim Out Timer
-// 	this.introOutTimer = {
-// 	    handle: 0,
-// 	    start: function() {
-// 	        this.stop();
-// 	        this.handle = setTimeout(_loadNextIntro.bind(self), 1000);
-// 	    },
-// 	    stop: function() {
-// 	        if (this.handle) {
-// 	            clearTimeout(this.handle);
-// 	            this.handle = 0;
-// 	        }
-// 	    }
-// 	};
-
-
-// }
-
-
-// function _animContentOut() {
-
-// 	this.contentBubble.animContentOut();
-// 	this.introOutTimer.start();
-
-// }
-
 function _onAnswerReceived(response) {
 
 	this.botIcon.changeState("waiting");
@@ -278,47 +202,23 @@ function _onQuestionReceived(newQuestion) {
 	this.inputTalk.disableInput();
 
 
-// var content_MOD = {
-// 					"type": "photo",
-// 					"question": "What is the most shared Photo at CES today / this week / this hour?",
-// 					"title": "Most liked instagram post",
-// 					"source": "instagram",
-// 					"user": {
-// 						"username": "gopro",
-// 						"full_name": "GoPro",
-// 						"profile_image": "http://testcms.buzzradar.com/api/external/image/instagram-avatar/3790/38357106.jpg",
-// 						"profile_image_big": "http://testcms.buzzradar.com/api/external/image/instagram-avatar/3790/38357106.jpg",
-// 						"name": "GoPro",
-// 						"description": ""
-// 					},
-// 					"tweet_date": "1512493014",
-// 					"tweet_date_ago": "2 days ago",
-// 					"group": "",
-// 					"image_url": "http://testcms.buzzradar.com/api/external/image/instagram/3790/38357106.jpg",
-// 					"followers": 0,
-// 					"friends": 0,
-// 					"retweets": 0,
-// 					"comments": 32,
-// 					"likes": 10468,
-// 					"content": "Photo of the Day: Feeling #fall. 🍂 Escape to the shoreline of a glassy lake in northern #Italy with a perspective from @albeross_. Enjoying the #outdoors? Share with us at GoPro.com/Awards.\n•\n•\n•\n@GoProIT #GoProIT #HERO5 #Lake #Reflection #LandscapePhotography",
-// 					"place": "",
-// 					"tags": "reflection,lake,goproit,fall,landscapephotography,outdoors,italy,hero5",
-// 					"tweet_id": "1663234416238347508_28902942",
-// 					"lang": "",
-// 					"sentiment": 0,
-// 					"influencer": 0,
-// 					"categories": [],
-// 						"original_tweet_info": {
-// 						"original_twitter_username": "",
-// 						"original_tweet_date": "",
-// 						"original_profile_image_url": "",
-// 						"original_name": "",
-// 						"original_followers_count": 0
-// 					}
-		
-// 				};
-// console.log(content_MOD);
-// _onAnswerReceived.call(this,content_MOD);
+
+
+
+
+
+
+
+
+	// var content_MOD = {
+	//     "answer":"Keynotes happening right now at CES",
+	//     "type":"ces_keynotes",
+	// };
+	// console.log(content_MOD);
+	// _onAnswerReceived.call(this,content_MOD);
+
+
+
 
 
 

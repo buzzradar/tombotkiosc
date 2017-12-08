@@ -59,6 +59,14 @@ HBTemplates.prototype.getTemplate = function (tplId, data) {
 
     // console.log("Get Template Id = ", tplId, data);
 
+
+    switch(tplId) {
+        case 'news_item':
+            _setSentimentScore(data);
+        break;
+    }
+
+
     if (!data) {
         return $(templates[tplId]);        
     }else{
@@ -85,7 +93,14 @@ HBTemplates.prototype.loadTemplate = function (tplId, data, targetElem) {
 
 
 
+function _setSentimentScore(data) {
 
+    data.sentiment = {
+        class : (data.sentiment < 0) ? 'negative' : 'positive',
+        absValue : Math.abs(data.sentiment),
+    };
+
+}
 
 
 

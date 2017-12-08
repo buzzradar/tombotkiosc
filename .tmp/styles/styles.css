@@ -95,9 +95,15 @@ footer {
 }
 .content-info.speechbubble {
   position: relative;
-  -moz-border-radius: 25px;
-  -webkit-border-radius: 25px;
-  border-radius: 25px;
+  -moz-border-radius-topleft: 25px;
+  -webkit-border-top-left-radius: 25px;
+  border-top-left-radius: 25px;
+  -moz-border-radius-bottomleft: 25px;
+  -webkit-border-bottom-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  -moz-border-radius-bottomright: 25px;
+  -webkit-border-bottom-right-radius: 25px;
+  border-bottom-right-radius: 25px;
   background: white;
   padding: 25px;
   color: #404040;
@@ -163,10 +169,6 @@ footer {
 /* --------------------------------------- */
 /*  Slides */
 /* --------------------------------------- */
-.margin-top-0 {
-  margin-top: 0px;
-}
-
 .slide {
   z-index: 999;
 }
@@ -175,27 +177,24 @@ footer {
   font-weight: 600;
   font-size: 1.8vw;
 }
-.slide .title .circle {
-  width: 40px;
-  height: 40px;
-  font-size: 30px;
-  border-radius: 50%;
-  color: #fff;
-  line-height: 40px;
-  text-align: center;
-  background: #404040;
-  display: inline-block;
+.slide .title .ask-me {
+  position: absolute;
+  top: -38px;
+  right: 0px;
+  font-size: 20px;
+  padding: 5px 20px !important;
+  background: #ff8900;
+  -moz-border-radius-topleft: 5px;
+  -webkit-border-top-left-radius: 5px;
+  border-top-left-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-top-right-radius: 5px;
+  color: white;
+  text-decoration: none;
 }
-.slide .title .title-copy {
-  display: inline-block;
-}
-.slide .ask-me {
-  font-size: 1.2vw !important;
-}
-.slide .question {
-  font-weight: 600;
-  font-size: 24px;
-  margin-bottom: 10px;
+.slide .title .ask-me:hover {
+  background: #f8ac29;
 }
 .slide p {
   font-size: inherit;
@@ -279,23 +278,121 @@ footer {
 /*  News */
 /* --------------------------------------- */
 .news {
-  margin-top: 30px;
+  margin-top: 20px;
 }
-.news .news__main {
-  font-size: 3vh;
+.news .source {
+  font-size: 20px;
 }
-.news .news__main .title {
-  padding: 3px 8px;
-  display: inline-block;
+.news .source .sentiment {
+  width: 35px;
+  height: 35px;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  color: #fff;
+  line-height: 35px;
+  text-align: center;
   background: #404040;
-  color: white;
-  font-size: 2.5vh;
-  margin-bottom: 10px;
+  display: inline-block;
 }
-.news .news__main .date {
-  font-size: 2.5vh;
+.news .source .sentiment.positive {
+  background-color: green;
+}
+.news .source .sentiment.negative {
+  background-color: red;
+}
+.news .source .source {
+  font-weight: bold;
+}
+.news .source .date {
   padding: 5px 0;
   color: #77C0B2;
+}
+.news .title {
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+  padding: 5px 10px;
+  background: #ccc;
+  color: #404040;
+  font-size: 3vh;
+  font-weight: bold;
+  margin: 10px 0px;
+}
+.news .news__main {
+  font-size: 2.2vh;
+}
+
+/* --------------------------------------- */
+/*  CES_KEYNOTES */
+/* --------------------------------------- */
+.keynotes .item {
+  margin: 50px 0px;
+}
+.keynotes .item .when {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  padding: 5px 15px;
+  color: #404040;
+  font-weight: bold;
+  font-size: 3vw;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.keynotes .item .when.now {
+  background-color: #c6e17d;
+}
+.keynotes .item .when.next {
+  background-color: #abdbf3;
+}
+.keynotes .item .generic, .keynotes .item .keynote, .keynotes .item .location, .keynotes .item .time {
+  margin: 5px 0px 0px 0px;
+}
+.keynotes .item .keynote {
+  font-weight: bold;
+  font-size: 2vw;
+  border-top: 1px solid #404040;
+  padding-top: 10px;
+}
+.keynotes .item .time {
+  padding-bottom: 10px;
+}
+
+/* --------------------------------------- */
+/*  CES_EVENTS */
+/* --------------------------------------- */
+.events .item {
+  margin: 50px 0px;
+}
+.events .item .when {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  padding: 5px 15px;
+  color: white;
+  font-weight: bold;
+  font-size: 3vw;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.events .item .when.now {
+  background-color: #c6e17d;
+}
+.events .item .when.next {
+  background-color: #abdbf3;
+}
+.events .item .generic, .events .item .keynote, .events .item .location, .events .item .time {
+  margin: 5px 0px 0px 0px;
+}
+.events .item .keynote {
+  font-weight: bold;
+  font-size: 2vw;
+  border-top: 1px solid #404040;
+  padding-top: 10px;
+}
+.events .item .time {
+  padding-bottom: 10px;
 }
 
 /* --------------------------------------- */

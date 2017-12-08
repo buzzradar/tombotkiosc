@@ -33,14 +33,8 @@
      
       <div class="slide">
 
-        <div>
-          <span class="title">
-            <div class="circle"><i class="fa fa-info"></i></div>
-            <div class="title-copy">Let me see if I can help you!</div>
-          </span>
-          <span class="pull-right">
-            <button type="button" class="btn btn-lg yellow-gold ask-me">Got It! Ask a question</button>
-          </span>
+        <div class="title">
+          <span><i class="fa fa-chevron-right"></i> {{answer}} </span><a href="#" class="pull-right ask-me">Got It! Ask a Question</a>
         </div>
 
         <div class="help">
@@ -75,14 +69,8 @@
      
       <div class="slide">
 
-        <div>
-          <span class="title">
-            <!-- <div class="circle"><i class="fa fa-lightbulb-o"></i></div> -->
-            <div class="title-copy">{{answer}}</div>
-          </span>
-          <span class="pull-right">
-            <button type="button" class="btn yellow-gold ask-me">Ask a new question</button>
-          </span>
+        <div class="title">
+          <span><i class="fa fa-chevron-right"></i> {{answer}} </span><a href="#" class="pull-right ask-me">Ask a New Question</a>
         </div>
 
         <div id="chartdiv" style="width: 100%; background-color: white;" ></div>
@@ -102,14 +90,8 @@
      
       <div class="slide">
 
-        <div>
-          <span class="title">
-            <!-- <div class="circle"><i class="fa fa-bolt"></i></div> -->
-            <div class="title-copy">{{answer}}</div>
-          </span>
-          <span class="pull-right">
-            <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
-          </span>
+        <div class="title">
+          <span><i class="fa fa-chevron-right"></i> {{answer}} </span><a href="#" class="pull-right ask-me">Ask a New Question</a>
         </div>
 
         <div class="photo">
@@ -151,14 +133,8 @@
      
       <div class="slide">
 
-        <div>
-          <span class="title">
-            <!-- <div class="circle"><i class="fa fa-bolt"></i></div> -->
-            <div class="title-copy">{{answer}}</div>
-          </span>
-          <span class="pull-right">
-            <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
-          </span>
+        <div class="title">
+          <span><i class="fa fa-chevron-right"></i> {{answer}} </span><a href="#" class="pull-right ask-me">Ask a New Question</a>
         </div>
 
         <div class="tweet">
@@ -205,30 +181,28 @@
      
       <div class="slide">
 
-        <div>
-          <span class="title">
-            <!-- <div class="circle"><i class="fa fa-bolt"></i></div> -->
-            <div class="title-copy">{{answer}}</div>
-          </span>
-          <span class="pull-right">
-            <button type="button" class="btn btn-lg yellow-gold ask-me">Ask a new question</button>
-          </span>
+        <div class="title">
+          <span><i class="fa fa-chevron-right"></i> {{answer}} </span><a href="#" class="pull-right ask-me">Ask a New Question</a>
         </div>
 
         <div class="news">
           
+          <div class="source">
+            <span class="sentiment {{sentiment.class}}">{{sentiment.absValue}}</span> <span class="source">{{source}}</span>
+            <span class="date pull-right">{{date}}</span>
+          </div>
+          <div class="title">
+            {{newstitle}}
+          </div>
+          
           <div class="row news__main">
             <div class="col-md-4">
-              <img src="{{image_url}}" width="100%"/>
+              <img src="{{image}}" width="100%"/>
             </div>
 
             <div class="col-md-8">
-              <div class="title">
-                <i class="fa fa-1x fa-instagram"></i> {{user.full_name}} 
-              </div>
-              <span class="date">{{tweet_date_ago}}</span>
-              <div class="description">
-                 {{content}}
+              <div class="news_copy">
+                 {{copy}}
               </div>
             </div>
           </div>
@@ -240,6 +214,67 @@
       
 
     </div>
+
+
+
+
+
+
+
+
+
+
+    <div id="ces_keynotes">
+     
+      <div class="slide">
+
+
+        <div class="title">
+          <span><i class="fa fa-chevron-right"></i> {{answer}} </span><a href="#" class="pull-right ask-me">Ask a New Question</a>
+        </div>
+
+
+        <div class="keynotes">
+
+          <div class="row">
+            <div class="col-md-6">
+
+              <div class="item">
+                <div class="when now">NOW</div>
+                <div class="location"> <i class="fa fa-map-marker"></i> Monte Carlo, Park Theater</div>
+                <div class="time"> <i class="fa fa-clock-o"></i> 6:30-7:30 PM</div>
+                <div class="keynote"></i> Brian Krzanich Chief Executive Officer (CEO) of Intel</div>
+              </div>
+
+            </div>
+            <div class="col-md-6">
+
+              <div class="item">
+                <div class="when next">NEXT</div>
+                <div class="location"> <i class="fa fa-map-marker"></i> Monte Carlo, Park Theater</div>
+                <div class="time"> <i class="fa fa-clock-o"></i> 6:30-7:30 PM</div>
+                <div class="keynote"></i> Gary Shapiro President and CEO Consumer Technology Association (CTA)</div>
+              </div>
+              
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      
+
+    </div>
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -73,6 +73,9 @@ function _renderContent(content_MOD) {
 		case "news":
 			this.content_DOM = HBTemplates_SRV.getTemplate('news_item', content_MOD);
 		break;
+		case "ces_keynotes":
+			this.content_DOM = HBTemplates_SRV.getTemplate('ces_keynotes', content_MOD);
+		break;
 
 	}
 

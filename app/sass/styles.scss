@@ -11,6 +11,10 @@ $primary-color: #ff8900;
 $secondary-color: #77C0B2;
 $dark-color: #404040;
 $twitter-color: #1ca2f3;
+$green: #c6e17d;
+$blue: #abdbf3;
+
+
 
 $par-size: 25px;
 
@@ -142,7 +146,9 @@ footer{
 
   &.speechbubble {
     position:relative;
-    @include border-radius(25px);
+    @include border-corner-radius(top, left, 25px);
+    @include border-corner-radius(bottom, left, 25px);
+    @include border-corner-radius(bottom, right, 25px);
     background:rgba(255, 255, 255, 1);
     padding:25px;
     color: $dark-color;
@@ -221,10 +227,6 @@ footer{
 /*  Slides */
 /* --------------------------------------- */
 
-.margin-top-0{
-  margin-top:0px;
-}
-
 .slide {
   
   z-index:999;
@@ -234,36 +236,25 @@ footer{
     font-weight:600;
     font-size:1.8vw;
 
-    .circle {
-      width: 40px;
-      height: 40px;
-      font-size:30px;
-      border-radius: 50%;
-      color: #fff;
-      line-height: 40px;
-      text-align: center;
-      background: $dark-color;
-      display:inline-block;
+    .ask-me{
+      position:absolute;
+      top:-38px;
+      right:0px;
+      font-size:20px;
+      padding:5px 20px !important;
+      background:$primary-color;
+      @include border-corner-radius(top, left, 5px);
+      @include border-corner-radius(top, right, 5px);
+      color:white;
+      text-decoration:none;
+    }  
+
+    .ask-me:hover{
+      background: #f8ac29;
     }
-
-    .title-copy{
-      display:inline-block;
-    }
-
-
   }
 
-  .ask-me{
-    font-size:1.2vw !important;
-  }
 
-  .question {
-
-    font-weight:600;
-    font-size:24px;
-    margin-bottom:10px;
-
-  }
 
   p{
     font-size:inherit;
@@ -428,26 +419,161 @@ footer{
 
 .news {
 
-  margin-top:30px;
+  margin-top:20px;
 
-  .news__main {
+  .source{
 
-    font-size:3vh;
+    font-size:20px;
 
-    .title {
-      padding:3px 8px;
-      display:inline-block;
+    .sentiment{
+
+      width: 35px;
+      height: 35px;
+      @include border-radius(50%);
+      color: #fff;
+      line-height: 35px;
+      text-align: center;
       background: $dark-color;
-      color:white;
-      font-size:2.5vh;
+      display:inline-block;
 
-      margin-bottom:10px;
+      &.positive {
+        background-color:green;
+      }
+      &.negative {
+        background-color:red;
+      }
+
     }
-
+    .source{
+      font-weight:bold;
+    }
     .date {
-      font-size:2.5vh;
       padding:5px 0;
       color: $secondary-color;
+    }
+
+  }
+
+  .title {
+    @include border-radius(15px);
+    padding:5px 10px;
+    background: #ccc;
+    color:$dark-color;
+    font-size:3vh;
+    font-weight:bold;
+    margin:10px 0px;
+  }
+
+  .news__main {
+    font-size:2.2vh;
+  }
+
+}
+
+
+
+
+
+/* --------------------------------------- */
+/*  CES_KEYNOTES */
+/* --------------------------------------- */
+
+
+.keynotes {
+
+  .item {
+    margin:50px 0px;
+
+    .when{
+      @include border-radius(10px);
+      padding:5px 15px;
+      color:$dark-color;
+      font-weight:bold;
+      font-size:3vw;
+      text-align:center;
+      margin-bottom:20px;
+
+      &.now{
+        background-color:$green;        
+      }
+      &.next{
+        background-color:$blue;        
+      }
+    }
+
+    .generic {
+      margin:5px 0px 0px 0px;      
+    }
+
+    .keynote{
+      @extend .generic;
+      font-weight:bold;
+      font-size:2vw;
+      border-top:1px solid $dark-color;
+      padding-top:10px;
+    }
+    .location{
+      @extend .generic;
+    }
+    .time{
+      @extend .generic;
+      padding-bottom:10px;
+    }
+
+  }
+
+}
+
+
+
+
+
+
+
+/* --------------------------------------- */
+/*  CES_EVENTS */
+/* --------------------------------------- */
+
+
+.events {
+
+  .item {
+    margin:50px 0px;
+
+    .when{
+      @include border-radius(10px);
+      padding:5px 15px;
+      color:white;
+      font-weight:bold;
+      font-size:3vw;
+      text-align:center;
+      margin-bottom:20px;
+
+      &.now{
+        background-color:$green;        
+      }
+      &.next{
+        background-color:$blue;        
+      }
+    }
+
+    .generic {
+      margin:5px 0px 0px 0px;      
+    }
+
+    .keynote{
+      @extend .generic;
+      font-weight:bold;
+      font-size:2vw;
+      border-top:1px solid $dark-color;
+      padding-top:10px;
+    }
+    .location{
+      @extend .generic;
+    }
+    .time{
+      @extend .generic;
+      padding-bottom:10px;
     }
 
   }
