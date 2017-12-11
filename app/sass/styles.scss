@@ -297,7 +297,7 @@ footer{
   .help-list-questions{
     
     li {
-      margin-top:2px;
+      margin-top:5px;
     }
 
     a {
@@ -534,51 +534,22 @@ footer{
 
 
 /* --------------------------------------- */
-/*  CES_EVENTS */
+/*  STATS */
 /* --------------------------------------- */
 
 
-.events {
+.stats {
 
-  .item {
-    margin:50px 0px;
+  //margin:2% 0px;
 
-    .when{
-      @include border-radius(10px);
-      padding:5px 15px;
-      color:white;
-      font-weight:bold;
-      font-size:3vw;
-      text-align:center;
-      margin-bottom:20px;
-
-      &.now{
-        background-color:$green;        
-      }
-      &.next{
-        background-color:$blue;        
-      }
-    }
-
-    .generic {
-      margin:5px 0px 0px 0px;      
-    }
-
-    .keynote{
-      @extend .generic;
-      font-weight:bold;
-      font-size:2vw;
-      border-top:1px solid $dark-color;
-      padding-top:10px;
-    }
-    .location{
-      @extend .generic;
-    }
-    .time{
-      @extend .generic;
-      padding-bottom:10px;
-    }
-
+  span {
+    text-align:center;
+    font-size:30vh;
+    font-weight:bold;
+    //background-color: $secondary-color;
+    color: $secondary-color;
+    padding:0 5%;
+    @include border-radius(10%);
   }
 
 }

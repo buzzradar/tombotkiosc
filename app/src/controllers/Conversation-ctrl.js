@@ -210,19 +210,19 @@ function _onQuestionReceived(newQuestion) {
 
 
 
-	// var content_MOD = {
-	//     "answer":"Keynotes happening right now at CES",
-	//     "type":"ces_keynotes",
-	// };
-	// console.log(content_MOD);
-	// _onAnswerReceived.call(this,content_MOD);
+	var content_MOD = {
+	    "answer":"The number of visitors at CES today is:",
+	    "type":"ces_stats",
+	};
+	console.log(content_MOD);
+	_onAnswerReceived.call(this,content_MOD);
 
 
 
 
 
 
-	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+	//APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 }
 

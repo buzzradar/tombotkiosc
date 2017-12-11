@@ -74,7 +74,13 @@ function _renderContent(content_MOD) {
 			this.content_DOM = HBTemplates_SRV.getTemplate('news_item', content_MOD);
 		break;
 		case "ces_keynotes":
-			this.content_DOM = HBTemplates_SRV.getTemplate('ces_keynotes', content_MOD);
+			this.content_DOM = HBTemplates_SRV.getTemplate('keynotes_item', content_MOD);
+		break;
+		case "ces_events":
+			this.content_DOM = HBTemplates_SRV.getTemplate('keynotes_item', content_MOD);
+		break;
+		case "ces_stats":
+			this.content_DOM = HBTemplates_SRV.getTemplate('stats_item', content_MOD);
 		break;
 
 	}
