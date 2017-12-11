@@ -40,7 +40,7 @@
 
   </head>
 
-  <body>
+  <body style="background: url('http://www.buzzradar.com/ces2018/kioskapp/assets/cesbot_bg.jpg') no-repeat center center fixed">
 
     <div class="control_timer" style="display: none;">
         <span class="state"></span>
@@ -116,7 +116,16 @@
 
 
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="js/tombot.js"></script>
+    <!-- <script src="js/tombot.js"></script> -->
+    <script>
+        $.getScript( "js/tombot.js" )
+          .done(function( script, textStatus ) {
+            //console.log( textStatus );
+          })
+          .fail(function( jqxhr, settings, exception ) {
+            console.log ("%c -> ERROR Loading tombol.js from index.html ", "background:#ff0000;");
+        });
+    </script>
 
     <!-- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>

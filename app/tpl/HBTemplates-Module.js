@@ -64,6 +64,13 @@ HBTemplates.prototype.getTemplate = function (tplId, data) {
         case 'news_item':
             _setSentimentScore(data);
         break;
+        case 'unknown':
+            _setHelpContent(tplId,data);
+            tplId = 'help_item';
+        break;
+        case 'help_item':
+            _setHelpContent(tplId,data);
+        break;
     }
 
 
@@ -99,6 +106,42 @@ function _setSentimentScore(data) {
         class : (data.sentiment < 0) ? 'negative' : 'positive',
         absValue : Math.abs(data.sentiment),
     };
+
+}
+
+
+function _setHelpContent(source,data) {
+
+    var suggestionsHTML = '';
+    var suggestions = [
+                "What are the top trends at CES this hour?",
+                "What has been the biggest moment at CES so far?",
+                "Where in the world are people talking about CES 2018 the most?",
+                "What are the big news stories at CES today?",
+                "How many conference sessions are there at CES this year?",
+                "How many exhibitors are attending CES this year?",
+                "How many people attended CES last year?",
+                "How many people have attended CES this week so far?",
+                "What events are happening now / today / tomorrow?",
+                "How many sq feet is CES?"
+            ];
+    data.dataProvider = (data.dataProvider.length == 0) ? suggestions : data.dataProvider;
+    $.each( data.dataProvider, function( key, value ) {
+      suggestionsHTML += '<li>'+value+'</li>';
+    });
+
+
+    
+
+    if (source == "unknown") {
+        data.answer = 'Is this what you wanted to ask?';        
+        data.subheader = '';   
+        data.suggestions = suggestionsHTML;     
+    }else{
+        data.answer = 'I sense you need some help';
+        data.subheader = 'Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...';        
+        data.suggestions = suggestionsHTML;     
+    }
 
 }
 

@@ -102,7 +102,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			_increaseWaitingTime.call(this);
+			// _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -112,11 +112,13 @@ function _checkState() {
 
 function _increaseWaitingTime() {
 
-	this.currentWaitingTime ++;
 	if (this.currentWaitingTime == this.waitingTime){
     	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
+		this.currentWaitingTime = 0;
 		_askIntroQuestion.call(this);
 	}
+
+	this.currentWaitingTime ++;
 
 }
 
@@ -212,21 +214,24 @@ function _onQuestionReceived(newQuestion) {
 
 
 
+	if ( DisplayGlobals_SRV.isLocalhost() ){
 
+		var content_MOD = {
+			"type":"unknown",
+			"dataProvider":[
+			    "What is the most shared Tweet at CES  today?",
+			  	"Where in the world are people talking about CES2018 the most"
+			]
+		};
+		_onAnswerReceived.call(this,content_MOD);
 
-	// var content_MOD = {
-	//     "answer":"The number of visitors at CES today is:",
-	//     "type":"ces_stats",
-	// };
-	// console.log(content_MOD);
-	// _onAnswerReceived.call(this,content_MOD);
+	}else{
 
+		_setState.call(this, 'calling_api');
+		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
+	}
 
-
-
-	_setState.call(this, 'calling_api');
-	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 }
 

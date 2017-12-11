@@ -65,6 +65,9 @@ function _getURL() {
     var url = window.location.href;
     DisplayGlobals_SRV.setIsLocalhost(url.includes('localhost'));
 
+    console.log ("%c -> Window.location.href ---> ", "background:#4fc7f4;", url);
+
+
 }
 
 
@@ -164,6 +167,9 @@ function _renderContent(content_MOD) {
 		break;
 		case "ces_stats":
 			this.content_DOM = HBTemplates_SRV.getTemplate('stats_item', content_MOD);
+		break;
+		case "unknown":
+			this.content_DOM = HBTemplates_SRV.getTemplate('unknown', content_MOD);
 		break;
 
 	}
@@ -411,7 +417,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			_increaseWaitingTime.call(this);
+			// _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -421,11 +427,13 @@ function _checkState() {
 
 function _increaseWaitingTime() {
 
-	this.currentWaitingTime ++;
 	if (this.currentWaitingTime == this.waitingTime){
     	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
+		this.currentWaitingTime = 0;
 		_askIntroQuestion.call(this);
 	}
+
+	this.currentWaitingTime ++;
 
 }
 
@@ -521,21 +529,24 @@ function _onQuestionReceived(newQuestion) {
 
 
 
+	if ( DisplayGlobals_SRV.isLocalhost() ){
 
+		var content_MOD = {
+			"type":"unknown",
+			"dataProvider":[
+			    "What is the most shared Tweet at CES  today?",
+			  	"Where in the world are people talking about CES2018 the most"
+			]
+		};
+		_onAnswerReceived.call(this,content_MOD);
 
-	// var content_MOD = {
-	//     "answer":"The number of visitors at CES today is:",
-	//     "type":"ces_stats",
-	// };
-	// console.log(content_MOD);
-	// _onAnswerReceived.call(this,content_MOD);
+	}else{
 
+		_setState.call(this, 'calling_api');
+		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
+	}
 
-
-
-	_setState.call(this, 'calling_api');
-	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 }
 
@@ -1339,6 +1350,8 @@ AIAgent.prototype.getModel = function(question) {
 	}else if(_checkHelp(question)){
 		answerMOD = {
 			type : 'help',
+			answer : 'I sense you need some help',
+			dataProvider : []
 		};
 	}else if(_checkHowAreYou(question)) {
 		answerMOD = {
@@ -2145,7 +2158,7 @@ DisplayGlobals.prototype.isLocalhost = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"help_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> I sense you need some help </span><a href=\"#\" class=\"pull-right ask-me\">Got It! Ask a Question</a>        </div>        <div class=\"help\">          <p>Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...</p>          <ul class=\"help-list-questions\">            <li>What are the top trends at CES this hour?</li>            <li>What has been the biggest moment at CES so far?</li>            <li>Where in the world are people talking about CES 2018 the most?</li>            <li>What are the big news stories at CES today?</li>            <li>How many conference sessions are there at CES this year?</li>            <li>How many exhibitors are attending CES this year? </li>            <li>How many people attended CES last year?</li>            <li>How many people have attended CES this week so far?</li>            <li>What events are happening now / today / tomorrow?</li>            <li>How many sq feet is CES?</li>          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"{{image_url}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-twitter\"></i> {{user.full_name}}               </div>              <span class=\"date\">{{tweet_date_ago}}</span>              <div class=\"description\">                 {{content}}              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          ","news_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"news\">                    <div class=\"source\">            <span class=\"sentiment {{sentiment.class}}\">{{sentiment.absValue}}</span> <span class=\"source\">{{source}}</span>            <span class=\"date pull-right\">{{date}}</span>          </div>          <div class=\"title\">            {{newstitle}}          </div>                    <div class=\"row news__main\">            <div class=\"col-md-4\">              <img src=\"{{image}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"news_copy\">                 {{copy}}              </div>            </div>          </div>                  </div>      </div>          ","keynotes_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"keynotes\">          <div class=\"row\">            <div class=\"col-md-6\">              <div class=\"item\">                <div class=\"when now\">NOW</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"keynote\"> Brian Krzanich Chief Executive Officer (CEO) of Intel</div>              </div>            </div>            <div class=\"col-md-6\">              <div class=\"item\">                <div class=\"when next\">NEXT</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"keynote\"> Gary Shapiro President and CEO Consumer Technology Association (CTA)</div>              </div>                          </div>          </div>        </div>      </div>          ","stats_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"stats\">          <div class=\"row\">            <div class=\"col-md-12 text-center\">              <span>56</span>            </div>          </div>        </div>      </div>          "}
+var templates = {"help_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Got It! Ask a Question</a>        </div>        <div class=\"help\">          <p>{{subheader}}</p>          <ul class=\"help-list-questions\">            {{{suggestions}}}          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"{{image_url}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-twitter\"></i> {{user.full_name}}               </div>              <span class=\"date\">{{tweet_date_ago}}</span>              <div class=\"description\">                 {{content}}              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          ","news_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"news\">                    <div class=\"source\">            <span class=\"sentiment {{sentiment.class}}\">{{sentiment.absValue}}</span> <span class=\"source\">{{source}}</span>            <span class=\"date pull-right\">{{date}}</span>          </div>          <div class=\"title\">            {{newstitle}}          </div>                    <div class=\"row news__main\">            <div class=\"col-md-4\">              <img src=\"{{image}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"news_copy\">                 {{copy}}              </div>            </div>          </div>                  </div>      </div>          ","keynotes_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"keynotes\">          <div class=\"row\">            <div class=\"col-md-6\">              <div class=\"item\">                <div class=\"when now\">NOW</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"keynote\"> Brian Krzanich Chief Executive Officer (CEO) of Intel</div>              </div>            </div>            <div class=\"col-md-6\">              <div class=\"item\">                <div class=\"when next\">NEXT</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"keynote\"> Gary Shapiro President and CEO Consumer Technology Association (CTA)</div>              </div>                          </div>          </div>        </div>      </div>          ","stats_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"stats\">          <div class=\"row\">            <div class=\"col-md-12 text-center\">              <span>56</span>            </div>          </div>        </div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -2212,6 +2225,13 @@ HBTemplates.prototype.getTemplate = function (tplId, data) {
         case 'news_item':
             _setSentimentScore(data);
         break;
+        case 'unknown':
+            _setHelpContent(tplId,data);
+            tplId = 'help_item';
+        break;
+        case 'help_item':
+            _setHelpContent(tplId,data);
+        break;
     }
 
 
@@ -2247,6 +2267,42 @@ function _setSentimentScore(data) {
         class : (data.sentiment < 0) ? 'negative' : 'positive',
         absValue : Math.abs(data.sentiment),
     };
+
+}
+
+
+function _setHelpContent(source,data) {
+
+    var suggestionsHTML = '';
+    var suggestions = [
+                "What are the top trends at CES this hour?",
+                "What has been the biggest moment at CES so far?",
+                "Where in the world are people talking about CES 2018 the most?",
+                "What are the big news stories at CES today?",
+                "How many conference sessions are there at CES this year?",
+                "How many exhibitors are attending CES this year?",
+                "How many people attended CES last year?",
+                "How many people have attended CES this week so far?",
+                "What events are happening now / today / tomorrow?",
+                "How many sq feet is CES?"
+            ];
+    data.dataProvider = (data.dataProvider.length == 0) ? suggestions : data.dataProvider;
+    $.each( data.dataProvider, function( key, value ) {
+      suggestionsHTML += '<li>'+value+'</li>';
+    });
+
+
+    
+
+    if (source == "unknown") {
+        data.answer = 'Is this what you wanted to ask?';        
+        data.subheader = '';   
+        data.suggestions = suggestionsHTML;     
+    }else{
+        data.answer = 'I sense you need some help';
+        data.subheader = 'Some say I am very good at my job but I am not perfect. Here are some examples of the questions I can answer...';        
+        data.suggestions = suggestionsHTML;     
+    }
 
 }
 

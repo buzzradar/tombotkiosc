@@ -82,6 +82,9 @@ function _renderContent(content_MOD) {
 		case "ces_stats":
 			this.content_DOM = HBTemplates_SRV.getTemplate('stats_item', content_MOD);
 		break;
+		case "unknown":
+			this.content_DOM = HBTemplates_SRV.getTemplate('unknown', content_MOD);
+		break;
 
 	}
 

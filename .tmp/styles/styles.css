@@ -12,8 +12,6 @@ html, body {
 }
 
 body {
-  background: orange;
-  background: url("../assets/cesbot_bg.jpg") no-repeat center center fixed;
   -moz-background-size: cover;
   -o-background-size: cover;
   -webkit-background-size: cover;
@@ -82,7 +80,7 @@ footer {
   float: right;
 }
 .conversation.answer input {
-  background-color: rgba(255, 255, 255, 0);
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
   text-align: right;
 }
