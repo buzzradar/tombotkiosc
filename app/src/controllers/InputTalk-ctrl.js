@@ -242,11 +242,11 @@ InputTalk_Ctrl.prototype.hide = function () {
 
 
 InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
-	
-	console.log(this);
+
+	this.input_DOM.off('focusout keydown');	
 	this.conversation_DOM.fadeIn(500);
 	_setCopy.call(this,'user',newQuestion, _autoQuestionAnimationFinished);	//set the copy of the input
-	
+
 };
 
 

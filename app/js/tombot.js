@@ -32,7 +32,7 @@ function App_NODE () {
 
 
     _loadSentencesJSON();
-    
+    _getURL();
 
 }
 
@@ -59,6 +59,13 @@ function _loadSentencesJSON() {
 }
 
 
+
+function _getURL() {
+
+    var url = window.location.href;
+    DisplayGlobals_SRV.setIsLocalhost(url.includes('localhost'));
+
+}
 
 
 
@@ -118,8 +125,8 @@ function _setChartHeight() {
 
 	var height = $(window).height();
 	var topOffset = this.bubble_DOM.offset().top;
-	var footerHeight = 80;
-	var chartHeight = Math.round(height-topOffset);
+	var footerHeight = 20;
+	var chartHeight = Math.round(height-topOffset-footerHeight);
 
 	console.log(height, topOffset, footerHeight, chartHeight);
 
@@ -330,7 +337,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = 2;
+	this.waitingTime = ( DisplayGlobals_SRV.isLocalhost() ) ? '5' : '20';
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -404,7 +411,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			// _increaseWaitingTime.call(this);
+			_increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -414,18 +421,23 @@ function _checkState() {
 
 function _increaseWaitingTime() {
 
+	this.currentWaitingTime ++;
 	if (this.currentWaitingTime == this.waitingTime){
     	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
 		_askIntroQuestion.call(this);
 	}
-	this.currentWaitingTime ++;
 
 }
 
 
 function _printDebugTimer() {
+
+	if ( DisplayGlobals_SRV.isLocalhost() ) {
+		$('.control_timer').show();
+	}
+
 	$('.control_timer').find('.state').html('<strong>State: </strong>' + this.state);
-	$('.control_timer').find('.time').html(this.currentWaitingTime + ' ' + this.waitingTime);
+	$('.control_timer').find('.time').html('<strong>Time: </strong>' +this.currentWaitingTime + ' of ' + this.waitingTime);
 }
 
 
@@ -499,7 +511,6 @@ function _onHelpReceived(response) {
 function _onQuestionReceived(newQuestion) {
 	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
 	
-	_setState.call(this, 'calling_api');
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
 
@@ -512,19 +523,19 @@ function _onQuestionReceived(newQuestion) {
 
 
 
-	var content_MOD = {
-	    "answer":"The number of visitors at CES today is:",
-	    "type":"ces_stats",
-	};
-	console.log(content_MOD);
-	_onAnswerReceived.call(this,content_MOD);
+	// var content_MOD = {
+	//     "answer":"The number of visitors at CES today is:",
+	//     "type":"ces_stats",
+	// };
+	// console.log(content_MOD);
+	// _onAnswerReceived.call(this,content_MOD);
 
 
 
 
 
-
-	//APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+	_setState.call(this, 'calling_api');
+	APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 
 }
 
@@ -841,11 +852,11 @@ InputTalk_Ctrl.prototype.hide = function () {
 
 
 InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
-	
-	console.log(this);
+
+	this.input_DOM.off('focusout keydown');	
 	this.conversation_DOM.fadeIn(500);
 	_setCopy.call(this,'user',newQuestion, _autoQuestionAnimationFinished);	//set the copy of the input
-	
+
 };
 
 
@@ -1190,6 +1201,11 @@ function _blinkEyes() {
 
 
 
+function _stopAllTransitions() {
+
+	d3.selectAll("*").transition();
+
+}
 
 
 
@@ -2081,6 +2097,29 @@ DisplayGlobals.prototype.setSentencesJSON = function(sentencesJSON) {
 DisplayGlobals.prototype.getSentencesJSON = function() {
 
     return _sentencesJSON;
+
+};
+
+
+
+
+
+//----------------------------
+// location URL
+//----------------------------
+
+let _isLocalhost;
+
+DisplayGlobals.prototype.setIsLocalhost = function(isLocalhost) {
+
+  _isLocalhost = isLocalhost;
+
+};
+
+
+DisplayGlobals.prototype.isLocalhost = function() {
+
+    return _isLocalhost;
 
 };
 

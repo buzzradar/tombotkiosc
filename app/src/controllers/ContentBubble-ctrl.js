@@ -42,8 +42,8 @@ function _setChartHeight() {
 
 	var height = $(window).height();
 	var topOffset = this.bubble_DOM.offset().top;
-	var footerHeight = 80;
-	var chartHeight = Math.round(height-topOffset);
+	var footerHeight = 20;
+	var chartHeight = Math.round(height-topOffset-footerHeight);
 
 	console.log(height, topOffset, footerHeight, chartHeight);
 

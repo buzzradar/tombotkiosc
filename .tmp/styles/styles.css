@@ -13,7 +13,7 @@ html, body {
 
 body {
   background: orange;
-  background: url("../assets/bg.jpg") no-repeat center center fixed;
+  background: url("../assets/cesbot_bg.jpg") no-repeat center center fixed;
   -moz-background-size: cover;
   -o-background-size: cover;
   -webkit-background-size: cover;
@@ -38,10 +38,6 @@ footer {
   margin-bottom: 1%;
   width: 200px;
   height: 200px;
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -webkit-transform: scale(1);
-  transform: scale(1);
 }
 .tomboticon .robot {
   position: absolute;
@@ -84,7 +80,6 @@ footer {
 }
 .conversation.answer label {
   float: right;
-  color: white;
 }
 .conversation.answer input {
   background-color: rgba(255, 255, 255, 0);

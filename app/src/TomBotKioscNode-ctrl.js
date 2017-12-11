@@ -31,7 +31,7 @@ function App_NODE () {
 
 
     _loadSentencesJSON();
-    
+    _getURL();
 
 }
 
@@ -58,6 +58,13 @@ function _loadSentencesJSON() {
 }
 
 
+
+function _getURL() {
+
+    var url = window.location.href;
+    DisplayGlobals_SRV.setIsLocalhost(url.includes('localhost'));
+
+}
 
 
 

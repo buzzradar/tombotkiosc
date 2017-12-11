@@ -29,7 +29,12 @@
 
     "intro_questions" : [ 
 
-        "What is the most read news story of CES 2018 so far?"
+            "Who’s being talked about right now at CES?",
+            "What is the most talked about brand / product/ industry right now?",
+            "Who is winning at CES today?/ Who is leading the conversation at CES right now?",
+            "How many people are talking about CES today / this week / this hour?",
+            "What has been the biggest moment at CES so far?"
+
     ],
 
 

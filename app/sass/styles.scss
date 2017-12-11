@@ -34,7 +34,7 @@ html,body {
 
 body{
   background:orange;
-  background: url("../assets/bg.jpg") no-repeat center center fixed;
+  background: url("../assets/cesbot_bg.jpg") no-repeat center center fixed;
   @include background-size(cover);
   color: $primary-color;
   font-size: $par-size;
@@ -59,7 +59,8 @@ footer{
   //background: green;
   width:200px;
   height:200px;
-  @include transform(scale(1));
+  //@include transform(scale(0.5));
+  //transform-origin: top;
 
 
   .robot {
@@ -69,7 +70,6 @@ footer{
     height:150px;
     top:25px;
     left:25px;
-
   }
 }
 
@@ -125,7 +125,7 @@ footer{
 
     label {
       float:right;
-      color:white;
+      //color:white;
     }
 
     input {

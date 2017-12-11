@@ -130,6 +130,29 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 
 
 
+//----------------------------
+// location URL
+//----------------------------
+
+let _isLocalhost;
+
+DisplayGlobals.prototype.setIsLocalhost = function(isLocalhost) {
+
+  _isLocalhost = isLocalhost;
+
+};
+
+
+DisplayGlobals.prototype.isLocalhost = function() {
+
+    return _isLocalhost;
+
+};
+
+
+
+
+
 
 
 

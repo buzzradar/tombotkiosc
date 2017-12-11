@@ -324,6 +324,11 @@ function _blinkEyes() {
 
 
 
+function _stopAllTransitions() {
+
+	d3.selectAll("*").transition();
+
+}
 
 
 
