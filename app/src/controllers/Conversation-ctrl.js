@@ -102,7 +102,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			// _increaseWaitingTime.call(this);
+			if ( !DisplayGlobals_SRV.isLocalhost() )  _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -216,14 +216,18 @@ function _onQuestionReceived(newQuestion) {
 
 	if ( DisplayGlobals_SRV.isLocalhost() ){
 
-		var content_MOD = {
-			"type":"unknown",
-			"dataProvider":[
-			    "What is the most shared Tweet at CES  today?",
-			  	"Where in the world are people talking about CES2018 the most"
-			]
-		};
-		_onAnswerReceived.call(this,content_MOD);
+		// var content_MOD = {
+		// 	"type":"unknown",
+		// 	"dataProvider":[
+		// 	    "What is the most shared Tweet at CES  today?",
+		// 	  	"Where in the world are people talking about CES2018 the most"
+		// 	]
+		// };
+		// _onAnswerReceived.call(this,content_MOD);
+
+		_setState.call(this, 'calling_api');
+		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+
 
 	}else{
 
