@@ -131,21 +131,21 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 
 
 //----------------------------
-// location URL
+// Dev Mode
 //----------------------------
 
-let _isLocalhost;
+let _isDevMode;
 
-DisplayGlobals.prototype.setIsLocalhost = function(isLocalhost) {
+DisplayGlobals.prototype.setDevMode = function(isDevMode) {
 
-  _isLocalhost = isLocalhost;
+  _isDevMode = isDevMode;
 
 };
 
 
-DisplayGlobals.prototype.isLocalhost = function() {
+DisplayGlobals.prototype.isDevMode = function() {
 
-    return _isLocalhost;
+    return _isDevMode;
 
 };
 

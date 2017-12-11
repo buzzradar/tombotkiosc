@@ -28,7 +28,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isLocalhost() ) ? '5' : '20';
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '20';
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -102,7 +102,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			if ( !DisplayGlobals_SRV.isLocalhost() )  _increaseWaitingTime.call(this);
+			if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -125,7 +125,7 @@ function _increaseWaitingTime() {
 
 function _printDebugTimer() {
 
-	if ( DisplayGlobals_SRV.isLocalhost() ) {
+	if ( DisplayGlobals_SRV.isDevMode() ) {
 		$('.control_timer').show();
 	}
 
@@ -214,7 +214,7 @@ function _onQuestionReceived(newQuestion) {
 
 
 
-	if ( DisplayGlobals_SRV.isLocalhost() ){
+	if ( DisplayGlobals_SRV.isDevMode() ){
 
 		// var content_MOD = {
 		// 	"type":"unknown",

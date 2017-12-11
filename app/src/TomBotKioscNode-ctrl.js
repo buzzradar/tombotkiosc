@@ -62,7 +62,7 @@ function _loadSentencesJSON() {
 function _getURL() {
 
     var url = window.location.href;
-    DisplayGlobals_SRV.setIsLocalhost(url.includes('localhost'));
+    DisplayGlobals_SRV.setDevMode(url.includes('localhost'));
 
     console.log ("%c -> Window.location.href ---> ", "background:#4fc7f4;", url);
 

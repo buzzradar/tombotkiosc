@@ -63,7 +63,7 @@ function _loadSentencesJSON() {
 function _getURL() {
 
     var url = window.location.href;
-    DisplayGlobals_SRV.setIsLocalhost(url.includes('localhost'));
+    DisplayGlobals_SRV.setDevMode(url.includes('localhost'));
 
     console.log ("%c -> Window.location.href ---> ", "background:#4fc7f4;", url);
 
@@ -343,7 +343,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isLocalhost() ) ? '5' : '20';
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '20';
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -417,7 +417,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			if ( !DisplayGlobals_SRV.isLocalhost() )  _increaseWaitingTime.call(this);
+			if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -440,7 +440,7 @@ function _increaseWaitingTime() {
 
 function _printDebugTimer() {
 
-	if ( DisplayGlobals_SRV.isLocalhost() ) {
+	if ( DisplayGlobals_SRV.isDevMode() ) {
 		$('.control_timer').show();
 	}
 
@@ -529,7 +529,7 @@ function _onQuestionReceived(newQuestion) {
 
 
 
-	if ( DisplayGlobals_SRV.isLocalhost() ){
+	if ( DisplayGlobals_SRV.isDevMode() ){
 
 		// var content_MOD = {
 		// 	"type":"unknown",
@@ -922,12 +922,33 @@ function TomBotIcon_Ctrl (target) {
 	this.botTalkingColor = '#77C0B2';
 	this.state = "waiting";
 
-	_createSVGTomBot.call(this,target);
+	_setSVGDimensions.call(this, target);
+
 
 }
 _nodeUtil.inherits(TomBotIcon_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
 
 
+
+
+function _setSVGDimensions(target) {
+
+	var windowHeight = $(window).height();
+	target.css('width',windowHeight * 0.20);
+	target.css('height',windowHeight * 0.20);
+
+	this.svgWidth = target.width();
+	this.svgHeight = target.height();
+
+	target.find('.robot').css('height',this.svgWidth - 50);
+	target.find('.robot').css('width',this.svgWidth - 50);
+
+
+
+	_createSVGTomBot.call(this,target);
+
+
+}
 
 
 
@@ -975,7 +996,7 @@ function _addBGBot() {
 	var g = this.svgContainer.append("g");
 
 	let dataCircle = [
-						{color: this.botColor,r:80, opacity: 1, delay:0}
+						{color: this.botColor,r:this.svgWidth/2 - 20, opacity: 1, delay:0}
 					  ];
 
 	this.botBG = g.selectAll("circle")
@@ -2122,21 +2143,21 @@ DisplayGlobals.prototype.getSentencesJSON = function() {
 
 
 //----------------------------
-// location URL
+// Dev Mode
 //----------------------------
 
-let _isLocalhost;
+let _isDevMode;
 
-DisplayGlobals.prototype.setIsLocalhost = function(isLocalhost) {
+DisplayGlobals.prototype.setDevMode = function(isDevMode) {
 
-  _isLocalhost = isLocalhost;
+  _isDevMode = isDevMode;
 
 };
 
 
-DisplayGlobals.prototype.isLocalhost = function() {
+DisplayGlobals.prototype.isDevMode = function() {
 
-    return _isLocalhost;
+    return _isDevMode;
 
 };
 

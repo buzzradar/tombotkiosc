@@ -30,12 +30,33 @@ function TomBotIcon_Ctrl (target) {
 	this.botTalkingColor = '#77C0B2';
 	this.state = "waiting";
 
-	_createSVGTomBot.call(this,target);
+	_setSVGDimensions.call(this, target);
+
 
 }
 _nodeUtil.inherits(TomBotIcon_Ctrl,_eventEmitter3); // extend _eventEmitter3 so we can use the event methods in LocalLib
 
 
+
+
+function _setSVGDimensions(target) {
+
+	var windowHeight = $(window).height();
+	target.css('width',windowHeight * 0.20);
+	target.css('height',windowHeight * 0.20);
+
+	this.svgWidth = target.width();
+	this.svgHeight = target.height();
+
+	target.find('.robot').css('height',this.svgWidth - 50);
+	target.find('.robot').css('width',this.svgWidth - 50);
+
+
+
+	_createSVGTomBot.call(this,target);
+
+
+}
 
 
 
@@ -83,7 +104,7 @@ function _addBGBot() {
 	var g = this.svgContainer.append("g");
 
 	let dataCircle = [
-						{color: this.botColor,r:80, opacity: 1, delay:0}
+						{color: this.botColor,r:this.svgWidth/2 - 20, opacity: 1, delay:0}
 					  ];
 
 	this.botBG = g.selectAll("circle")
