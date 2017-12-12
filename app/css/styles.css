@@ -172,7 +172,8 @@ footer {
 }
 .slide .title .ask-me {
   position: absolute;
-  top: -38px;
+  height: 40px;
+  top: -40px;
   right: 0px;
   font-size: 20px;
   padding: 5px 20px !important;

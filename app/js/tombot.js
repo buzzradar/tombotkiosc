@@ -202,7 +202,8 @@ function _renderContent(content_MOD) {
 	function _suggestedQuestionClicked(e) {
 		e.preventDefault();
 		var question = $(this).attr('data-question');
-		console.log(question,self);
+		self.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+		setTimeout(_dispatchSuggestedQuestion.bind(self,question),500);
 	}
 
 
@@ -238,6 +239,14 @@ function _dispatchIntroStopped() {
 
 	_destroyChart.call(this);
 	this.emit.call(this,"intro_stopped");
+
+}
+
+
+function _dispatchSuggestedQuestion(question) {
+
+	console.log(question,this);
+	this.emit.call(this,"suggested_question",question);
 
 }
 
@@ -349,7 +358,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '20';
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '15';
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -380,6 +389,7 @@ function _addContentAndInput() {
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
 	this.contentBubble.on("intro_stopped",_showInputTalk,this);
+	this.contentBubble.on("suggested_question",_askSuggestedQuestion,this);
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
 	this.inputTalk.on("question_ready", _onQuestionReceived, this);
@@ -446,9 +456,9 @@ function _increaseWaitingTime() {
 
 function _printDebugTimer() {
 
-	if ( DisplayGlobals_SRV.isDevMode() ) {
+	//if ( DisplayGlobals_SRV.isDevMode() ) {
 		$('.control_timer').show();
-	}
+	//}
 
 	$('.control_timer').find('.state').html('<strong>State: </strong>' + this.state);
 	$('.control_timer').find('.time').html('<strong>Time: </strong>' +this.currentWaitingTime + ' of ' + this.waitingTime);
@@ -464,6 +474,13 @@ function _addMouseMoveEvent() {
 
 }
 
+
+
+function _askSuggestedQuestion(suggestedQuestion) {
+
+	_onQuestionReceived.call(this,suggestedQuestion);
+
+}
 
 
 
@@ -2462,7 +2479,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, 50);
+    let copyInterval = setInterval(onEachInterval, _getAnimationTime());
 
     function onEachInterval() {
 
@@ -2474,7 +2491,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
             copyInterval = null;
             botIcon.changeState("waiting");
             
-            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),1000);
+            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),500);
 
             return false;
         }
@@ -2486,6 +2503,12 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
 };
 
 
+
+function _getAnimationTime() {
+
+    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 40;
+
+}
 
  
 

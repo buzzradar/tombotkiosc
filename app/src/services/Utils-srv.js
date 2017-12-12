@@ -41,7 +41,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, 50);
+    let copyInterval = setInterval(onEachInterval, _getAnimationTime());
 
     function onEachInterval() {
 
@@ -53,7 +53,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
             copyInterval = null;
             botIcon.changeState("waiting");
             
-            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),1000);
+            setTimeout(dispatchCopyAnimationFinished.bind(this,inputDOM),500);
 
             return false;
         }
@@ -65,6 +65,12 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
 };
 
 
+
+function _getAnimationTime() {
+
+    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 40;
+
+}
 
  
 

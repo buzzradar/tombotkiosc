@@ -28,7 +28,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '20';
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '15';
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -59,6 +59,7 @@ function _addContentAndInput() {
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
 	this.contentBubble.on("intro_stopped",_showInputTalk,this);
+	this.contentBubble.on("suggested_question",_askSuggestedQuestion,this);
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
 	this.inputTalk.on("question_ready", _onQuestionReceived, this);
@@ -125,9 +126,9 @@ function _increaseWaitingTime() {
 
 function _printDebugTimer() {
 
-	if ( DisplayGlobals_SRV.isDevMode() ) {
+	//if ( DisplayGlobals_SRV.isDevMode() ) {
 		$('.control_timer').show();
-	}
+	//}
 
 	$('.control_timer').find('.state').html('<strong>State: </strong>' + this.state);
 	$('.control_timer').find('.time').html('<strong>Time: </strong>' +this.currentWaitingTime + ' of ' + this.waitingTime);
@@ -143,6 +144,13 @@ function _addMouseMoveEvent() {
 
 }
 
+
+
+function _askSuggestedQuestion(suggestedQuestion) {
+
+	_onQuestionReceived.call(this,suggestedQuestion);
+
+}
 
 
 

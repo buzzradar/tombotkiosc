@@ -116,7 +116,8 @@ function _renderContent(content_MOD) {
 	function _suggestedQuestionClicked(e) {
 		e.preventDefault();
 		var question = $(this).attr('data-question');
-		console.log(question,self);
+		self.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+		setTimeout(_dispatchSuggestedQuestion.bind(self,question),500);
 	}
 
 
@@ -152,6 +153,14 @@ function _dispatchIntroStopped() {
 
 	_destroyChart.call(this);
 	this.emit.call(this,"intro_stopped");
+
+}
+
+
+function _dispatchSuggestedQuestion(question) {
+
+	console.log(question,this);
+	this.emit.call(this,"suggested_question",question);
 
 }
 
