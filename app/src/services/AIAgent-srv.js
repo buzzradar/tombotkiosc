@@ -46,7 +46,7 @@ AIAgent.prototype.getModel = function(question) {
 	}else if(_checkHelp(question)){
 		answerMOD = {
 			type : 'help',
-			answer : 'I sense you need some help',
+			answer : 'I sense you may need some help',
 			dataProvider : []
 		};
 	}else if(_checkHowAreYou(question)) {

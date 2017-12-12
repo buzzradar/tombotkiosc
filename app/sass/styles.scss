@@ -35,7 +35,7 @@ html,body {
 body{
   //background:orange;
   //background: url("http://www.buzzradar.com/ces2018/kioskapp/assets/cesbot_bg.jpg") no-repeat center center fixed;
-  @include background-size(cover);
+  //@include background-size(cover);
   color: $primary-color;
   font-size: $par-size;
 }
@@ -79,7 +79,7 @@ footer{
 .main_container {
   
   margin:0 auto;
-  width: 65%;
+  width: 70%;
   height:100%;
   //background:red;
 }
@@ -297,7 +297,7 @@ footer{
   .help-list-questions{
     
     li {
-      margin-top:5px;
+      margin-top:10px;
     }
 
     a {

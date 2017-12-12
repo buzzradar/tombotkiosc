@@ -12,10 +12,6 @@ html, body {
 }
 
 body {
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  -webkit-background-size: cover;
-  background-size: cover;
   color: #ff8900;
   font-size: 25px;
 }
@@ -47,7 +43,7 @@ footer {
 
 .main_container {
   margin: 0 auto;
-  width: 65%;
+  width: 70%;
   height: 100%;
 }
 
@@ -207,7 +203,7 @@ footer {
   font-size: 2.2vh;
 }
 .help .help-list-questions li {
-  margin-top: 5px;
+  margin-top: 10px;
 }
 .help .help-list-questions a {
   color: #404040;

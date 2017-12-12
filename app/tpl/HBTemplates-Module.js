@@ -127,11 +127,8 @@ function _setHelpContent(source,data) {
             ];
     data.dataProvider = (data.dataProvider.length == 0) ? suggestions : data.dataProvider;
     $.each( data.dataProvider, function( key, value ) {
-      suggestionsHTML += '<li>'+value+'</li>';
+      suggestionsHTML += '<li><a href="#" class="suggested-question" data-question="'+value+'">'+value+'</a></li>';
     });
-
-
-    
 
     if (source == "unknown") {
         data.answer = 'Is this what you wanted to ask?';        

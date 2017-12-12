@@ -157,18 +157,19 @@ function _fixDataProviderFromMarius(dataProvider) {
 
 
 
-function _loadSerialChart(dataProvider) {
+function _loadSerialChart(dataProvider, dateFormat) {
 
 	var serialChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
 			"categoryField": "date",
-			"dataDateFormat": "YYYY-MM-DD",
+			"dataDateFormat": _getSerialDateFormat(dateFormat),
 			"export": {
 				"enabled": false
 			},
 			"categoryAxis": {
 				"gridPosition": "start",
+        		"minPeriod": "hh",
 				"parseDates": true
 			},
 			"chartCursor": {
@@ -218,6 +219,14 @@ function _loadSerialChart(dataProvider) {
 	);
 
 	return serialChart;
+
+}
+
+function _getSerialDateFormat(dateFormat) {
+
+	if(!dateFormat) dateFormat = 'daily';
+	var format = (dateFormat == "hourly") ? 'YYYY-MM-DD HH:NN:SS' : 'YYYY-MM-DD';
+	return format;
 
 }
 
@@ -425,9 +434,9 @@ Charts_SRV.prototype.loadBarChart = function(dataProvider) {
 };
 
 
-Charts_SRV.prototype.loadSerialChart = function(dataProvider) {
+Charts_SRV.prototype.loadSerialChart = function(dataProvider,dateFormat) {
 
-	return _loadSerialChart.call(this,dataProvider);
+	return _loadSerialChart.call(this,dataProvider, dateFormat);
 
 };
 

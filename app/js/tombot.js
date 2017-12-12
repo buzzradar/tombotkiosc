@@ -186,7 +186,7 @@ function _renderContent(content_MOD) {
 				this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
 			break;
 			case 'serial':
-				this.chart = Charts_SRV.loadSerialChart.call(this,content_MOD.dataProvider);
+				this.chart = Charts_SRV.loadSerialChart.call(this,content_MOD.dataProvider, content_MOD.dateFormat);
 			break;
 			case 'pie':
 				this.chart = Charts_SRV.loadPieChart.call(this,content_MOD.dataProvider);
@@ -195,6 +195,7 @@ function _renderContent(content_MOD) {
 	}
 
 	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
+	this.bubble_DOM.find('.suggested-question').click(_suggestedQuestionClicked);
 	_animBubbleIn.call(this);
 	
 
@@ -221,10 +222,7 @@ function _animBubbleOut() {
 
 function _stopSlides() {
 
-	console.log("stop intro....");
 	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-
-
 	setTimeout(_dispatchIntroStopped.bind(this),500);
 
 }
@@ -249,6 +247,14 @@ function _destroyChart() {
 }
 
 
+
+function _suggestedQuestionClicked(e) {
+
+	e.preventDefault();
+	var question = $(this).attr('data-question');
+	console.log(question);
+
+}
 
 
 
@@ -1371,7 +1377,7 @@ AIAgent.prototype.getModel = function(question) {
 	}else if(_checkHelp(question)){
 		answerMOD = {
 			type : 'help',
-			answer : 'I sense you need some help',
+			answer : 'I sense you may need some help',
 			dataProvider : []
 		};
 	}else if(_checkHowAreYou(question)) {
@@ -1702,18 +1708,19 @@ function _fixDataProviderFromMarius(dataProvider) {
 
 
 
-function _loadSerialChart(dataProvider) {
+function _loadSerialChart(dataProvider, dateFormat) {
 
 	var serialChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "serial",
 			"categoryField": "date",
-			"dataDateFormat": "YYYY-MM-DD",
+			"dataDateFormat": _getSerialDateFormat(dateFormat),
 			"export": {
 				"enabled": false
 			},
 			"categoryAxis": {
 				"gridPosition": "start",
+        		"minPeriod": "hh",
 				"parseDates": true
 			},
 			"chartCursor": {
@@ -1763,6 +1770,14 @@ function _loadSerialChart(dataProvider) {
 	);
 
 	return serialChart;
+
+}
+
+function _getSerialDateFormat(dateFormat) {
+
+	if(!dateFormat) dateFormat = 'daily';
+	var format = (dateFormat == "hourly") ? 'YYYY-MM-DD HH:NN:SS' : 'YYYY-MM-DD';
+	return format;
 
 }
 
@@ -1970,9 +1985,9 @@ Charts_SRV.prototype.loadBarChart = function(dataProvider) {
 };
 
 
-Charts_SRV.prototype.loadSerialChart = function(dataProvider) {
+Charts_SRV.prototype.loadSerialChart = function(dataProvider,dateFormat) {
 
-	return _loadSerialChart.call(this,dataProvider);
+	return _loadSerialChart.call(this,dataProvider, dateFormat);
 
 };
 
@@ -2309,11 +2324,8 @@ function _setHelpContent(source,data) {
             ];
     data.dataProvider = (data.dataProvider.length == 0) ? suggestions : data.dataProvider;
     $.each( data.dataProvider, function( key, value ) {
-      suggestionsHTML += '<li>'+value+'</li>';
+      suggestionsHTML += '<li><a href="#" class="suggested-question" data-question="'+value+'">'+value+'</a></li>';
     });
-
-
-    
 
     if (source == "unknown") {
         data.answer = 'Is this what you wanted to ask?';        

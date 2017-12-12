@@ -100,7 +100,7 @@ function _renderContent(content_MOD) {
 				this.chart = Charts_SRV.loadBarChart.call(this,content_MOD.dataProvider);
 			break;
 			case 'serial':
-				this.chart = Charts_SRV.loadSerialChart.call(this,content_MOD.dataProvider);
+				this.chart = Charts_SRV.loadSerialChart.call(this,content_MOD.dataProvider, content_MOD.dateFormat);
 			break;
 			case 'pie':
 				this.chart = Charts_SRV.loadPieChart.call(this,content_MOD.dataProvider);
@@ -109,6 +109,7 @@ function _renderContent(content_MOD) {
 	}
 
 	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
+	this.bubble_DOM.find('.suggested-question').click(_suggestedQuestionClicked);
 	_animBubbleIn.call(this);
 	
 
@@ -135,10 +136,7 @@ function _animBubbleOut() {
 
 function _stopSlides() {
 
-	console.log("stop intro....");
 	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-
-
 	setTimeout(_dispatchIntroStopped.bind(this),500);
 
 }
@@ -163,6 +161,14 @@ function _destroyChart() {
 }
 
 
+
+function _suggestedQuestionClicked(e) {
+
+	e.preventDefault();
+	var question = $(this).attr('data-question');
+	console.log(question);
+
+}
 
 
 
