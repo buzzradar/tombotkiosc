@@ -55,6 +55,7 @@ function _setChartHeight() {
 
 function _renderContent(content_MOD) {
 
+	var self = this;
 	this.bubble_DOM.height('auto');
 	switch(content_MOD.type) {
 
@@ -112,6 +113,11 @@ function _renderContent(content_MOD) {
 	this.bubble_DOM.find('.suggested-question').click(_suggestedQuestionClicked);
 	_animBubbleIn.call(this);
 	
+	function _suggestedQuestionClicked(e) {
+		e.preventDefault();
+		var question = $(this).attr('data-question');
+		console.log(question,self);
+	}
 
 
 }
@@ -162,13 +168,7 @@ function _destroyChart() {
 
 
 
-function _suggestedQuestionClicked(e) {
 
-	e.preventDefault();
-	var question = $(this).attr('data-question');
-	console.log(question);
-
-}
 
 
 

@@ -87,7 +87,7 @@ function _changeOwner(newOwner) {
 }
 
 
-function _addFocusInListener() {
+function _addClickListener() {
 
 	var self = this;
 	this.input_DOM.off('click').on('click', onInputClicked.bind(this));
@@ -101,6 +101,7 @@ function onInputClicked() {
 	this.input_DOM.attr("disabled", false);
 	this.input_DOM.val('');
     _changeOwner.call(this,'user');
+	 _addFocusOutKeyDownListener.call(this);
 
 }
 
@@ -120,7 +121,6 @@ function _addFocusOutKeyDownListener() {
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
-			_addFocusOutKeyDownListener.call(this);
     	}
 	}
 
@@ -145,6 +145,7 @@ function _checkQuestion() {
 		if (content_MOD.type == "input"){
 			_setCopy.call(this,'cesbot',content_MOD.answer,_onGreetingAnimationFinished);
 		}else if(content_MOD.type == "help") {
+			this.input_DOM.off('focusout keydown');
 			this.emit("show_help", content_MOD);
 		}
 
@@ -182,8 +183,7 @@ function _showInput() {
 	this.conversation_DOM.fadeIn(500);
 	_setCopy.call(this,'cesbot',Utils_SRV.getRandomGreeting(), _onGreetingAnimationFinished);	//set the copy of the input
 	
-	_addFocusInListener.call(this);
-	_addFocusOutKeyDownListener.call(this);
+	_addClickListener.call(this);
 
 }
 

@@ -141,6 +141,7 @@ function _setChartHeight() {
 
 function _renderContent(content_MOD) {
 
+	var self = this;
 	this.bubble_DOM.height('auto');
 	switch(content_MOD.type) {
 
@@ -198,6 +199,11 @@ function _renderContent(content_MOD) {
 	this.bubble_DOM.find('.suggested-question').click(_suggestedQuestionClicked);
 	_animBubbleIn.call(this);
 	
+	function _suggestedQuestionClicked(e) {
+		e.preventDefault();
+		var question = $(this).attr('data-question');
+		console.log(question,self);
+	}
 
 
 }
@@ -248,13 +254,7 @@ function _destroyChart() {
 
 
 
-function _suggestedQuestionClicked(e) {
 
-	e.preventDefault();
-	var question = $(this).attr('data-question');
-	console.log(question);
-
-}
 
 
 
@@ -383,7 +383,7 @@ function _addContentAndInput() {
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
 	this.inputTalk.on("question_ready", _onQuestionReceived, this);
-	this.inputTalk.on("show_help", _onHelpReceived, this);
+	this.inputTalk.on("show_help", _onAnswerReceived, this);
 
 
 	_onEachTickSecond.call(this);
@@ -508,17 +508,8 @@ function _onAnswerReceived(response) {
 	_hideInputTalk.call(this);
 	_setState.call(this, 'content_displayed');
 
-
 }
 
-
-
-function _onHelpReceived(response) {
-
-	this.contentBubble.renderAnswer(response);
-	_hideInputTalk.call(this);
-
-}
 
 
 
@@ -527,10 +518,6 @@ function _onQuestionReceived(newQuestion) {
 	
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
-
-
-
-
 
 
 
@@ -718,7 +705,7 @@ function _changeOwner(newOwner) {
 }
 
 
-function _addFocusInListener() {
+function _addClickListener() {
 
 	var self = this;
 	this.input_DOM.off('click').on('click', onInputClicked.bind(this));
@@ -732,6 +719,7 @@ function onInputClicked() {
 	this.input_DOM.attr("disabled", false);
 	this.input_DOM.val('');
     _changeOwner.call(this,'user');
+	 _addFocusOutKeyDownListener.call(this);
 
 }
 
@@ -751,7 +739,6 @@ function _addFocusOutKeyDownListener() {
     	if (e.type == "focusout" || e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
-			_addFocusOutKeyDownListener.call(this);
     	}
 	}
 
@@ -776,6 +763,7 @@ function _checkQuestion() {
 		if (content_MOD.type == "input"){
 			_setCopy.call(this,'cesbot',content_MOD.answer,_onGreetingAnimationFinished);
 		}else if(content_MOD.type == "help") {
+			this.input_DOM.off('focusout keydown');
 			this.emit("show_help", content_MOD);
 		}
 
@@ -813,8 +801,7 @@ function _showInput() {
 	this.conversation_DOM.fadeIn(500);
 	_setCopy.call(this,'cesbot',Utils_SRV.getRandomGreeting(), _onGreetingAnimationFinished);	//set the copy of the input
 	
-	_addFocusInListener.call(this);
-	_addFocusOutKeyDownListener.call(this);
+	_addClickListener.call(this);
 
 }
 

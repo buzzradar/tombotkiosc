@@ -62,7 +62,7 @@ function _addContentAndInput() {
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
 	this.inputTalk.on("question_ready", _onQuestionReceived, this);
-	this.inputTalk.on("show_help", _onHelpReceived, this);
+	this.inputTalk.on("show_help", _onAnswerReceived, this);
 
 
 	_onEachTickSecond.call(this);
@@ -187,17 +187,8 @@ function _onAnswerReceived(response) {
 	_hideInputTalk.call(this);
 	_setState.call(this, 'content_displayed');
 
-
 }
 
-
-
-function _onHelpReceived(response) {
-
-	this.contentBubble.renderAnswer(response);
-	_hideInputTalk.call(this);
-
-}
 
 
 
@@ -206,10 +197,6 @@ function _onQuestionReceived(newQuestion) {
 	
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
-
-
-
-
 
 
 
