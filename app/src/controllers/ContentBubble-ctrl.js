@@ -112,6 +112,13 @@ function _renderContent(content_MOD) {
 	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
 	this.bubble_DOM.find('.suggested-question').click(_suggestedQuestionClicked);
 	_animBubbleIn.call(this);
+
+	function _stopSlides() {
+
+		this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+		setTimeout(_dispatchAskNewQuestion.bind(this),500);
+
+	}
 	
 	function _suggestedQuestionClicked(e) {
 		e.preventDefault();
@@ -140,19 +147,10 @@ function _animBubbleOut() {
 }
 
 
-
-function _stopSlides() {
-
-	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-	setTimeout(_dispatchIntroStopped.bind(this),500);
-
-}
-
-
-function _dispatchIntroStopped() {
+function _dispatchAskNewQuestion() {
 
 	_destroyChart.call(this);
-	this.emit.call(this,"intro_stopped");
+	this.emit.call(this,"ask_new_question");
 
 }
 

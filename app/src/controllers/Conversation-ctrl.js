@@ -55,10 +55,11 @@ function _init() {
 
 
 
+
 function _addContentAndInput() {
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
-	this.contentBubble.on("intro_stopped",_showInputTalk,this);
+	this.contentBubble.on("ask_new_question",_showInputandFocusIt,this);
 	this.contentBubble.on("suggested_question",_askSuggestedQuestion,this);
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
@@ -250,8 +251,9 @@ function _onQuestionReceived(newQuestion) {
 
 
 
-
-
+function _showInputandFocusIt(){
+	this.inputTalk.focusInputUser();
+}
 
 function _hideInputTalk() {
 	this.inputTalk.hide();

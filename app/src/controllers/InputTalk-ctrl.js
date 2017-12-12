@@ -90,12 +90,12 @@ function _changeOwner(newOwner) {
 function _addClickListener() {
 
 	var self = this;
-	this.input_DOM.off('click').on('click', onInputClicked.bind(this));
+	this.input_DOM.off('click').on('click', _onInputClicked.bind(this));
 
 }
 
 
-function onInputClicked() {
+function _onInputClicked() {
 	console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
 
 	this.input_DOM.attr("disabled", false);
@@ -238,6 +238,17 @@ InputTalk_Ctrl.prototype.show = function () {
 
 InputTalk_Ctrl.prototype.hide = function () {
 	_hideInput.call(this);
+};
+
+
+InputTalk_Ctrl.prototype.focusInputUser = function () {
+	this.conversation_DOM.fadeIn(500);
+	this.input_DOM.val('');
+	this.input_DOM.focus();
+	this.input_DOM.attr("disabled", false);
+    _changeOwner.call(this,'user');
+	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
+	_addFocusOutKeyDownListener.call(this);
 };
 
 

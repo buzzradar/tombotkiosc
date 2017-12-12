@@ -68,7 +68,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
 
 function _getAnimationTime() {
 
-    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 40;
+    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 25;
 
 }
 

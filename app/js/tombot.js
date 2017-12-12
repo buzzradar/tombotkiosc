@@ -198,6 +198,13 @@ function _renderContent(content_MOD) {
 	this.bubble_DOM.find('.ask-me').click(_stopSlides.bind(this));
 	this.bubble_DOM.find('.suggested-question').click(_suggestedQuestionClicked);
 	_animBubbleIn.call(this);
+
+	function _stopSlides() {
+
+		this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
+		setTimeout(_dispatchAskNewQuestion.bind(this),500);
+
+	}
 	
 	function _suggestedQuestionClicked(e) {
 		e.preventDefault();
@@ -226,19 +233,10 @@ function _animBubbleOut() {
 }
 
 
-
-function _stopSlides() {
-
-	this.bubble_DOM.removeClass('anim-in').addClass('anim-out');
-	setTimeout(_dispatchIntroStopped.bind(this),500);
-
-}
-
-
-function _dispatchIntroStopped() {
+function _dispatchAskNewQuestion() {
 
 	_destroyChart.call(this);
-	this.emit.call(this,"intro_stopped");
+	this.emit.call(this,"ask_new_question");
 
 }
 
@@ -385,10 +383,11 @@ function _init() {
 
 
 
+
 function _addContentAndInput() {
 
 	this.contentBubble = new ContentBubble_CTRL(this.botIcon);
-	this.contentBubble.on("intro_stopped",_showInputTalk,this);
+	this.contentBubble.on("ask_new_question",_showInputandFocusIt,this);
 	this.contentBubble.on("suggested_question",_askSuggestedQuestion,this);
 
 	this.inputTalk = new InputTalk_CTRL(this.botIcon);
@@ -580,8 +579,9 @@ function _onQuestionReceived(newQuestion) {
 
 
 
-
-
+function _showInputandFocusIt(){
+	this.inputTalk.focusInputUser();
+}
 
 function _hideInputTalk() {
 	this.inputTalk.hide();
@@ -725,12 +725,12 @@ function _changeOwner(newOwner) {
 function _addClickListener() {
 
 	var self = this;
-	this.input_DOM.off('click').on('click', onInputClicked.bind(this));
+	this.input_DOM.off('click').on('click', _onInputClicked.bind(this));
 
 }
 
 
-function onInputClicked() {
+function _onInputClicked() {
 	console.log ("%c -> NOTE => ", "background:#00ff00;", "on Click ......");
 
 	this.input_DOM.attr("disabled", false);
@@ -873,6 +873,17 @@ InputTalk_Ctrl.prototype.show = function () {
 
 InputTalk_Ctrl.prototype.hide = function () {
 	_hideInput.call(this);
+};
+
+
+InputTalk_Ctrl.prototype.focusInputUser = function () {
+	this.conversation_DOM.fadeIn(500);
+	this.input_DOM.val('');
+	this.input_DOM.focus();
+	this.input_DOM.attr("disabled", false);
+    _changeOwner.call(this,'user');
+	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
+	_addFocusOutKeyDownListener.call(this);
 };
 
 
@@ -2506,7 +2517,7 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
 
 function _getAnimationTime() {
 
-    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 40;
+    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 25;
 
 }
 
