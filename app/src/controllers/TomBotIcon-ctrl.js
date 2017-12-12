@@ -44,17 +44,13 @@ function _setSVGDimensions(target) {
 	var windowHeight = $(window).height();
 	target.css('width',windowHeight * 0.20);
 	target.css('height',windowHeight * 0.20);
-
 	this.svgWidth = target.width();
 	this.svgHeight = target.height();
-
 	target.find('.robot').css('height',this.svgWidth - 50);
 	target.find('.robot').css('width',this.svgWidth - 50);
 
 
-
 	_createSVGTomBot.call(this,target);
-
 
 }
 
