@@ -356,7 +356,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '15';
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 5 : 30;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -442,13 +442,14 @@ function _checkState() {
 
 function _increaseWaitingTime() {
 
-	if (this.currentWaitingTime == this.waitingTime){
+	this.currentWaitingTime ++;
+	console.log(this.currentWaitingTime, this.waitingTime);
+	if (this.currentWaitingTime == (this.waitingTime + 1) ) {
     	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
 		this.currentWaitingTime = 0;
 		_askIntroQuestion.call(this);
 	}
 
-	this.currentWaitingTime ++;
 
 }
 
@@ -707,7 +708,7 @@ function _setCopy(owner, copy, onAnimationFinished) {
 	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
 	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
-	Utils_SRV.animateCopy(this.input_DOM,copy,this.botIcon);
+	Utils_SRV.animateCopy(this.input_DOM,copy,owner,this.botIcon);
 	DisplayGlobals_SRV.getConversationRef().changeState('working');
 }
 
@@ -753,7 +754,8 @@ function _addFocusOutKeyDownListener() {
 			DisplayGlobals_SRV.getConversationRef().changeState('working');
         }
 
-    	if (e.type == "focusout" || e.which == 13) {
+    	// if (e.type == "focusout" || e.which == 13) {
+    	if (e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
     	}
@@ -879,7 +881,6 @@ InputTalk_Ctrl.prototype.hide = function () {
 InputTalk_Ctrl.prototype.focusInputUser = function () {
 	this.conversation_DOM.fadeIn(500);
 	this.input_DOM.val('');
-	this.input_DOM.focus();
 	this.input_DOM.attr("disabled", false);
     _changeOwner.call(this,'user');
 	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
@@ -1425,7 +1426,7 @@ function _checkHello(question) {
 
 	var isHello = false;
 	question = question.toLowerCase();
-	if ( question.length <= 5 && !question.includes("help") && !question.includes("reach") && !question.includes("photo") ) {
+	if ( question == "hello" ) {
 		isHello = true;
 	}
 	return isHello;
@@ -2483,14 +2484,14 @@ var dispatchCopyAnimationFinished = function(inputDOM) {
 };
 
 
-Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
+Utils_SRV.prototype.animateCopy = function (inputDOM,copy,owner,botIcon) {
 
     inputDOM.attr("disabled", true);
     let copyArray = copy.split('');
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, _getAnimationTime());
+    let copyInterval = setInterval(onEachInterval, _getAnimationTime(owner));
 
     function onEachInterval() {
 
@@ -2515,9 +2516,12 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
 
 
 
-function _getAnimationTime() {
+function _getAnimationTime(owner) {
 
-    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 25;
+    var t = ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 25;
+    if (owner == "user") t = 70;
+
+    return t;
 
 }
 

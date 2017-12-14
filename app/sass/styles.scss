@@ -101,7 +101,7 @@ footer{
     padding:30px 20px;
     font-size:1.5vw;
     font-weight:300;
-    border:1px solid rgba(255, 255, 255, 0.1);
+    border:1px solid rgba(255, 255, 255, 0.2);
   }
 
   label {
@@ -132,6 +132,16 @@ footer{
       background-color: rgba(255, 255, 255, 0.1);
       color:white;
       text-align:right;
+
+      -webkit-border-radius: 4px;
+         -moz-border-radius: 4px;
+              border-radius: 4px;
+
+
+      -webkit-box-shadow: 0px 0px 4px #4195fc;
+         -moz-box-shadow: 0px 0px 4px #4195fc;
+              box-shadow: 0px 0px 4px #4195fc; 
+
     }
 
   }

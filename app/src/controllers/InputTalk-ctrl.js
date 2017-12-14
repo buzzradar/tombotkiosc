@@ -72,7 +72,7 @@ function _setCopy(owner, copy, onAnimationFinished) {
 	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
 	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
-	Utils_SRV.animateCopy(this.input_DOM,copy,this.botIcon);
+	Utils_SRV.animateCopy(this.input_DOM,copy,owner,this.botIcon);
 	DisplayGlobals_SRV.getConversationRef().changeState('working');
 }
 
@@ -118,7 +118,8 @@ function _addFocusOutKeyDownListener() {
 			DisplayGlobals_SRV.getConversationRef().changeState('working');
         }
 
-    	if (e.type == "focusout" || e.which == 13) {
+    	// if (e.type == "focusout" || e.which == 13) {
+    	if (e.which == 13) {
     		this.input_DOM.off('focusout keydown');
 	        _checkQuestion.call(this);
     	}
@@ -244,7 +245,6 @@ InputTalk_Ctrl.prototype.hide = function () {
 InputTalk_Ctrl.prototype.focusInputUser = function () {
 	this.conversation_DOM.fadeIn(500);
 	this.input_DOM.val('');
-	this.input_DOM.focus();
 	this.input_DOM.attr("disabled", false);
     _changeOwner.call(this,'user');
 	DisplayGlobals_SRV.getConversationRef().changeState('waiting');

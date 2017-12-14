@@ -34,14 +34,14 @@ var dispatchCopyAnimationFinished = function(inputDOM) {
 };
 
 
-Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
+Utils_SRV.prototype.animateCopy = function (inputDOM,copy,owner,botIcon) {
 
     inputDOM.attr("disabled", true);
     let copyArray = copy.split('');
     let copyAnim = '';
 
     botIcon.changeState("talking");
-    let copyInterval = setInterval(onEachInterval, _getAnimationTime());
+    let copyInterval = setInterval(onEachInterval, _getAnimationTime(owner));
 
     function onEachInterval() {
 
@@ -66,9 +66,12 @@ Utils_SRV.prototype.animateCopy = function (inputDOM,copy,botIcon) {
 
 
 
-function _getAnimationTime() {
+function _getAnimationTime(owner) {
 
-    return ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 25;
+    var t = ( DisplayGlobals_SRV.isDevMode() ) ? 10 : 25;
+    if (owner == "user") t = 70;
+
+    return t;
 
 }
 

@@ -28,7 +28,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? '5' : '15';
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 5 : 30;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -114,13 +114,14 @@ function _checkState() {
 
 function _increaseWaitingTime() {
 
-	if (this.currentWaitingTime == this.waitingTime){
+	this.currentWaitingTime ++;
+	console.log(this.currentWaitingTime, this.waitingTime);
+	if (this.currentWaitingTime == (this.waitingTime + 1) ) {
     	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
 		this.currentWaitingTime = 0;
 		_askIntroQuestion.call(this);
 	}
 
-	this.currentWaitingTime ++;
 
 }
 
