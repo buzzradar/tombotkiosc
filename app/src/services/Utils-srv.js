@@ -34,13 +34,13 @@ var dispatchCopyAnimationFinished = function(inputDOM) {
 };
 
 
-Utils_SRV.prototype.animateCopy = function (inputDOM,copy,owner,botIcon) {
+Utils_SRV.prototype.animateCopy = function (inputDOM,copy,owner,botIcon,botIconState) {
 
     inputDOM.attr("disabled", true);
     let copyArray = copy.split('');
     let copyAnim = '';
 
-    botIcon.changeState("talking");
+    botIcon.changeState(botIconState);
     let copyInterval = setInterval(onEachInterval, _getAnimationTime(owner));
 
     function onEachInterval() {

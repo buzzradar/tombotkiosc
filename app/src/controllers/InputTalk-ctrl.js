@@ -66,13 +66,13 @@ function _setOwner() {
 
 }
 
-function _setCopy(owner, copy, onAnimationFinished) {
+function _setCopy(owner, copy, onAnimationFinished, botIconState) {
 	
 	if (owner == 'user') this.input_DOM.attr("disabled", true);
 	_changeOwner.call(this,owner);
 	this.input_DOM.val('');
 	Utils_SRV.on("copy_animation_finished",onAnimationFinished,this);
-	Utils_SRV.animateCopy(this.input_DOM,copy,owner,this.botIcon);
+	Utils_SRV.animateCopy(this.input_DOM,copy,owner,this.botIcon,botIconState);
 	DisplayGlobals_SRV.getConversationRef().changeState('working');
 }
 
@@ -101,8 +101,7 @@ function _onInputClicked() {
 	this.input_DOM.attr("disabled", false);
 	this.input_DOM.val('');
     _changeOwner.call(this,'user');
-	 _addFocusOutKeyDownListener.call(this);
-
+	_addFocusOutKeyDownListener.call(this);
 }
 
 
@@ -140,11 +139,11 @@ function _checkQuestion() {
 	if (!content_MOD) {
 		//Make API Call
 		console.log("AI Return FALSE so ask Marius");
-		_setCopy.call(this,'cesbot',Utils_SRV.getRandomAcknowledge(),_onAcknowledgeAnimationFinished);
+		_setCopy.call(this,'cesbot',Utils_SRV.getRandomAcknowledge(),_onAcknowledgeAnimationFinished, 'talking');
 	}else{
 
 		if (content_MOD.type == "input"){
-			_setCopy.call(this,'cesbot',content_MOD.answer,_onGreetingAnimationFinished);
+			_setCopy.call(this,'cesbot',content_MOD.answer,_onGreetingAnimationFinished, 'talking');
 		}else if(content_MOD.type == "help") {
 			this.input_DOM.off('focusout keydown');
 			this.emit("show_help", content_MOD);
@@ -182,7 +181,7 @@ function _autoQuestionAnimationFinished() {
 function _showInput() {
 
 	this.conversation_DOM.fadeIn(500);
-	_setCopy.call(this,'cesbot',Utils_SRV.getRandomGreeting(), _onGreetingAnimationFinished);	//set the copy of the input
+	_setCopy.call(this,'cesbot',Utils_SRV.getRandomGreeting(), _onGreetingAnimationFinished, 'talking');	//set the copy of the input
 	
 	_addClickListener.call(this);
 
@@ -256,7 +255,7 @@ InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
 
 	this.input_DOM.off('focusout keydown');	
 	this.conversation_DOM.fadeIn(500);
-	_setCopy.call(this,'user',newQuestion, _autoQuestionAnimationFinished);	//set the copy of the input
+	_setCopy.call(this,'user',newQuestion, _autoQuestionAnimationFinished, 'listening');	//set the copy of the input
 
 };
 
