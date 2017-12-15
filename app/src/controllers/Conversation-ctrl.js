@@ -115,7 +115,7 @@ function _checkState() {
 function _increaseWaitingTime() {
 
 	this.currentWaitingTime ++;
-	console.log(this.currentWaitingTime, this.waitingTime);
+	//console.log(this.currentWaitingTime, this.waitingTime);
 	if (this.currentWaitingTime == (this.waitingTime + 1) ) {
     	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
 		this.currentWaitingTime = 0;
