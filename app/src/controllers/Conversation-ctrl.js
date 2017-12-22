@@ -214,19 +214,19 @@ function _onQuestionReceived(newQuestion) {
 
 	if ( DisplayGlobals_SRV.isDevMode() ){
 
-		// var content_MOD = {
-		// 	"type":"ces_keynotes",
-		// 	"answer" : "This is the title",
-		// 	"number":59
-		// };
-		// _onAnswerReceived.call(this,content_MOD);
+		var content_MOD = {
+			"type":"ces_stats",
+			"answer" : "This is the title",
+			"number": 765432
+		};
+		_onAnswerReceived.call(this,content_MOD);
 
 
 
 
-		_setState.call(this, 'calling_api');
+		// _setState.call(this, 'calling_api');
 		// setTimeout(function() {
-			APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+			// APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
 		// }.bind(this),5000);
 
 		
