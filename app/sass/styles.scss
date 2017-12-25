@@ -554,13 +554,14 @@ footer{
   //margin:2% 0px;
 
   span {
+    width:auto;
     text-align:center;
-    font-size:15vw;
+    font-size:11vw;
     font-weight:bold;
-    //background-color: $secondary-color;
+    //background-color: grey;
     color: $secondary-color;
     padding:0 5%;
-    @include border-radius(10%);
+    //@include border-radius(10%);
   }
 
 }

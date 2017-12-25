@@ -545,7 +545,7 @@ function _onQuestionReceived(newQuestion) {
 		var content_MOD = {
 			"type":"ces_stats",
 			"answer" : "This is the title",
-			"number": 765432
+			"number": 76543288
 		};
 		_onAnswerReceived.call(this,content_MOD);
 
