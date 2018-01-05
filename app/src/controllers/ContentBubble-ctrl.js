@@ -78,6 +78,7 @@ function _renderContent(content_MOD) {
 		// 	this.content_DOM = HBTemplates_SRV.getTemplate('events_item', content_MOD);
 		// break;
 		case "ces_events":
+			content_MOD = setContent_Module_Events(content_MOD);
 			this.content_DOM = HBTemplates_SRV.getTemplate('events_item', content_MOD);
 		break;
 		case "ces_stats":
@@ -131,6 +132,18 @@ function _renderContent(content_MOD) {
 }
 
 
+function setContent_Module_Events(content_MOD) {
+
+	console.clear();
+	console.log(content_MOD);
+
+	content_MOD["answer"] = "I have found "+content_MOD.dataProvider.length+" Events";
+
+	return content_MOD;
+
+}
+
+
 function _animBubbleIn() {
 
 	// console.log("anim-in!!!!!!!!!!!!!!!!!!!!!!");
@@ -158,7 +171,7 @@ function _dispatchAskNewQuestion() {
 function _dispatchSuggestedQuestion(question) {
 
 	console.log(question,this);
-	this.emit.call(this,"suggested_question",question);
+	this.emit.call(this,"suggested_question",{"question":question,"isHuman":false});
 
 }
 

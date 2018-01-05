@@ -321,6 +321,10 @@ function _transformTitle(valueField) {
 
 function _loadPieChart(dataProvider) {
 
+
+	console.log
+
+
 	var pieChart = AmCharts.makeChart("chartdiv",
 		{
 			"type": "pie",
@@ -345,7 +349,7 @@ function _loadPieChart(dataProvider) {
 			    "markerType" : "square",
 			    "markerSize" : 15,
 			    "markerLabelGap" : 20,
-			    "verticalGap" : 20,
+			    "verticalGap" : 13,
 			},
 			"titles": [],
 			"dataProvider": _getPieColors(dataProvider)
@@ -371,7 +375,7 @@ function _getPieColors(dataProvider) {
 	  	}else if (value.category.toLowerCase() === "neutral"){
 	  		value['color'] = _arrayColorsSentiment[2];
 	  	}else{
-	  		value['color'] = _arrayColors[i];
+	  		// value['color'] = _arrayColors[i];
 	  		i++;
 	  	}
 

@@ -216,19 +216,19 @@ function _onQuestionReceived(newQuestion) {
 
 	if ( DisplayGlobals_SRV.isDevMode() ){
 
-		var content_MOD = {
-			"type":"ces_events",
-			"answer" : "This is the title",
-			"number": 76543288
-		};
-		_onAnswerReceived.call(this,content_MOD);
+		// var content_MOD = {
+		// 	"type":"ces_events",
+		// 	"answer" : "This is the title",
+		// 	"number": 76543288
+		// };
+		// _onAnswerReceived.call(this,content_MOD);
 
 
 
 
-		// _setState.call(this, 'calling_api');
+		_setState.call(this, 'calling_api');
 		// setTimeout(function() {
-		// 	APICalls_SRV.callGET(this.apiCallURL_Dev,{question:newQuestion.question, isHuman:newQuestion.isHuman}, _onAnswerReceived.bind(this));
+			APICalls_SRV.callGET(this.apiCallURL_Live,{question:newQuestion.question, isHuman:newQuestion.isHuman}, _onAnswerReceived.bind(this));
 		// }.bind(this),5000);
 
 		
