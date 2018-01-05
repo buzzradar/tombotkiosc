@@ -327,7 +327,7 @@ footer {
 /*  CES_KEYNOTES */
 /* --------------------------------------- */
 .keynotes .item {
-  margin: 50px 0px;
+  margin: 25px 0px;
 }
 .keynotes .item .when {
   -moz-border-radius: 10px;
@@ -341,7 +341,9 @@ footer {
   margin-bottom: 20px;
 }
 .keynotes .item .when.now {
-  background-color: #c6e17d;
+  background-color: #eeeeee;
+  color: #404040;
+  letter-spacing: 10px;
 }
 .keynotes .item .when.next {
   background-color: #abdbf3;
@@ -352,7 +354,7 @@ footer {
 .keynotes .item .keynote {
   font-weight: bold;
   font-size: 2vw;
-  border-top: 1px solid #404040;
+  border-bottom: 1px solid #404040;
   padding-top: 10px;
 }
 .keynotes .item .time {

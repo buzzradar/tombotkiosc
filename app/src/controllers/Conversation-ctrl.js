@@ -19,6 +19,8 @@ const AIAgent_SRV = require('../services/AIAgent-srv');
 
 function Conversation_Ctrl () {
 
+	this.apiCallURL_Live = 'http://insights.buzzradar.com/apis/cesbot/query.json?access_token=YjI3NGY5ZTBhMzQyYzdlZDM4MGI0NTI5ZGU1YmQ1NTVmNjg5MWUwY2MwMWFhZTY2MjNmYzhmNTZiMTI1MTllNg';
+	this.apiCallURL_Dev = 'http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw';
 	this.botIcon = null;
 	this.inputTalk = null;
 	this.contentBubble = null;
@@ -28,7 +30,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 5 : 30;
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 2 : 30;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -105,7 +107,7 @@ function _checkState() {
 		break;
 		case "content_displayed":
 			// if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
-			_increaseWaitingTime.call(this);
+			// _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -204,7 +206,7 @@ function _onAnswerReceived(response) {
 
 
 function _onQuestionReceived(newQuestion) {
-	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
+	// console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
 	
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
@@ -215,7 +217,7 @@ function _onQuestionReceived(newQuestion) {
 	if ( DisplayGlobals_SRV.isDevMode() ){
 
 		var content_MOD = {
-			"type":"ces_stats",
+			"type":"ces_events",
 			"answer" : "This is the title",
 			"number": 76543288
 		};
@@ -226,7 +228,7 @@ function _onQuestionReceived(newQuestion) {
 
 		// _setState.call(this, 'calling_api');
 		// setTimeout(function() {
-			// APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+		// 	APICalls_SRV.callGET(this.apiCallURL_Dev,{question:newQuestion.question, isHuman:newQuestion.isHuman}, _onAnswerReceived.bind(this));
 		// }.bind(this),5000);
 
 		
@@ -234,7 +236,7 @@ function _onQuestionReceived(newQuestion) {
 	}else{
 
 		_setState.call(this, 'calling_api');
-		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+		APICalls_SRV.callGET(this.apiCallURL_Live,{question:newQuestion.question, isHuman:newQuestion.isHuman}, _onAnswerReceived.bind(this));
 
 	}
 

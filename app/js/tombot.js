@@ -160,11 +160,11 @@ function _renderContent(content_MOD) {
 		case "news":
 			this.content_DOM = HBTemplates_SRV.getTemplate('news_item', content_MOD);
 		break;
-		case "ces_keynotes":
-			this.content_DOM = HBTemplates_SRV.getTemplate('keynotes_item', content_MOD);
-		break;
+		// case "ces_keynotes":
+		// 	this.content_DOM = HBTemplates_SRV.getTemplate('events_item', content_MOD);
+		// break;
 		case "ces_events":
-			this.content_DOM = HBTemplates_SRV.getTemplate('keynotes_item', content_MOD);
+			this.content_DOM = HBTemplates_SRV.getTemplate('events_item', content_MOD);
 		break;
 		case "ces_stats":
 			this.content_DOM = HBTemplates_SRV.getTemplate('stats_item', content_MOD);
@@ -347,6 +347,8 @@ const AIAgent_SRV = require('../services/AIAgent-srv');
 
 function Conversation_Ctrl () {
 
+	this.apiCallURL_Live = 'http://insights.buzzradar.com/apis/cesbot/query.json?access_token=YjI3NGY5ZTBhMzQyYzdlZDM4MGI0NTI5ZGU1YmQ1NTVmNjg5MWUwY2MwMWFhZTY2MjNmYzhmNTZiMTI1MTllNg';
+	this.apiCallURL_Dev = 'http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw';
 	this.botIcon = null;
 	this.inputTalk = null;
 	this.contentBubble = null;
@@ -356,7 +358,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 5 : 30;
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 2 : 30;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -433,7 +435,7 @@ function _checkState() {
 		break;
 		case "content_displayed":
 			// if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
-			_increaseWaitingTime.call(this);
+			// _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -532,7 +534,7 @@ function _onAnswerReceived(response) {
 
 
 function _onQuestionReceived(newQuestion) {
-	console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
+	// console.log ("%c ->(Conversation_CTRL) Event question_ready => ", "background:#c3bb35;", newQuestion);
 	
 	this.botIcon.changeState("thinking");
 	this.inputTalk.disableInput();
@@ -543,7 +545,7 @@ function _onQuestionReceived(newQuestion) {
 	if ( DisplayGlobals_SRV.isDevMode() ){
 
 		var content_MOD = {
-			"type":"ces_stats",
+			"type":"ces_events",
 			"answer" : "This is the title",
 			"number": 76543288
 		};
@@ -554,7 +556,7 @@ function _onQuestionReceived(newQuestion) {
 
 		// _setState.call(this, 'calling_api');
 		// setTimeout(function() {
-			// APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+		// 	APICalls_SRV.callGET(this.apiCallURL_Dev,{question:newQuestion.question, isHuman:newQuestion.isHuman}, _onAnswerReceived.bind(this));
 		// }.bind(this),5000);
 
 		
@@ -562,7 +564,7 @@ function _onQuestionReceived(newQuestion) {
 	}else{
 
 		_setState.call(this, 'calling_api');
-		APICalls_SRV.callGET('http://testcms.buzzradar.com/apis/cesbot/query.json?access_token=NjkwZTVlNDY4NGM3ZTA0MmUyZWVhYWQ2NTdlOGExNWY4MGU1ZjQ1OWMxMDQ4ZjFhZmNmOWZlN2E0MzhjNmIyYw',{question:newQuestion}, _onAnswerReceived.bind(this));
+		APICalls_SRV.callGET(this.apiCallURL_Live,{question:newQuestion.question, isHuman:newQuestion.isHuman}, _onAnswerReceived.bind(this));
 
 	}
 
@@ -669,6 +671,7 @@ function InputTalk_Ctrl (botIcon) {
 	this.input_DOM = this.conversation_DOM.find('input');
 	this.owner = "cesbot";   //cesbot or user
 	this.question = '';
+	this.isHuman = false;
 
 	_init.call(this);
 
@@ -761,7 +764,7 @@ function _addFocusOutKeyDownListener() {
     	// if (e.type == "focusout" || e.which == 13) {
     	if (e.which == 13) {
     		this.input_DOM.off('focusout keydown');
-	        _checkQuestion.call(this);
+	        _checkQuestion.call(this,true);
     	}
 	}
 
@@ -769,17 +772,18 @@ function _addFocusOutKeyDownListener() {
 
 
 
-function _checkQuestion() {
+function _checkQuestion(isHuman) {
 
 	this.question = this.input_DOM.val();
 	this.input_DOM.val('');
 	var content_MOD = AIAgent_SRV.getModel(this.question);
+	this.isHuman = isHuman;
 
-	console.log("AI Agent pre check.....",this.question, content_MOD);
+	//console.log("AI Agent pre check.....",this.question, content_MOD);
 
 	if (!content_MOD) {
 		//Make API Call
-		console.log("AI Return FALSE so ask Marius");
+		// console.log("AI Return FALSE so ask Marius");
 		_setCopy.call(this,'cesbot',Utils_SRV.getRandomAcknowledge(),_onAcknowledgeAnimationFinished, 'talking');
 	}else{
 
@@ -798,24 +802,24 @@ function _checkQuestion() {
 
 
 function _onAcknowledgeAnimationFinished() {
-	console.log("on acknowledege animation finished!");
+	// console.log("on acknowledege animation finished!", this.isHuman);
 	Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
-	this.emit("question_ready",this.question);
+	this.emit("question_ready",{"question" : this.question, "isHuman" : this.isHuman});
 }
 
 
 function _onGreetingAnimationFinished() {
-	console.log("on greeting animation finished!");
+	// console.log("on greeting animation finished!");
 	Utils_SRV.removeListener ("copy_animation_finished", _onGreetingAnimationFinished);
 	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
 }
 
 
 function _autoQuestionAnimationFinished() {
-	console.log("on _auto Question Animation Finished!");
+	// console.log("on _auto Question Animation Finished!");
 	Utils_SRV.removeListener ("copy_animation_finished", _autoQuestionAnimationFinished);
-	_checkQuestion.call(this);
+	_checkQuestion.call(this,false);
 }
 
 
@@ -1527,7 +1531,7 @@ function ApiCalls () {
 
 ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 
-	console.log ("%c -> ", "background:#c5f442;", "APICalls-> GET : URL =>" , urlCall, dataObj);
+	console.log ("%c -> ", "background:#c5f442;", "APICalls -> question =>" , dataObj);
 
 	$.ajax({
 		type: 'GET',
@@ -2082,7 +2086,7 @@ function DisplayGlobals () {
 //--------------------------------------
 
 
-let _version = "0.2";
+let _version = "0.3";
 
 DisplayGlobals.prototype.getVersion = function() {
 
@@ -2214,7 +2218,7 @@ DisplayGlobals.prototype.isDevMode = function() {
 module.exports = new DisplayGlobals ();
 
 },{"lodash":57}],11:[function(require,module,exports){
-var templates = {"help_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Got It! Ask a Question</a>        </div>        <div class=\"help\">          <p>{{subheader}}</p>          <ul class=\"help-list-questions\">            {{{suggestions}}}          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"{{image_url}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-twitter\"></i> {{user.full_name}}               </div>              <span class=\"date\">{{tweet_date_ago}}</span>              <div class=\"description\">                 {{content}}              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          ","news_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"news\">                    <div class=\"source\">            <span class=\"sentiment {{sentiment.class}}\">{{sentiment.absValue}}</span> <span class=\"source\">{{source}}</span>            <span class=\"date pull-right\">{{date}}</span>          </div>          <div class=\"title\">            {{title}}          </div>                    <div class=\"row news__main\">            <div class=\"col-md-4\">              <img src=\"{{image}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"news_copy\">                 {{copy}}              </div>            </div>          </div>                  </div>      </div>          ","keynotes_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"keynotes\">          <div class=\"row\">            <div class=\"col-md-6\">              <div class=\"item\">                <div class=\"when now\">NOW</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"keynote\"> Brian Krzanich Chief Executive Officer (CEO) of Intel</div>              </div>            </div>            <div class=\"col-md-6\">              <div class=\"item\">                <div class=\"when next\">NEXT</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"keynote\"> Gary Shapiro President and CEO Consumer Technology Association (CTA)</div>              </div>                          </div>          </div>        </div>      </div>          ","stats_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"stats\">          <div class=\"row\">            <div class=\"col-md-12 text-center\">              <span>{{number}}</span>            </div>          </div>        </div>      </div>          "}
+var templates = {"help_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Got It! Ask a Question</a>        </div>        <div class=\"help\">          <p>{{subheader}}</p>          <ul class=\"help-list-questions\">            {{{suggestions}}}          </ul>        </div>             </div>          ","graph_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div id=\"chartdiv\" style=\"width: 100%; background-color: white;\"></div>      </div>          ","photo_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"photo\">                    <div class=\"row photo__main\">            <div class=\"col-md-4\">              <img src=\"{{image_url}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"title\">                <i class=\"fa fa-1x fa-twitter\"></i> {{user.full_name}}               </div>              <span class=\"date\">{{tweet_date_ago}}</span>              <div class=\"description\">                 {{content}}              </div>            </div>          </div>                  </div>      </div>          ","tweet_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"tweet\">                    <div class=\"tweet__user\">            <span class=\"tw-icon\">              <i class=\"fa fa-2x fa-twitter\"></i>            </span>            <div class=\"name\">{{user.name}} <small>@{{user.username}}</small></div>            <div class=\"date\">{{tweet_date_ago}}</div>          </div>          <div class=\"row tweet__main\">            <div class=\"col-md-3\">              <img src=\"{{user.profile_image_big}}\" width=\"100%\">            </div>            <div class=\"col-md-9\">              {{content}}            </div>          </div>                  </div>      </div>          ","news_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"news\">                    <div class=\"source\">            <span class=\"sentiment {{sentiment.class}}\">{{sentiment.absValue}}</span> <span class=\"source\">{{source}}</span>            <span class=\"date pull-right\">{{date}}</span>          </div>          <div class=\"title\">            {{title}}          </div>                    <div class=\"row news__main\">            <div class=\"col-md-4\">              <img src=\"{{image}}\" width=\"100%\">            </div>            <div class=\"col-md-8\">              <div class=\"news_copy\">                 {{copy}}              </div>            </div>          </div>                  </div>      </div>          ","events_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> I have found 23 Events </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"keynotes\">          <div class=\"row\">            <div class=\"col-md-12\">                            <div class=\"item\">                <div class=\"when now\">                  EVENT 1                </div>                <div class=\"keynote\">Brian Krzanich Chief Executive Officer (CEO) of Intel</div>                <div class=\"location\"> <i class=\"fa fa-map-marker\"></i> Monte Carlo, Park Theater</div>                <div class=\"time\"> <i class=\"fa fa-clock-o\"></i> 6:30-7:30 PM</div>                <div class=\"controls\">                  <button type=\"button\" class=\"btn green-dark btn-xs previous\">Previous Event</button>                  <button type=\"button\" class=\"btn purple-soft btn-xs next\">Next Event</button>                </div>              </div>            </div>          </div>        </div>      </div>          ","stats_item":"           <div class=\"slide\">        <div class=\"title\">          <span><i class=\"fa fa-chevron-right\"></i> {{answer}} </span><a href=\"#\" class=\"pull-right ask-me\">Ask a New Question</a>        </div>        <div class=\"stats\">          <div class=\"row\">            <div class=\"col-md-12 text-center\">              <span>{{number}}</span>            </div>          </div>        </div>      </div>          "}
 /*jslint node: true, unused: true, esnext: true */
 
 

@@ -31,7 +31,7 @@ function ApiCalls () {
 
 ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 
-	console.log ("%c -> ", "background:#c5f442;", "APICalls-> GET : URL =>" , urlCall, dataObj);
+	console.log ("%c -> ", "background:#c5f442;", "APICalls -> question =>" , dataObj);
 
 	$.ajax({
 		type: 'GET',

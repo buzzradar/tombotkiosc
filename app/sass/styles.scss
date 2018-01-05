@@ -496,7 +496,7 @@ footer{
 .keynotes {
 
   .item {
-    margin:50px 0px;
+    margin:25px 0px;
 
     .when{
       @include border-radius(10px);
@@ -508,11 +508,15 @@ footer{
       margin-bottom:20px;
 
       &.now{
-        background-color:$green;        
+        background-color:#eeeeee;
+        color:#404040;
+        letter-spacing:10px;  
       }
       &.next{
         background-color:$blue;        
       }
+
+
     }
 
     .generic {
@@ -523,7 +527,7 @@ footer{
       @extend .generic;
       font-weight:bold;
       font-size:2vw;
-      border-top:1px solid $dark-color;
+      border-bottom:1px solid $dark-color;
       padding-top:10px;
     }
     .location{

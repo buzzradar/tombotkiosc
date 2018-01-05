@@ -39,7 +39,7 @@ function DisplayGlobals () {
 //--------------------------------------
 
 
-let _version = "0.2";
+let _version = "0.3";
 
 DisplayGlobals.prototype.getVersion = function() {
 

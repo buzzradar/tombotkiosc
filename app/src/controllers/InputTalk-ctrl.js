@@ -28,6 +28,7 @@ function InputTalk_Ctrl (botIcon) {
 	this.input_DOM = this.conversation_DOM.find('input');
 	this.owner = "cesbot";   //cesbot or user
 	this.question = '';
+	this.isHuman = false;
 
 	_init.call(this);
 
@@ -120,7 +121,7 @@ function _addFocusOutKeyDownListener() {
     	// if (e.type == "focusout" || e.which == 13) {
     	if (e.which == 13) {
     		this.input_DOM.off('focusout keydown');
-	        _checkQuestion.call(this);
+	        _checkQuestion.call(this,true);
     	}
 	}
 
@@ -128,17 +129,18 @@ function _addFocusOutKeyDownListener() {
 
 
 
-function _checkQuestion() {
+function _checkQuestion(isHuman) {
 
 	this.question = this.input_DOM.val();
 	this.input_DOM.val('');
 	var content_MOD = AIAgent_SRV.getModel(this.question);
+	this.isHuman = isHuman;
 
-	console.log("AI Agent pre check.....",this.question, content_MOD);
+	//console.log("AI Agent pre check.....",this.question, content_MOD);
 
 	if (!content_MOD) {
 		//Make API Call
-		console.log("AI Return FALSE so ask Marius");
+		// console.log("AI Return FALSE so ask Marius");
 		_setCopy.call(this,'cesbot',Utils_SRV.getRandomAcknowledge(),_onAcknowledgeAnimationFinished, 'talking');
 	}else{
 
@@ -157,24 +159,24 @@ function _checkQuestion() {
 
 
 function _onAcknowledgeAnimationFinished() {
-	console.log("on acknowledege animation finished!");
+	// console.log("on acknowledege animation finished!", this.isHuman);
 	Utils_SRV.removeListener ("copy_animation_finished", _onAcknowledgeAnimationFinished);
 	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
-	this.emit("question_ready",this.question);
+	this.emit("question_ready",{"question" : this.question, "isHuman" : this.isHuman});
 }
 
 
 function _onGreetingAnimationFinished() {
-	console.log("on greeting animation finished!");
+	// console.log("on greeting animation finished!");
 	Utils_SRV.removeListener ("copy_animation_finished", _onGreetingAnimationFinished);
 	DisplayGlobals_SRV.getConversationRef().changeState('waiting');
 }
 
 
 function _autoQuestionAnimationFinished() {
-	console.log("on _auto Question Animation Finished!");
+	// console.log("on _auto Question Animation Finished!");
 	Utils_SRV.removeListener ("copy_animation_finished", _autoQuestionAnimationFinished);
-	_checkQuestion.call(this);
+	_checkQuestion.call(this,false);
 }
 
 
