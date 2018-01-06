@@ -131,8 +131,9 @@ function _renderContent(content_MOD) {
 
 	//for events only
 	if (content_MOD.type == "ces_events") {
-		this.bubble_DOM.find('.previous-events-btn').click(_previousEventClicked.bind(this, content_MOD.dataProvider.length));
-		this.bubble_DOM.find('.next-events-btn').click(_nextEventClicked.bind(this, content_MOD.dataProvider.length));
+		_renderEvent.call(this, content_MOD);
+		this.bubble_DOM.find('.previous-events-btn').click(_previousEventClicked.bind(this, content_MOD));
+		this.bubble_DOM.find('.next-events-btn').click(_nextEventClicked.bind(this, content_MOD));
 	}
 
 
@@ -191,23 +192,52 @@ function _destroyChart() {
 }
 
 
-function _previousEventClicked(numEvents) {
+
+
+
+
+
+
+
+
+
+//----------------------------------------------
+//Events
+
+
+function _renderEvent(content_MOD) {
+
+	console.log(content_MOD.dataProvider[this.currentEvent]);
+
+	var eventHolder_DOM = this.bubble_DOM.find('.keynotes').find('.item');
+	content_MOD.dataProvider[this.currentEvent]["numEvent"] = this.currentEvent + 1;
+	var event_rendered_DOM = HBTemplates_SRV.getTemplate('event_layout', content_MOD.dataProvider[this.currentEvent]);
+
+	eventHolder_DOM.html(event_rendered_DOM);
+
+}
+
+function _previousEventClicked(content_MOD) {
 
 	this.currentEvent --;
 	if (this.currentEvent < 0) {
-		this.currentEvent = numEvents - 1;
+		this.currentEvent = content_MOD.dataProvider.length - 1;
 	}
+
+	_renderEvent.call(this, content_MOD);
 
 	console.log("previous", this.currentEvent);
 
 }
 
-function _nextEventClicked(numEvents) {
+function _nextEventClicked(content_MOD) {
 
 	this.currentEvent ++;
-	if (this.currentEvent > numEvents - 1) {
+	if (this.currentEvent > content_MOD.dataProvider.length - 1) {
 		this.currentEvent = 0;
 	}
+
+	_renderEvent.call(this, content_MOD);
 
 	console.log("next", this.currentEvent);
 

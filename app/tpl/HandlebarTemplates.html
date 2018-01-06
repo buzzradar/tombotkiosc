@@ -236,16 +236,12 @@
               
 
               <div class="item">
-                <div class="when now">
-                  EVENT 1
-                </div>
-                <div class="keynote">Brian Krzanich Chief Executive Officer (CEO) of Intel</div>
-                <div class="location"> <i class="fa fa-map-marker"></i> Monte Carlo, Park Theater</div>
-                <div class="time"> <i class="fa fa-clock-o"></i> 6:30-7:30 PM</div>
-                <div class="controls">
-                  <button type="button" class="btn green-dark btn-xs previous-events-btn">Previous Event</button>
-                  <button type="button" class="btn purple-soft btn-xs next-events-btn">Next Event</button>
-                </div>
+                <!-- This will get rendered dynamically (see template id event_layout) -->
+              </div>
+
+              <div class="controls">
+                <button type="button" class="btn green-dark btn-xs previous-events-btn">Previous Event</button>
+                <button type="button" class="btn purple-soft btn-xs next-events-btn">Next Event</button>
               </div>
 
             </div>
@@ -259,6 +255,20 @@
     </div>
 
 
+
+
+    <div id="event_layout">
+
+      <div class="when now">
+        EVENT {{numEvent}}
+      </div>
+      <div class="keynote">{{title}}</div>
+      <div class="speaker"> <i class="fa fa-user"></i>{{speaker}}</div>
+      <div class="location"> <i class="fa fa-map-marker"></i> {{location}}</div>
+      <div class="time"> <i class="fa fa-clock-o"></i> {{time}}</div>
+
+
+    </div>
 
 
 
