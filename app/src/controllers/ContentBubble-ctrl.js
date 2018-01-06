@@ -22,6 +22,7 @@ function ContentBubble_Ctrl (botIcon) {
 	this.botIcon = botIcon;
 	this.content_DOM = null;
 	this.chart = null;
+	this.currentEvent = 0;
 	
 	_init.call(this);
 
@@ -74,9 +75,6 @@ function _renderContent(content_MOD) {
 		case "news":
 			this.content_DOM = HBTemplates_SRV.getTemplate('news_item', content_MOD);
 		break;
-		// case "ces_keynotes":
-		// 	this.content_DOM = HBTemplates_SRV.getTemplate('events_item', content_MOD);
-		// break;
 		case "ces_events":
 			content_MOD = setContent_Module_Events(content_MOD);
 			this.content_DOM = HBTemplates_SRV.getTemplate('events_item', content_MOD);
@@ -129,13 +127,19 @@ function _renderContent(content_MOD) {
 	}
 
 
+
+
+	//for events only
+	if (content_MOD.type == "ces_events") {
+		this.bubble_DOM.find('.previous-events-btn').click(_previousEventClicked.bind(this, content_MOD.dataProvider.length));
+		this.bubble_DOM.find('.next-events-btn').click(_nextEventClicked.bind(this, content_MOD.dataProvider.length));
+	}
+
+
 }
 
 
 function setContent_Module_Events(content_MOD) {
-
-	console.clear();
-	console.log(content_MOD);
 
 	content_MOD["answer"] = "I have found "+content_MOD.dataProvider.length+" Events";
 
@@ -186,6 +190,28 @@ function _destroyChart() {
 
 }
 
+
+function _previousEventClicked(numEvents) {
+
+	this.currentEvent --;
+	if (this.currentEvent < 0) {
+		this.currentEvent = numEvents - 1;
+	}
+
+	console.log("previous", this.currentEvent);
+
+}
+
+function _nextEventClicked(numEvents) {
+
+	this.currentEvent ++;
+	if (this.currentEvent > numEvents - 1) {
+		this.currentEvent = 0;
+	}
+
+	console.log("next", this.currentEvent);
+
+}
 
 
 
