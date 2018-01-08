@@ -4,6 +4,7 @@
 const _ = require("lodash");
 
 const DisplayGlobals_SRV = require('./DisplayGlobals-srv'); 
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 
 
@@ -41,10 +42,11 @@ ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 		success: function(json) {
 			console.log("Success!", json);
 			if(callBack) callBack(json);
-
 		},
 		error: function(e) {
 			console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
+			var error_MOD = AIAgent_SRV.getModel("error");
+			if(callBack) callBack(error_MOD);
 		}
 	});
 

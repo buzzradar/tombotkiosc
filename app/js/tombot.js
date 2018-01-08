@@ -403,7 +403,6 @@ const APICalls_SRV = require('../services/APICalls-srv');
 const TomBotIcon_CTRL = require('./TomBotIcon-ctrl');
 const InputTalk_CTRL = require('./InputTalk-ctrl');
 const ContentBubble_CTRL = require('./ContentBubble-ctrl');
-const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 
 
@@ -427,7 +426,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 2 : 30;
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 5 : 30;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -503,8 +502,7 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			// if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
-			// _increaseWaitingTime.call(this);
+			if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -517,7 +515,7 @@ function _increaseWaitingTime() {
 	this.currentWaitingTime ++;
 	//console.log(this.currentWaitingTime, this.waitingTime);
 	if (this.currentWaitingTime == (this.waitingTime + 1) ) {
-    	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
+    	console.log ("%c -> WAIT TOO LONG:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
 		this.currentWaitingTime = 0;
 		_askIntroQuestion.call(this);
 	}
@@ -591,11 +589,20 @@ function _askIntroQuestion() {
 
 function _onAnswerReceived(response) {
 
-	this.botIcon.changeState("waiting");
 
-	this.contentBubble.renderAnswer(response);
-	_hideInputTalk.call(this);
-	_setState.call(this, 'content_displayed');
+
+	if (response.type == "error") {
+		//ERROR FROM THE SERVER DISPLAY A DEFAULT MESSAGE
+		this.inputTalk.showErrorFromServer();
+	}else{
+		this.botIcon.changeState("waiting");
+		this.contentBubble.renderAnswer(response);
+		_hideInputTalk.call(this);
+		_setState.call(this, 'content_displayed');	
+	}
+
+
+	
 
 }
 
@@ -709,7 +716,7 @@ Conversation_Ctrl.prototype.getState = function() {
 
 
 module.exports = Conversation_Ctrl;
-},{"../services/AIAgent-srv":7,"../services/APICalls-srv":8,"../services/DisplayGlobals-srv":10,"./ContentBubble-ctrl":2,"./InputTalk-ctrl":4,"./TomBotIcon-ctrl":5}],4:[function(require,module,exports){
+},{"../services/APICalls-srv":8,"../services/DisplayGlobals-srv":10,"./ContentBubble-ctrl":2,"./InputTalk-ctrl":4,"./TomBotIcon-ctrl":5}],4:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -974,6 +981,11 @@ InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
 };
 
 
+InputTalk_Ctrl.prototype.showErrorFromServer = function () {
+
+	_setCopy.call(this,'cesbot',"Oops sorry! Something went wrong with my brain. Apologies, try again please!",_onGreetingAnimationFinished, 'talking');
+	
+};
 
 
 
@@ -1483,6 +1495,10 @@ AIAgent.prototype.getModel = function(question) {
 			type : 'input',
 			answer : 'My name is CESBot and I am a AI Social Agent.'
 		};
+	}else if($.trim(question) == "error") {
+		answerMOD = {
+			type : 'error'
+		};
 	}
 	
 	return answerMOD;
@@ -1573,6 +1589,7 @@ module.exports = new AIAgent ();
 const _ = require("lodash");
 
 const DisplayGlobals_SRV = require('./DisplayGlobals-srv'); 
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 
 
@@ -1610,10 +1627,11 @@ ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 		success: function(json) {
 			console.log("Success!", json);
 			if(callBack) callBack(json);
-
 		},
 		error: function(e) {
 			console.log ("%c -> ", "background:#ff0000;", "GET APICalls.ajaxCall() ---> Error", e);
+			var error_MOD = AIAgent_SRV.getModel("error");
+			if(callBack) callBack(error_MOD);
 		}
 	});
 
@@ -1641,7 +1659,7 @@ ApiCalls.prototype.callGET = function(urlCall, dataObj, callBack) {
 
 module.exports = new ApiCalls ();
 
-},{"./DisplayGlobals-srv":10,"lodash":57}],9:[function(require,module,exports){
+},{"../services/AIAgent-srv":7,"./DisplayGlobals-srv":10,"lodash":57}],9:[function(require,module,exports){
 /*jslint node: true, unused: true, esnext: true */
 
 
@@ -1993,7 +2011,7 @@ function _loadPieChart(dataProvider) {
 			    "markerType" : "square",
 			    "markerSize" : 15,
 			    "markerLabelGap" : 20,
-			    "verticalGap" : 13,
+			    "verticalGap" : 10,
 			},
 			"titles": [],
 			"dataProvider": _getPieColors(dataProvider)
@@ -2159,7 +2177,7 @@ function DisplayGlobals () {
 //--------------------------------------
 
 
-let _version = "0.4";
+let _version = "0.5";
 
 DisplayGlobals.prototype.getVersion = function() {
 

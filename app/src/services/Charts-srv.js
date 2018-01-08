@@ -349,7 +349,7 @@ function _loadPieChart(dataProvider) {
 			    "markerType" : "square",
 			    "markerSize" : 15,
 			    "markerLabelGap" : 20,
-			    "verticalGap" : 13,
+			    "verticalGap" : 10,
 			},
 			"titles": [],
 			"dataProvider": _getPieColors(dataProvider)
