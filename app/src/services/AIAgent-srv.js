@@ -59,6 +59,10 @@ AIAgent.prototype.getModel = function(question) {
 			type : 'input',
 			answer : 'My name is CESBot and I am a AI Social Agent.'
 		};
+	}else if($.trim(question) == "error") {
+		answerMOD = {
+			type : 'error'
+		};
 	}
 	
 	return answerMOD;
