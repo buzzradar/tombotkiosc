@@ -123,7 +123,7 @@ function _setHelpContent(source,data) {
                 "How many exhibitors are attending CES this year?",
                 "How many people attended CES last year?",
                 "How many people have attended CES this week so far?",
-                "What events are happening now / today / tomorrow?",
+                "What events are happening today?",
                 "How many sq feet is CES?"
             ];
     data.dataProvider = (data.dataProvider.length == 0) ? suggestions : data.dataProvider;

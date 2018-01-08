@@ -29,20 +29,20 @@
 
     "intro_questions" : [ 
 
-
-        "Events",
+        "What are the events happening today?",
         "Twitter mentions last week?",
-        "What are the top trends at CES today / this week / this hour?",
+        "What are the top trends at CES today?",
         "How many people attended CES last year?",
         "Who’s being talked about right now at CES?",
         "Twitter mentions today?",
-        "What is the most talked about brand / product/ industry right now?",
-        "Who is winning at CES today?/ Who is leading the conversation at CES right now?",
+        "What is the most talked about brand industry right now?",
+        "Who is winning at CES today?",
+        "Who is leading the conversation at CES right now?",
         "How many conference sessions are there?",
-        "How many people are talking about CES today / this week / this hour?",
+        "How many people are talking about CES this week?",
         "What has been the biggest moment at CES so far?",
         "Who is the most talked about person at CES right now",
-        "Who are the biggest influncers at CES now / today / tomorrow?"
+        "Who are the biggest influncers at CES now tomorrow?"
 
     ],
 
@@ -55,22 +55,23 @@
 
 
     "intro_questions_all" : [ 
-        "What are the top trends at CES today / this week / this hour?",
+        "What are the top trends at CES today?",
         "Who’s being talked about right now at CES?",
-        "What is the most talked about brand / product/ industry right now?",
-        "Who is winning at CES today?/ Who is leading the conversation at CES right now?",
-        "How many people are talking about CES today / this week / this hour?",
+        "What is the most talked about brand?",
+        "Who is winning at CES today?",
+        "Who is leading the conversation at CES right now?",
+        "How many people are talking about CES today?",
         "What has been the biggest moment at CES so far?",
         "Who is the most talked about person at CES right now",
-        "Who are the biggest influncers at CES now / today / tomorrow?",
-        "What is the most shared Tweet at CES  today / this week / this hour?",
-        "What is the most shared Photo at CES  today / this week / this hour?",
+        "Who are the biggest influncers at CES now?",
+        "What is the most shared Tweet at CES this hour?",
+        "What is the most shared Photo at CES today?",
         "Where in the world are people talking about CES2018 the most",
         "What is the most popular time of day?",
         "Where is my brand in the listing of top brands?",
         "What is the most popular brand in [industry]?",
         "Who is the top influencer in [industry]?",
-        "What are the big news stories at CES today / this week / this hour?",
+        "What are the big news stories at CES today this hour?",
         "How Many News Stories have been written about CES 2018 so far?",
         "What is the most read news story of CES 2018 so far?"
     ]
