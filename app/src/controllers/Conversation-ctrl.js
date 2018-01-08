@@ -6,6 +6,7 @@ const APICalls_SRV = require('../services/APICalls-srv');
 const TomBotIcon_CTRL = require('./TomBotIcon-ctrl');
 const InputTalk_CTRL = require('./InputTalk-ctrl');
 const ContentBubble_CTRL = require('./ContentBubble-ctrl');
+const AIAgent_SRV = require('../services/AIAgent-srv'); 
 
 
 
@@ -29,7 +30,7 @@ function Conversation_Ctrl () {
 	this.introInTimer = null;
 	this.introOutTimer = null;
 	this.waitingTimer = null;
-	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 5 : 30;
+	this.waitingTime = ( DisplayGlobals_SRV.isDevMode() ) ? 2 : 30;
 	this.currentWaitingTime = 0;
 	this.state = "working";
 
@@ -105,7 +106,8 @@ function _checkState() {
 			//do nothing
 		break;
 		case "content_displayed":
-			if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
+			// if ( !DisplayGlobals_SRV.isDevMode() )  _increaseWaitingTime.call(this);
+			// _increaseWaitingTime.call(this);
 		break;
 
 	}
@@ -118,7 +120,7 @@ function _increaseWaitingTime() {
 	this.currentWaitingTime ++;
 	//console.log(this.currentWaitingTime, this.waitingTime);
 	if (this.currentWaitingTime == (this.waitingTime + 1) ) {
-    	console.log ("%c -> WAIT TOO LONG:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
+    	console.log ("%c -> VERSION:", "background:#dc1ad1;", "WARNING: Waiting for too long. Ask a random question." );
 		this.currentWaitingTime = 0;
 		_askIntroQuestion.call(this);
 	}
@@ -192,20 +194,11 @@ function _askIntroQuestion() {
 
 function _onAnswerReceived(response) {
 
+	this.botIcon.changeState("waiting");
 
-
-	if (response.type == "error") {
-		//ERROR FROM THE SERVER DISPLAY A DEFAULT MESSAGE
-		this.inputTalk.showErrorFromServer();
-	}else{
-		this.botIcon.changeState("waiting");
-		this.contentBubble.renderAnswer(response);
-		_hideInputTalk.call(this);
-		_setState.call(this, 'content_displayed');	
-	}
-
-
-	
+	this.contentBubble.renderAnswer(response);
+	_hideInputTalk.call(this);
+	_setState.call(this, 'content_displayed');
 
 }
 

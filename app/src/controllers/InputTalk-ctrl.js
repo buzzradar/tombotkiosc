@@ -262,11 +262,6 @@ InputTalk_Ctrl.prototype.askRandomQuestion = function (newQuestion) {
 };
 
 
-InputTalk_Ctrl.prototype.showErrorFromServer = function () {
-
-	_setCopy.call(this,'cesbot',"Oops sorry! Something went wrong with my brain. Apologies, try again please!",_onGreetingAnimationFinished, 'talking');
-	
-};
 
 
 
