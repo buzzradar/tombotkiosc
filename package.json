@@ -39,7 +39,7 @@
     "gulp-uglify": "^2.1.2",
     "jscs": "^2.8.0",
     "require-dir": "*",
-    "serve": "^1.4.0",
+    "serve": "^11.3.2",
     "uglify-js": "^2.6.1",
     "uglifyify": "^3.0.1",
     "watchify": "^3.7.0"
